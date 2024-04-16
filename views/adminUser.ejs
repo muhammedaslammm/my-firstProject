@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/adminNavBar.css" />
+    <title>User Management</title>
+    <style>
+      body {
+        font-family: "poppins", sans-serif;
+      }
+
+      .container {
+        width: 95%;
+        margin: 70px auto;
+        display: flex;
+        height: 100vh;
+      }
+      .sidebar-left {
+        display: flex;
+        flex-direction: column;
+      }
+      .sidebar-left a {
+        text-decoration: none;
+        color: black;
+        padding: 15px 10px 15px 2px;
+      }
+      .sidebar-left a:hover {
+        font-weight: 500;
+      }
+      .content-body {
+        margin-left: 15px;
+        width: 100%;
+        margin-top: 10px;
+        padding: 0px 20px;
+        height: auto;
+        box-sizing: border-box;
+      }
+      .body-head {
+        font-weight: 500;
+        font-size: 17px;
+        margin-bottom: 20px;
+      }
+      .user-card {
+        display: flex;
+        width: 100%;
+        border: 1px solid rgb(209, 207, 207);
+        border-radius: 3px;
+        justify-content: space-between;
+        box-sizing: border-box;
+        padding: 18px 12px;
+        margin-bottom: 12px;
+      }
+      .user-username,
+      .user-email,
+      .user-password,
+      .user-status,
+      .user-option {
+        display: flex;
+        flex-direction: column;
+      }
+      .user-card .head {
+        font-weight: 500;
+      }
+      .user-option a {
+        font-weight: 500;
+        color: rgb(143, 103, 17);
+      }
+      .user-option a:hover {
+        cursor: pointer;
+      }
+      #blocked {
+        color: red;
+      }
+      #notBlocked {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- nav bar -->
+    <%-include('./partials/adminNavBar.ejs')%>
+    <div class="container">
+      <div class="sidebar-left">
+        <%-include('./partials/adminSidebar.ejs')%>
+      </div>
+      <div class="content-body">
+        <div class="body-head">User List</div>
+        <%if(users.length > 0) { %> <% users.forEach(function(user){ %>
+
+        <div class="user-card" data-userID="<%=user._id%>">
+          <div class="user-username">
+            <div class="head">username</div>
+            <div class="user-username"><%=user.username%></div>
+          </div>
+          <div class="user-email">
+            <div class="head">email</div>
+            <div class="user-email"><%=user.email%></div>
+          </div>
+
+          <%let status = ''%> <% if(user.isBlocked){ %> <% status = 'Blocked' %>
+          <% } else{ %> <% status = 'Active' %> <% }%>
+          <div class="user-status">
+            <div class="head">status</div>
+            <div
+              class="user-actual-status"
+              id="<%=user.isBlocked ? 'blocked': 'notBlocked'%>"
+            >
+              <%=status%>
+            </div>
+          </div>
+          <div class="user-option">
+            <%if(user.isBlocked === false){%>
+            <a id="changeUserStatus" onclick="changeStatus('<%=user._id%>')"
+              >Block</a
+            >
+            <%}else if(user.isBlocked === true){%>
+            <a id="changeUserStatus" onclick="changeStatus('<%=user._id%>')"
+              >Unblock</a
+            >
+            <%}%>
+          </div>
+        </div>
+
+        <% })%> <% } else { %>
+        <div class="no-result">No Users To Show</div>
+        <% }%>
+      </div>
+    </div>
+    <script>
+      async function changeStatus(userID) {
+        console.log(userID);
+
+        try {
+          const button = document.querySelector(
+            `.user-card[data-userID='${userID}'] #changeUserStatus`
+          );
+          const userStatus = document.querySelector(
+            `.user-card[data-userID='${userID}'] .user-actual-status`
+          );
+
+          // blocking
+          if (button.innerText === "Block") {
+            const data = await fetch(`/admin/blockUser/${userID}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            });
+
+            const response = await data.json();
+            if (response.error) {
+              window.alert(response.error);
+            } else {
+              button.innerText = response.button;
+              userStatus.innerText = response.status;
+              userStatus.style.color = "red";
+            }
+
+            // unblocking
+          } else if (button.innerText === "Unblock") {
+            const data = await fetch(`/admin/unblockUser/${userID}`, {
+              method: "POST",
+            });
+            const response = await data.json();
+            if (response.error) {
+              window.alert(response.error);
+            } else {
+              button.innerText = response.button;
+              userStatus.innerText = response.status;
+              userStatus.style.color = "green";
+            }
+          }
+        } catch (error) {
+          console.log(error, "error when updating the staus of the user");
+        }
+      }
+    </script>
+  </body>
+</html>

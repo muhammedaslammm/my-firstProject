@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+
+    <link rel="stylesheet" href="/styles/nav.css" />
+    <title>Document</title>
+    <style>
+      body {
+        font-family: "poppins", sans-serif;
+        padding-bottom: 100px;
+        background-color: rgb(248, 248, 248);
+      }
+      .container {
+        width: 85%;
+        margin: 80px auto;
+      }
+      .navigate {
+        margin-top: 10px;
+        margin-bottom: 8px;
+      }
+      #topLink {
+        font-size: 15px;
+        color: rgb(178, 178, 178);
+        margin-right: 10px;
+      }
+
+      /* top section */
+      .box-top {
+        display: flex;
+        box-shadow: 0px 0px 5px rgb(206, 206, 206);
+        background-color: white;
+        padding: 20px;
+        line-height: 20px;
+        margin-bottom: 10px;
+      }
+
+      /* address */
+      .address-box {
+        width: 40%;
+      }
+      .address-head {
+        font-size: 17px;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .name {
+        font-weight: 500;
+        margin-bottom: 2px;
+      }
+      .phone-head {
+        margin-top: 10px;
+        font-weight: 500;
+        margin-bottom: 2px;
+      }
+
+      /* reward */
+      .reward-box {
+        width: 30%;
+      }
+      .rewardbox-head {
+        font-weight: 500;
+        font-size: 17px;
+      }
+
+      /* orderID */
+      .orderID-head {
+        font-size: 14px;
+        color: grey;
+      }
+      .orderID {
+        font-size: 17px;
+        font-weight: 500;
+        color: rgb(92, 91, 91);
+      }
+
+      /* order cancel */
+      .more-box {
+        width: 30%;
+        display: flex;
+        justify-content: end;
+      }
+      .more-box #cancel {
+        border: 1px solid black;
+        padding: 2px 7px;
+        border-radius: 3px;
+        box-shadow: 0px 0px 7px rgb(223, 222, 222) inset;
+        font-size: 15px;
+      }
+
+      .more-box #cancel:hover {
+        cursor: pointer;
+      }
+
+      /* product details */
+      .product-box {
+        display: flex;
+        box-shadow: 0px 0px 5px rgb(206, 206, 206);
+        background-color: white;
+        padding: 20px;
+        line-height: 20px;
+        margin-bottom: 10px;
+      }
+      .product-details {
+        display: flex;
+        width: 40%;
+      }
+
+      .image {
+        width: 11%;
+      }
+      .image img {
+        width: 100%;
+      }
+
+      .detail-summary {
+        margin-left: 3%;
+      }
+      .brand {
+        font-weight: 500;
+      }
+      .summary {
+        margin-bottom: 8px;
+      }
+      .color,
+      .size,
+      .quantity {
+        font-size: 15px;
+        color: rgb(75, 75, 75);
+      }
+      .price {
+        margin-top: 10px;
+        font-weight: 500;
+      }
+      .product-stat {
+        width: 30%;
+      }
+      .product-stat .product-status {
+        font-weight: 500;
+        color: green;
+      }
+      .product-stat .note {
+        font-size: 13px;
+        color: rgb(86, 86, 86);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- headers -->
+    <%-include("./partials/navbar.ejs")%>
+    <!-- -- -->
+    <div class="container">
+      <div class="navigate">
+        <a href="/order-page" id="topLink">>back to order page</a>
+      </div>
+      <div class="box-top">
+        <div class="address-box">
+          <div class="address-head">Delivery Address</div>
+          <div class="name"><%=address.name%></div>
+          <div class="address"><%=address.address%></div>
+          <div class="district"><%=address.district%> - district</div>
+          <div class="phone-head">Phone:</div>
+          <div class="phone-number"><%=address.phone%></div>
+        </div>
+        <div class="reward-box">
+          <div class="rewardbox-head">Your Reward</div>
+        </div>
+        <div class="orderID-box">
+          <div class="orderID-head">Order ID</div>
+          <div class="orderID"><%=product.moasOrderID%></div>
+        </div>
+        <div class="more-box">
+          <%if(statuses.includes(product.orderStatus)){%>
+          <!--statuses if from server-side array -->
+          <form action="/cancel/<%=order._id%>/<%=product._id%>" method="post">
+            <button type="submit" id="cancel">cancel your order</button>
+          </form>
+          <%}else if(product.orderStatus === "cancelled"){%>
+          <div class="cancelled-note" style="color: rgb(183, 24, 24)">
+            <%const cancelledDate = product.cancelledDate.toDateString()%>
+            <div class="cancel-note">Order Cancelled on</div>
+            <div class="cancelled-date" style="font-weight: 500">
+              <%=cancelledDate%>
+            </div>
+          </div>
+
+          <%}else if(product.orderStatus === "delivered"){%>
+          <form action="/return/<%=order._id%>" method="post">
+            <button type="submit">return product</button>
+          </form>
+          <%}%>
+        </div>
+      </div>
+
+      <!-- product box -->
+      <div class="product-box">
+        <div class="product-details">
+          <div class="image">
+            <img src="<%=product.image%>" alt="product image" />
+          </div>
+          <div class="detail-summary">
+            <div class="brand"><%=product.brand%></div>
+            <div class="summary">
+              <%=product.color%> Men's <%=product.productType%>
+            </div>
+            <div class="color">color: <%=product.color%></div>
+            <div class="size">size: <%=product.size%></div>
+            <div class="quantity">quantity: <%=product.quantity%></div>
+            <div class="price">Rs. <%=product.totalPrice%></div>
+          </div>
+        </div>
+        <div class="product-stat">
+          <%if(order.orderStatus === "cancelled"){%>
+          <div class="product-status" style="color: rgb(183, 24, 24)">
+            Order <%=order.orderStatus%>
+          </div>
+          <div class="note">The item you ordered is cancelled</div>
+          <%}else if(order.orderStatus === "on progress"){%>
+          <div class="product-status" style="color: rgb(29, 138, 7)">
+            Order <%=order.orderStatus%>
+          </div>
+          <div class="note">The item you ordered is on progress</div>
+          <%}else if(order.orderStatus === "shipped"){%>
+          <div class="product-status" style="color: rgb(29, 138, 7)">
+            Order <%=order.orderStatus%>
+          </div>
+          <div class="note">The item you ordered is shipped</div>
+          <%}else if(order.orderStatus === "delivered"){%>
+          <div class="product-status" style="color: rgb(29, 138, 7)">
+            Order <%=order.orderStatus%>
+          </div>
+          <div class="note">The item you ordered is delivered</div>
+          <%}%>
+        </div>
+      </div>
+    </div>
+    <script>
+      // nav
+      const profileButton = document.querySelector("#profile-button");
+      const content = document.querySelector(".dropdown-content");
+
+      profileButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        content.style.display =
+          content.style.display === "none" ? "block" : "none";
+      });
+
+      // ---------------------------------------------------
+    </script>
+  </body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="/styles/nav.css" />
+    <link rel="stylesheet" href="/styles/productAddress.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- header -->
+    <%-include('./partials/navbar.ejs')%>
+    <!--  -->
+    <div class="container-body">
+      <div class="address-box">
+        <div class="head">Add Your Address</div>
+        <form
+          action="/product-addAddress?productID=<%=productID%>&quantity=<%=quantity%>&size=<%=size%>"
+          method="post"
+          id="form"
+        >
+          <div class="name">
+            <label for="">Name</label>
+            <input type="text" name="name" id="name" class="input" /><br />
+            <p id="error" class="error"></p>
+          </div>
+
+          <div class="address">
+            <label for="">Address</label>
+            <input type="text" name="address" id="address" class="input" />
+            <p id="error" class="error"></p>
+          </div>
+
+          <div class="number">
+            <label for="">Mobile Number</label>
+            <input type="number" name="phone" id="phone" class="input" /><br />
+            <p id="error" class="error"></p>
+          </div>
+
+          <div class="city">
+            <label for="">City</label>
+            <input type="text" name="city" id="city" class="input" />
+            <p id="error" class="error"></p>
+          </div>
+
+          <div class="state">
+            <label for="">State</label>
+            <input type="text" name="state" id="state" class="input" /><br />
+            <p id="error" class="error"></p>
+          </div>
+
+          <div class="district">
+            <label for="">District</label>
+            <input
+              type="text"
+              name="district"
+              id="district"
+              class="input"
+            /><br />
+            <p id="error" class="error"></p>
+          </div>
+
+          <div class="pincode">
+            <label for="">Pincode</label>
+            <input
+              type="number"
+              name="pincode"
+              id="pincode"
+              class="input"
+            /><br />
+            <p id="error" class="error"></p>
+          </div>
+
+          <div class="country">
+            <label for="">Country</label>
+            <input
+              type="text"
+              name="country"
+              id="country"
+              class="input"
+            /><br />
+            <p id="error" class="error"></p>
+          </div>
+
+          <input type="submit" />
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const form = document.querySelector("#form");
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const inputFields = document.querySelectorAll(".input");
+        const phoneField = document.querySelector("#phone");
+        let validForm = true;
+
+        // field value checking
+        inputFields.forEach(function (input) {
+          if (input.value === "") {
+            input.parentNode.querySelector("#error").innerText =
+              "*Required Field";
+            validForm = false;
+          }
+        });
+
+        // checking phone number
+        if (phoneField.value.length > 10) {
+          phoneField.parentElement.querySelector("#error").innerText =
+            "Invalid Phone Number";
+          validForm = false;
+        }
+        if (validForm) {
+          form.submit();
+        }
+      });
+
+      // on key up
+      const inputFields = document.querySelectorAll(".input");
+      inputFields.forEach(function (input) {
+        input.addEventListener("keyup", function (event) {
+          if (event.target.value.length === 0) {
+            event.target.parentNode.querySelector("#error").innerText =
+              "*Required Field";
+          } else {
+            event.target.parentElement.querySelector("#error").innerText = "";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

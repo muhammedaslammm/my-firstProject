@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/adminLogin.css" />
+    <link rel="stylesheet" href="/styles/adminLoginNav.css" />
+    <title>Admin login</title>
+    <style></style>
+  </head>
+  <body>
+    <header>
+      <div class="nav-container">
+        <div class="leftSection">
+          <div class="logo"><a href="/admin/adminHome">moas</a></div>
+          <div class="page">>admin login</div>
+        </div>
+      </div>
+    </header>
+    <main>
+      <div class="container">
+        <div class="page-left">
+          <img src="/wallpapers/Secure login-bro.png" alt="" />
+        </div>
+        <div class="page-right">
+          <div class="adminlogin-box">
+            <div class="adminlogin-head">adminlogin</div>
+            <form action="/admin/adminlogin" method="post">
+              <label for="">username</label>
+              <input
+                type="text"
+                name="username"
+                value="<%= typeof userData != 'undefined' ? userData.username:''%>"
+              />
+              <p class="error">
+                <%if(typeof errors != 'undefined' && errors.name) { %>
+                <%=errors.email%> <% }%>
+              </p>
+              <label for="">password</label>
+              <input
+                type="password"
+                name="password"
+                value="<%= typeof userData != 'undefined' ? userData.password:''%>"
+              />
+              <p>
+                <%if(typeof errors != 'undefined' && errors.password) { %>
+                <%=errors.password%> <% }%>
+              </p>
+
+              <p class="login-error">
+                <%if(typeof errors != 'undefined' && errors.login) { %>
+                <%=errors.login%> <% }%>
+              </p>
+              <input type="submit" />
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

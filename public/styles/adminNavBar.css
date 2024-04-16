@@ -1,0 +1,36 @@
+body {
+    font-family: "poppins", sans-serif;
+    margin:0
+}
+header {
+  border-bottom:1px solid rgb(158, 158, 158);
+  padding:4px 0px;
+  background-color: rgb(50, 49, 49);
+  position: fixed;
+  top:0;
+  right:0;
+  left:0;
+  z-index: 1;
+}
+.nav-container{
+  width:90%;
+  margin:0 auto
+}
+.leftSection{
+  display: flex;
+  align-items: center;
+}
+
+.leftSection .logo{
+  margin-right: 10px;
+}
+.leftSection .logo a{
+  font-size: 28px;
+  font-weight: 500;
+  text-decoration: none;
+  color:white
+}
+.leftSection .page{
+  font-size: 19px;
+  color:rgb(137, 134, 134)
+}

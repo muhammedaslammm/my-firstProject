@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="/styles/nav.css" />
+    <title>Address</title>
+    <style>
+      .page-container {
+        width: 95%;
+        margin: 90px auto;
+        display: flex;     
+        justify-content: space-between;
+        box-sizing: border-box;
+      }
+      .page-container .page-sidebar {
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border: 1px solid rgb(203, 200, 200);
+        padding-top: 10px;
+        width: 13%;
+        box-sizing: border-box;
+      }
+      .page-container .page-sidebar a {
+        padding: 12px 14px;
+        text-decoration: none;
+        color: rgb(64, 64, 64);
+        font-size: 17px;
+      }
+      .page-container .page-sidebar a:hover {
+        border-left: 2.5px solid rgb(64, 67, 135);
+      }
+      /* page content */
+      .content-body{
+        display: flex;
+        flex-direction: column;
+        width:85%;
+        padding-left:2%;
+        
+      }  
+      .nav-links{
+        margin-bottom: 8px;
+      }  
+      .nav-links a{
+        font-size: 15px;
+        color:rgb(179, 178, 178);
+        text-decoration: none;              
+      }  
+      .nav-links span{
+        font-size: 15px;
+        text-decoration: none;
+        color: grey;
+        font-weight: 500;  
+        margin-left: 2px;
+      }
+
+      .page-content {
+        width:85%;
+        background-color: white;
+        justify-content: flex;
+        flex-direction: column;
+        
+      }
+      .address-box {
+        border: 1px solid rgb(174, 173, 173);
+        border-radius: 3px;
+        padding: 10px 15px 15px;
+        box-sizing: border-box;
+        line-height: 18px;
+      }
+      .address-box .box-head {
+        font-weight: 500;
+        margin-bottom: 20px;
+        font-size: 18px;
+      }
+      .address-box form label {
+        display: block;
+        margin: 0;
+        margin-left: 1px;
+        font-size: 17px;
+        margin-bottom: 5px;
+      }
+      .address-box form input[type="text"],.address-box form input[type="number"] {
+        width: 97%;
+        border: 1px solid rgb(174, 173, 173);
+        border-radius: 3px;
+        outline: none;
+        padding: 4px 9px;
+        /* margin-bottom: 15px; */
+      }
+      .error{
+        font-size: 15px;
+        margin:0;
+        margin-bottom: 10px;
+        margin-top: 1px;
+        margin-left: 2px;
+        color: maroon;
+      }
+      form input[type="submit"] {
+        width: auto;
+        height: auto;
+        padding: 4px 12px;
+        font-size: 16px;
+        color: white;
+        font-weight:500 ;
+        border:none;
+        background-color: rgba(121, 23, 167, 0.837);
+        border-radius: 0px;
+        margin: 15px 0px;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <!-- headers -->
+    <%-include("./partials/navbar.ejs")%>
+    <!-- -- -->
+      <div class="page-container">
+          <div class="page-sidebar">
+            <a href="/user-profile">User Profile</a>
+            <a href="/address-management"style="border-left: 2.5px solid rgb(64, 67, 135);">Address Management</a>
+            <a href="/order-page">My Orders</a>
+            <a href="#">Payment Options</a>
+          </div>
+          <div class="content-body">
+            <div class="nav-links">
+              <a href="/address-management">>address-management</a> <span>>reset password</span>
+            </div>
+            <div class="page-content">
+              <div class="address-box">                               
+                <div class="box-head">add new address</div>
+                <form action="/new-address" method="post">
+                  <label for="">Name</label>                
+                  <input type="text" name="name" value="<%=typeof data != 'undefined' ? data.name : ''%>"><br>
+                  <p class="error">
+                    <%if(typeof error != 'undefined'){%>
+                      <%=error.name%>
+                    <%}%>
+                  </p>                  
+
+                  <label for="">Address</label>                
+                  <input type="text" name="address" value="<%=typeof data != 'undefined' ? data.address : ''%>">
+                  <p class="error">
+                    <%if(typeof error != 'undefined'){%>
+                      <%=error.address%>
+                    <%}%>
+                  </p>
+
+
+                  <label for="">Mobile Number</label>                
+                  <input type="text" name="phone" value="<%=typeof data != 'undefined' ? data.phone : ''%>"><br>
+                  <p class="error">
+                    <%if(typeof error != 'undefined'){%>
+                      <%=error.phone%>
+                    <%}%>
+                  </p>
+  
+  
+                  <label for="">City</label>                
+                  <input type="text" name="city" value="<%=typeof data != 'undefined' ? data.city : ''%>">
+                  <p class="error">
+                    <%if(typeof error != 'undefined'){%>
+                      <%=error.city%>
+                    <%}%>
+                  </p>
+  
+                  
+                  <label for="">State</label>                
+                  <input type="text" name="state" value="<%=typeof data != 'undefined' ? data.state : ''%>"><br>
+                  <p class="error">
+                    <%if(typeof error != 'undefined'){%>
+                      <%=error.state%>
+                    <%}%>
+                  </p>
+
+                  <label for="">District</label>                
+                  <input type="text" name="district" value="<%=typeof data != 'undefined' ? data.district : ''%>"><br>
+                  <p class="error">
+                    <%if(typeof error != 'undefined'){%>
+                      <%=error.district%>
+                    <%}%>
+                  </p>
+
+                  <label for="">Pincode</label>                
+                  <input type="number" name="pincode" value="<%=typeof data != 'undefined' ? data.pincode : ''%>"><br>
+                  <p class="error">
+                    <%if(typeof error != 'undefined'){%>
+                      <%=error.pincode%>
+                    <%}%>
+                  </p>
+
+                  <label for="">Country</label>                
+                  <input type="text" name="country" value="<%=typeof data != 'undefined' ? data.country : ''%>"><br>
+                  <p class="error">
+                    <%if(typeof error != 'undefined'){%>
+                      <%=error.country%>
+                    <%}%>
+                  </p>
+
+                  <div class="checkbox" style="margin-top: 12px;">
+                    <label for="checkbox" style="font-size: 15px; display: inline">set as the default address</label>
+                    <input type="checkbox" id="checkbox">
+                    <input type="hidden" value="unchecked" id="checkbox_value" name="check_box_status">
+                  </div>
+
+                  <input type="submit">
+                </form>
+              </div>          
+          </div>
+      </div>
+
+    <script>
+      // nav
+      const profileButton = document.querySelector("#profile-button");
+      const content = document.querySelector(".dropdown-content");
+
+      profileButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        content.style.display =
+          content.style.display === "none" ? "block" : "none";
+      });
+
+      // ---------------------------------------------------
+
+
+        const checkbox = document.querySelector("#checkbox");
+        const checkbox_value = document.querySelector("#checkbox_value");
+
+        checkbox.addEventListener("change",function(){
+          if(checkbox.checked){
+            checkbox_value.value = "checked";
+          }
+          else{
+            checkbox_value.value = "unchecked";
+          }
+        })      
+    </script>
+  </body>
+</html>

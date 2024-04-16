@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="/styles/nav.css" />
+    
+    <title>Address</title>
+    <style>
+      .page-container {
+        width: 95%;
+        margin: 90px auto;
+        display: flex;     
+        justify-content: space-between;
+        box-sizing: border-box;
+      }
+      .page-container .page-sidebar {
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border: 1px solid rgb(203, 200, 200);
+        padding-top: 10px;
+        width: 13%;
+        box-sizing: border-box;
+      }
+      .page-container .page-sidebar a {
+        padding: 12px 14px;
+        text-decoration: none;
+        color: rgb(64, 64, 64);
+        font-size: 17px;
+      }
+      .page-container .page-sidebar a:hover {
+        border-left: 2.5px solid rgb(64, 67, 135);
+      }
+      /* page content */
+      .page-content {
+        width:85%;
+        background-color: white;
+        justify-content: flex;
+        flex-direction: column;
+        
+      }
+      .address-box{
+        border: 1px solid rgb(203, 200, 200);
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .page-head{
+        display:flex;
+        justify-content: space-between;
+        margin-bottom: 25px;
+      }
+      .page-head .heading{
+        font-size: 18px;
+        font-weight: 500;
+      }
+      .page-head .new-address a{
+        font-size: 16px;
+        text-decoration: none;
+        color: rgb(171, 17, 17);
+
+      }
+      .address-card{
+        display:flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        border:1px solid rgb(185, 185, 185);
+        padding:12px 12px;
+        margin-top: 10px;
+      }
+      .address-card-details{
+        line-height: 20px;
+        color:rgb(83, 81, 81)
+      }
+      .username{
+        font-size: 17px;
+        font-weight: 500;
+        margin-bottom: 2px;
+      }
+      .contact{
+        margin-top: 2px;
+        font-size: 15px;
+      }
+      
+      .options a{
+        text-decoration: none;
+        padding:0px 5px;
+        /* border-right: 1px solid rgb(64, 64, 64); */
+        color:rgb(69, 68, 69);
+        font-weight: 500;
+        font-size: 15px;
+      }
+      .options a:hover{
+        color:rgb(96, 94, 94)
+      }
+      .options a:last-child{
+        border-right: none;
+      }
+      .no-content{
+        display: flex;
+        justify-content: center;
+        margin-top: 10%;
+        color: grey;
+      }
+      .no-content a{
+        color:rgb(45, 44, 45);
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- headers -->
+    <%-include("./partials/navbar.ejs")%>
+    <!-- -- -->
+    
+    <div class="page-container">
+        <div class="page-sidebar">
+          <a href="/user-profile">User Profile</a>
+          <a href="/address-management"style="border-left: 2.5px solid rgb(64, 67, 135);">Address Management</a>
+          <a href="/order-page">My Orders</a>
+          <a href="#">Payment Options</a>
+        </div>
+        <div class="page-content">
+          <div class="address-box">
+            <div class="page-head">
+                <div class="heading">User Address</div>
+                <div class="new-address"><a href="/new-address">add new address</a></div>
+            </div>
+            <% if(addresses.length > 0 ){ %>
+                <% addresses.forEach(function(address){ %>
+                    <div class="address-card">
+                        <div class="address-card-details">
+                            <div class="username"><%=address.name%></div>
+                            <div class="address"><%=address.address%></div>
+                            <div class="place-and-pin"><%address.district%> <%=address.state%> <%=address.pincode%></div>
+                            <div class="contact">Phone: <%=address.phone%></div>
+                        </div>
+                        <div class="options">
+                            <a href="/edit-address/<%=address._id%>" >edit</a>
+                            <a href="/remove-address/<%=address._id%>" >remove</a>
+                            <%if(address.default != true){%>
+                                <a href="/set-as-default/<%=address._id%>" >set as default</a>
+                            <%}else{%>
+                                <p style=" display:inline; font-size: 15px; font-weight: 500; color:rgb(18, 176, 18)">default address</p>
+                            <%}%>
+                            
+                        </div>
+                        
+                    </div>
+                <% }) %>
+            <% }else{ %>
+                <div class="no-content">no address to show here. <a href="/new-address">add new address</a></div>
+            <% } %>
+            </div>            
+        </div>
+    
+  <script>
+    const profileButton = document.querySelector("#profile-button");
+      const content = document.querySelector(".dropdown-content");
+
+      profileButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        content.style.display =
+          content.style.display === "none" ? "block" : "none";
+      });
+  </script>
+  </body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>signup-otp</title>
+    <style>
+      body {
+        font-family: "poppins", sans-serif;
+      }
+
+      header {
+        border-bottom: 1px solid rgb(205, 205, 205);
+        background-color: white;
+        padding: 5px 0;
+      }
+      nav {
+        height: 32px;
+        width: 97%;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .nav-left {
+        display: flex;
+        align-items: center;
+      }
+      .nav-left .logo {
+        color: black;
+      }
+      .nav-left input[type="search"] {
+        border: 1px solid rgb(203, 203, 203);
+        background-color: white;
+        padding: 3px;
+      }
+      .nav-left input[type="submit"] {
+        background-color: white;
+        border: 1px solid black;
+        padding: 4px 7.9px;
+        font-weight: 500;
+        color: black;
+      }
+      .nav-right a {
+        text-decoration: none;
+        color: black;
+        font-size: 16px;
+        margin-right: 24px;
+      }
+      .nav-right a:last-child {
+        margin: 0;
+      }
+      .logo {
+        margin-right: 8px;
+        font-size: 22px;
+        font-weight: 500;
+      }
+
+      .container {
+        width: 80%;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+      }
+
+      .otp-box {
+        width: 350px;
+        box-shadow: 0px 0px 7px rgb(173, 172, 172);
+        border-radius: 4px;
+        padding: 30px 20px;
+        margin-top: 13%;
+        box-sizing: border-box;
+      }
+
+      .otp-box .otp-head {
+        font-weight: 400;
+        font-size: 17px;
+        margin: 0;
+        margin-bottom: 12px;
+        font-weight: 500;
+      }
+      .otp-box .summary {
+        margin-bottom: 15px;
+        font-size: 14px;
+        color: rgb(71, 70, 70);
+      }
+      .otp-box .summary span {
+        font-weight: 500;
+        color: black;
+      }
+      .error-and-timer {
+        display: flex;
+        justify-content: space-between;
+      }
+      form p {
+        margin: 0;
+      }
+      form .error {
+        margin: 0;
+        color: maroon;
+        font-size: 14px;
+      }
+      #timer {
+        font-size: 14px;
+        color: rgb(202, 41, 41);
+      }
+      input[type="text"] {
+        width: 97%;
+        padding: 4px;
+        border: 1px solid rgb(165, 162, 162);
+        outline: none;
+        margin-bottom: 8px;
+      }
+      .submit-and-resend {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+      input[type="submit"]:hover {
+        cursor: pointer;
+      }
+      .resend-otp {
+        font-size: 14px;
+        color: rgb(53, 52, 52);
+        margin-right: 2px;
+      }
+      .resend-otp a {
+        font-size: 14px;
+        color: rgb(157, 157, 16);
+        text-decoration: none;
+        font-weight: 500;
+        margin-left: 3px;
+        transition: color 0.3s;
+      }
+      .resend-otp a:hover {
+        color: rgb(149, 20, 149);
+      }
+      .otp-form input[type="submit"] {
+        padding: 5px 8px;
+        font-size: 13px;
+        background-color: rgba(94, 27, 153, 0.764);
+        color: rgb(255, 255, 255);
+        font-weight: 700;
+        border: 1px solid;
+        transition: background-color 0.2s;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <div class="nav-left">
+          <div class="logo">moas</div>
+          <form action="post">
+            <input type="search" name="search" />
+            <input type="submit" />
+          </form>
+        </div>
+        <div class="nav-right">
+          <a href="">cart</a>
+          <a href="">wishlist</a>
+          <a href="">profile</a>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <div class="container">
+        <div class="otp-box">
+          <p class="otp-head">OTP Validation</p>
+          <p class="summary">
+            We have send an One Time Password to your Email-Id
+            <span><%=email%></span>
+          </p>
+          <div class="otp-form">
+            <form action="/signup-otp" method="post">
+              <div class="error-and-timer">
+                <p class="error"></p>
+                <p id="timer"></p>
+              </div>
+              <input type="text" name="otp" id="inputOTP" />
+              <div class="submit-and-resend">
+                <input type="submit" id="otpSubmitButton" />
+              </div>
+              <div class="resend-otp">
+                have an issue with OTP?<a
+                  href=""
+                  id="resend-otp-link"
+                  onclick="resendOTP(event,'<%=email%>')"
+                  >resend OTP</a
+                >
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      // otp timer
+      function time() {
+        const startTime = localStorage.getItem("startTime") || Date.now();
+        if (!localStorage.getItem("startTime")) {
+          localStorage.setItem("startTime", startTime);
+        }
+        return startTime;
+      }
+
+      const duration = 120;
+      const element = document.querySelector("#timer");
+
+      async function updateTimer() {
+        const startTime = time();
+        const currentTime = Math.floor((Date.now() - startTime) / 1000);
+        const remainingTime = duration - currentTime;
+
+        if (remainingTime <= 0) {
+          try {
+            const response = await fetch("/delete-otp", {
+              method: "GET",
+            });
+            const data = await response.json();
+            if (response.ok) {
+              console.log("OTP deleted");
+            } else {
+              console.log("failed to delete OTP");
+            }
+          } catch (error) {
+            console.log(error);
+          }
+          const button = document.querySelector("#otpSubmitButton");
+          button.disabled = true;
+          button.style.backgroundColor = "rgba(94, 27, 153, 0.229)";
+          console.log("button disabled");
+          element.innerText = "timer ended";
+        } else {
+          let minutes = Math.floor(remainingTime / 60);
+          let seconds = remainingTime % 60;
+
+          minutes = minutes < 10 ? `0${minutes}` : minutes;
+          seconds = seconds < 10 ? `0${seconds}` : seconds;
+
+          element.innerText = `${minutes}:${seconds}`;
+          setTimeout(updateTimer, 1000);
+        }
+      }
+      updateTimer();
+
+      // resend OTP
+      async function resendOTP(event, email) {
+        event.preventDefault();
+        event.target.disabled = true;
+        event.target.style.color = "rgb(193, 192, 192)";
+        event.target.style.cursor = "auto";
+        const response = await fetch("/resendOTP", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            console.log(`otp ${data.otp} sended through mail`);
+            localStorage.removeItem("startTime");
+            const button = document.querySelector("#otpSubmitButton");
+            button.disabled = false;
+            button.style.backgroundColor = "rgba(94, 27, 153, 0.764)";
+            event.target.disabled = false;
+            event.target.style.cursor = "pointer";
+            event.target.style.color = "rgb(157, 157, 16)";
+            updateTimer();
+          }
+        } else {
+          console.log("failed to resend OTP");
+        }
+      }
+
+      // otp validation
+      const submit = document.querySelector("#otpSubmitButton");
+      submit.addEventListener("click", async function (event) {
+        event.preventDefault();
+        console.log("hey");
+        const otp = document.querySelector("#inputOTP").value;
+        try {
+          const serverResponse = await fetch("/signup-otp", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ otp }),
+          });
+
+          const data = await serverResponse.json();
+
+          if (data.error === "Invalid OTP") {
+            document.querySelector(".error").innerText = "invalid OTP";
+          } else if (data.message) {
+            localStorage.removeItem("startTime");
+            window.location.href = "/";
+          } else if (data.error === "server error") {
+            window.location.href = "/signup";
+          }
+        } catch (error) {
+          console.log(error, "error when validating otp server side");
+        }
+      });
+    </script>
+  </body>
+</html>

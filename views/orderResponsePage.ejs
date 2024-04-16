@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="/styles/nav.css" />
+    <title>order-response-page</title>
+    <style>
+      body {
+        font-family: "poppins", sans-serif;
+        padding-bottom: 100px;
+        background-color: rgb(248, 248, 248);
+      }
+      .page-body {
+        width: 85%;
+        margin: 90px auto;
+      }
+      .order-response-box {
+        display: flex;
+        justify-content: space-between;
+        background-color: white;
+        border: 1px solid rgb(207, 207, 207);
+        align-items: center;
+        padding: 20px;
+      }
+
+      .response-message .message-head {
+        font-size: 23px;
+        font-weight: 500;
+        color: rgb(0, 138, 37);
+      }
+
+      /* right */
+      .view-order .note {
+        font-size: 14px;
+        margin-bottom: 6px;
+      }
+      .view-order a {
+        padding: 3px 15px;
+        color: white;
+        font-weight: 500;
+        background-color: rgb(20, 144, 53);
+        border-radius: 3px;
+        text-decoration: none;
+      }
+
+      /* address -box */
+      .address-box {
+        border: 1px solid rgb(207, 207, 207);
+        background-color: white;
+        margin-top: 10px;
+        padding: 20px;
+        line-height: 20px;
+        color: rgb(80, 80, 80);
+      }
+      .address-head {
+        font-size: 17px;
+        font-weight: 500;
+        margin-bottom: 10px;
+        color: black;
+      }
+      .address-name,
+      .address-house {
+        margin-bottom: 2px;
+      }
+      .address-district {
+        margin-bottom: 10px;
+      }
+      .phone-head {
+        margin-bottom: 2px;
+        color: black;
+        font-weight: 500;
+      }
+
+      /* product box */
+      .product-box {
+        border: 1px solid rgb(207, 207, 207);
+        background-color: white;
+        padding: 20px;
+        width: 49%;
+        display: flex;
+        margin-top: 20px;
+        /* box-sizing: border-box; */
+      }
+      .left-section {
+        display: flex;
+      }
+      .image {
+        width: 10%;
+        height: auto;
+      }
+      .image img {
+        width: 100%;
+      }
+
+      /* product card details section */
+      .details {
+        line-height: 20px;
+        margin-left: 4%;
+      }
+      .brand {
+        font-weight: 500;
+        font-size: 17px;
+      }
+      .color {
+        margin-top: 10px;
+        color: rgb(86, 86, 86);
+      }
+      .quantity {
+        color: rgb(86, 86, 86);
+      }
+
+      /* product card price section */
+
+      .price-head {
+        font-weight: 500;
+      }
+      .price-amount {
+        font-size: 21px;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- header -->
+    <%-include('./partials/navbar.ejs')%>
+
+    <!-- -------- -->
+    <div class="page-body">
+      <!-- order esponse box -->
+      <div class="order-response-box">
+        <div class="response-message">
+          <div class="message-head">Your Order is Successfully Placed</div>
+          <div class="message-sub"></div>
+        </div>
+        <div class="view-order">
+          <a href="/order-page">Go to My Orders</a>
+        </div>
+      </div>
+
+      <!-- address box -->
+      <div class="address-box">
+        <div class="address-head">Delivery Address</div>
+        <div class="address-name"><%=address.name%></div>
+        <div class="address-house"><%=address.address%></div>
+        <div class="address-district">
+          <%=address.district%> district - <%=address.pincode%>,
+          <%=address.state%>
+        </div>
+        <div class="phone">
+          <div class="phone-head">Phone Number</div>
+          <div class="number"><%=address.phone%></div>
+        </div>
+      </div>
+
+      <!-- product box -->
+      <%products.forEach(function(product){%>
+      <div class="product-box">
+        <div class="left-section">
+          <div class="image">
+            <img src="<%=product.image%>" alt="product image" />
+          </div>
+          <div class="details">
+            <div class="brand"><%=product.brand%></div>
+            <div class="description">
+              <%=product.color%> Men's <%=product.productType%>
+            </div>
+            <div class="color">color: <%=product.color%></div>
+            <div class="quantity">quantity: <%=product.quantity%></div>
+          </div>
+        </div>
+
+        <div class="right-section">
+          <div class="price">
+            <div class="price-head">Total</div>
+            <div class="price-amount">Rs. <%=product.totalPrice%></div>
+          </div>
+        </div>
+      </div>
+      <%})%>
+    </div>
+    <script>
+      // nav bar
+      const profileButton = document.querySelector("#profile-button");
+      const content = document.querySelector(".dropdown-content");
+
+      profileButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        content.style.display =
+          content.style.display === "none" ? "block" : "none";
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        localStorage.removeItem("selectedSize");
+        localStorage.removeItem("stock_left");
+      });
+      // ----------------
+    </script>
+  </body>
+</html>

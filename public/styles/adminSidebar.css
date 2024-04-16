@@ -1,0 +1,20 @@
+body {
+    font-family: "poppins", sans-serif;
+    background-color: rgb(251, 251, 251);
+  }
+  
+  .sidebar-left {
+    display: flex;
+    flex-direction: column;
+    width:13%;
+    background-color: white;
+  }
+  .sidebar-left a {
+    text-decoration: none;
+    color: black;
+    padding: 15px 10px 15px 2px;
+    font-size: 17px;
+  }
+  .sidebar-left a:hover {
+    font-weight: 500;
+  }

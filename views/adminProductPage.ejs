@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/adminNavBar.css" />
+
+    <title>admin product page</title>
+    <style>
+      body {
+        font-family: "poppins", sans-serif;
+        padding-bottom: 100px;
+      }
+      .container {
+        width: 95%;
+        margin: 70px auto;
+        display: flex;
+        height: 100vh;
+      }
+      .sidebar-left {
+        display: flex;
+        flex-direction: column;
+      }
+      .sidebar-left a {
+        text-decoration: none;
+        color: black;
+        padding: 15px 10px 15px 2px;
+      }
+      .sidebar-left a:hover {
+        font-weight: 500;
+      }
+
+      /* product - content */
+      .content-body {
+        margin-left: 15px;
+        width: 70%;
+        margin-top: 10px;
+      }
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .section-head .head-name {
+        font-weight: 500;
+        font-size: 19px;
+      }
+      .section-head a {
+        font-size: 16px;
+        color: maroon;
+        text-decoration: none;
+      }
+
+      /* filter panel */
+      .filter-panel {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+      .filter-panel-left a {
+        text-decoration: none;
+        color: rgb(37, 37, 37);
+      }
+      .filter-panel .filter-panel-right {
+        display: flex;
+      }
+      .filter-panel-right input {
+        outline: none;
+        width: 150px;
+        padding: 2.5px 2px;
+        border: 1px solid rgb(180, 179, 179);
+      }
+      .filter-panel-right form select {
+        outline: none;
+        width: 150px;
+        padding: 2px 2px;
+        border: 1px solid rgb(180, 179, 179);
+      }
+      .filter-panel-right div {
+        margin-right: 15px;
+      }
+      .filter-panel-right :last-child {
+        margin: 0;
+      }
+
+      .product-section {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+      }
+      .product-section .no-product {
+        margin-top: 10%;
+      }
+      .product-card {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        box-shadow: 0px 0px 7px rgb(215, 212, 212);
+        padding: 15px 0px;
+        margin-bottom: 8px;
+        overflow: hidden;
+      }
+      .product-image {
+        width: 7%;
+        height: auto;
+        overflow: hidden;
+      }
+      .product-image img {
+        width: 100%;
+        object-fit: cover;
+      }
+      .product-card .brand,
+      .product-card .category-head,
+      .product-card .quantity-head {
+        font-weight: 500;
+      }
+
+      .options a {
+        text-decoration: none;
+        font-weight: 500;
+        margin-right: 10px;
+      }
+      .options a:last-child {
+        margin-right: 0px;
+      }
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px;
+        margin-bottom: 50px;
+        gap: 20px;
+      }
+      .pagination a {
+        font-size: 17px;
+        color: rgba(16, 119, 32, 0.87);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .pagination .currentPage {
+        font-weight: 500;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- nav bar -->
+    <%-include('./partials/adminNavBar.ejs')%>
+    <div class="container">
+      <div class="sidebar-left">
+        <%-include('./partials/adminSidebar.ejs')%>
+      </div>
+      <div class="content-body">
+        <div class="section-head">
+          <div class="head-name">Products</div>
+          <a href="/admin/addNewProduct">add new product</a>
+        </div>
+        <div class="filter-panel">
+          <div class="filter-panel-left">
+            <a href="/admin/refresh-product-page">refresh</a>
+          </div>
+          <div class="filter-panel-right">
+            <div class="sort">
+              <form action="/admin/sort-product-page">
+                <select name="sort" id="">
+                  <option value="ascending">ascending</option>
+                  <option value="descending">descending</option>
+                </select>
+              </form>
+            </div>
+            <div class="filter">
+              <input type="text" placeholder="filter" />
+            </div>
+          </div>
+        </div>
+        <div class="product-section">
+          <% if(products.length > 0 ){ %> <% products.forEach(function(product){
+          %>
+          <div class="product-card">
+            <div class="product-image">
+              <img src="<%=product.images[0]%>" alt="product Image" />
+            </div>
+            <div class="product-name">
+              <div class="brand"><%=product.brand%></div>
+              <div class="tagline">
+                <%=product.color%> <%=product.pattern%> <%=product.fit%> <%=
+                product.fabric%> <%=product.productType%>
+              </div>
+            </div>
+            <div class="product-price">
+              <div class="selling-price">Rs. <%=product.sellingPrice%></div>
+              <div class="actual-price">Rs. <%=product.actualPrice%></div>
+            </div>
+            <div class="product-category">
+              <div class="category-head">category</div>
+              <div class="category"><%=product.category%></div>
+            </div>
+            <div class="product-quantity">
+              <%const totalQuantity = product.extra_small + product.small +
+              product.medium + product.large + product.extra_large +
+              product.extra_extra_large%>
+              <div class="quantity-head">Qty</div>
+              <div class="category"><%=totalQuantity%></div>
+            </div>
+            <div class="options">
+              <a
+                href="/admin/update-product/<%=product._id%>"
+                style="color: rgb(22, 90, 173)"
+                >edit</a
+              >
+              <a
+                href=""
+                style="color: rgb(172, 12, 12)"
+                class="deleteButton"
+                onclick="deleteProduct(event,'<%=product._id%>')"
+              >
+                delete
+              </a>
+            </div>
+          </div>
+          <% }) %> <% } else{ %>
+          <div class="no-product">no product available</div>
+          <% }%>
+        </div>
+        <div class="pagination">
+          <%if(currentPage > 1){%>
+          <a
+            href="/admin/products?page=<%=currentPage - 1%>"
+            class="pageButtons"
+          >
+            Back
+          </a>
+          <%}%>
+          <div class="currentPage"><%=currentPage%></div>
+          <%if(currentPage < totalPages){%>
+          <a
+            href="/admin/products?page=<%=currentPage + 1%>"
+            class="pageButtons"
+            >Next</a
+          >
+          <%}%>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/jsFiles/adminProductDlt.js"></script>
+  </body>
+</html>

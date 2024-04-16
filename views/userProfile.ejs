@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="/styles/nav.css" />
+
+    <title>Document</title>
+    <style>
+      .page-container {
+        width: 95%;
+        margin: 90px auto;
+        display: flex;
+        justify-content: space-between;
+        box-sizing: border-box;
+      }
+      .page-container .page-sidebar {
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border: 1px solid rgb(203, 200, 200);
+        padding-top: 10px;
+        width: 13%;
+        box-sizing: border-box;
+      }
+      .page-container .page-sidebar a {
+        padding: 12px 12px;
+        text-decoration: none;
+        color: rgb(64, 64, 64);
+        font-size: 17px;
+      }
+      .page-container .page-sidebar a:hover {
+        border-left: 2.5px solid rgb(159, 164, 247);
+      }
+      /* page content */
+      .page-content {
+        width: 85%;
+        justify-content: flex;
+        flex-direction: column;
+      }
+
+      .user-data,
+      .user-address {
+        border: 1px solid rgb(203, 200, 200);
+        background-color: white;
+        padding: 20px;
+        width: 60%;
+        margin-bottom: 20px;
+      }
+      .user-head,
+      .address-head {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 20px;
+        margin-left: 5px;
+      }
+      .name,
+      .email,
+      .number {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid rgb(226, 224, 224);
+        padding: 5px 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        /* line-height: 21px; */
+      }
+      .user-data .head {
+        font-weight: 500;
+      }
+      .user-data a {
+        color: rgb(168, 111, 3);
+        text-decoration: none;
+      }
+      .user-data .body {
+        color: rgb(50, 50, 50);
+      }
+      .reset-password {
+        border: 1px solid rgb(226, 224, 224);
+        padding: 5px 10px;
+        width: 70%;
+        margin-bottom: 10px;
+        border-radius: 5px;
+      }
+      .reset-password a {
+        color: rgb(145, 30, 30);
+        font-weight: 500;
+        text-decoration: none;
+      }
+
+      /* address card */
+      .address-card {
+        align-items: flex-end;
+        border: 1px solid rgb(226, 224, 224);
+        padding: 10px 8px;
+        margin-top: 10px;
+        border-radius: 5px;
+        background-color: white;
+      }
+      .address-card-details {
+        line-height: 20px;
+        color: rgb(83, 81, 81);
+      }
+      .username {
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+      .address,
+      .place-and-pin {
+        font-size: 15px;
+        color: rgb(65, 65, 65);
+      }
+      .contact {
+        margin-top: 4px;
+        font-size: 15px;
+        color: rgb(65, 65, 65);
+      }
+      .user-address .no-content {
+        color: rgb(163, 162, 162);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- headers -->
+    <%-include("./partials/navbar.ejs")%>
+    <!-- -- -->
+    <div class="page-container">
+      <div class="page-sidebar">
+        <a
+          href="/user-profile"
+          style="border-left: 2.5px solid rgb(64, 67, 135)"
+          >User Profile</a
+        >
+        <a href="/address-management">Address Management</a>
+        <a href="/order-page">My Orders</a>
+        <a href="#">Payment Options</a>
+      </div>
+      <div class="page-content">
+        <div class="user-detail">
+          <div class="user-data">
+            <div class="user-head">User Information</div>
+
+            <div class="name">
+              <div class="user-details">
+                <div class="head">name</div>
+                <div class="body"><%=user.username%></div>
+              </div>
+              <div class="user-details-edit">
+                <a href="/user-profile/edit-user?edit=username">edit name</a>
+              </div>
+            </div>
+            <div class="email">
+              <div class="user-details">
+                <div class="head">email-id</div>
+                <div class="body"><%=user.email%></div>
+              </div>
+              <div class="user-details-edit">
+                <a href="/user-profile/edit-user?edit=email">edit email ID</a>
+              </div>
+            </div>
+            <div class="number">
+              <div class="user-details">
+                <div class="head">number</div>
+                <div class="body"><%=user.number ? user.number : '-'%></div>
+              </div>
+              <div class="user-details-edit">
+                <a href="/user-profile/edit-user?edit=number">edit number</a>
+              </div>
+            </div>
+            <div class="reset-password">
+              <a href="/user-profile/reset-password">reset password</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="user-address">
+          <%const userAddress = address ?? 'address not selected'%> <% if(typeof
+          userAddress != 'string'){ %>
+          <div class="address-head">User Address</div>
+          <div class="address-card">
+            <div class="address-card-details">
+              <div class="username"><%=userAddress.name%></div>
+              <div class="address"><%=userAddress.address%></div>
+              <div class="place-and-pin">
+                <%=userAddress.district%> <%=userAddress.state%>
+                <%=userAddress.pincode%>
+              </div>
+              <div class="contact">Phone: <%=userAddress.phone%></div>
+            </div>
+          </div>
+          <% } else{ %>
+          <div class="no-content"><%=userAddress%></div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+    <script>
+      const profileButton = document.querySelector("#profile-button");
+      const content = document.querySelector(".dropdown-content");
+
+      profileButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        content.style.display =
+          content.style.display === "none" ? "block" : "none";
+      });
+    </script>
+  </body>
+</html>

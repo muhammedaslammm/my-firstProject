@@ -1,0 +1,62 @@
+body {
+    font-family: "poppins", sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    width: 80%;
+    margin: 100px auto;
+    display: flex;
+    justify-content: space-between;
+  }
+  .page-left{
+    width:48%
+  }
+  .page-left img{
+    width:70%;
+    
+  }
+  .page-right{
+    width:48%;
+    display: flex;    
+    align-items: center;
+    
+  }
+  .adminlogin-box {
+        background-color: white;
+        width: 98%;
+        border-radius: 7px;
+        padding: 15px 12px;
+        box-sizing: border-box;
+        border: 1px solid rgb(207, 206, 206);
+  }
+  .adminlogin-box label {
+    display: block;
+  }
+  .adminlogin-box form input {
+    width: 94%;
+    padding: 6px;
+    border: 1px solid rgb(197, 195, 195);
+    outline: none;
+  }
+  .adminlogin-box form input:last-child {
+    margin-top: 12px;
+    width: initial;
+    padding: 5px 13px;
+    font-weight: 700;
+    background-color: rgb(37, 103, 165);
+    color: white;
+    border: 1px solid;
+    border-radius: 3px;
+  }
+  .adminlogin-box form input[type='submit']:hover{
+    cursor: pointer;
+  }
+  .adminlogin-box form p {
+    margin: 0;
+    color: rgb(190, 33, 33);
+    margin-bottom: 10px;
+  }
+  .adminlogin-box .login-error {
+    margin: 0;
+  }

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/adminNavBar.css" />
+
+    <title>admin category</title>
+    <style>
+      .container {
+        width: 95%;
+        margin: 70px auto;
+        display: flex;
+        height: auto;
+      }
+      .sidebar-left {
+        display: flex;
+        flex-direction: column;
+      }
+      .sidebar-left a {
+        text-decoration: none;
+        color: black;
+        padding: 15px 10px 15px 2px;
+        font-size: 17px;
+      }
+      .sidebar-left a:hover {
+        font-weight: 500;
+      }
+      .content-body {
+        margin-left: 15px;
+        width: 100%;
+        margin-top: 10px;
+        height: auto;
+        display: flex;
+        justify-content: space-between;
+        box-sizing: border-box;
+      }
+
+      .category-list {
+        width: 65%;
+      }
+      .category-head {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 20px;
+      }
+      .table-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 15px;
+        margin-bottom: 15px;
+      }
+      .table-row .name {
+        font-weight: 500;
+        margin-left: 2%;
+      }
+      .table-row .option {
+        font-weight: 500;
+        margin-right: 2%;
+      }
+      .category-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 1px;
+        box-shadow: 0px 0px 3px rgb(221, 219, 219);
+      }
+      .category-card .category {
+        margin-left: 4%;
+      }
+      .category-card .edit-cata {
+        margin-right: 4%;
+        display: flex;
+        flex-direction: column;
+      }
+      .edit-cata a {
+        text-decoration: none;
+      }
+      #edit {
+        color: rgb(61, 172, 144);
+      }
+      #delete {
+        color: rgb(164, 56, 56);
+      }
+      /* new category */
+      .new-category-section {
+        width: 32%;
+      }
+      .new-category {
+        padding: 20px 15px;
+        box-shadow: 0px 0px 7px rgb(190, 188, 188);
+        box-sizing: border-box;
+        margin-top: 70px;
+      }
+      .new-category-head {
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .category-field form input[type="text"] {
+        width: 98%;
+        border: 1px solid rgb(151, 149, 149);
+        padding: 4px;
+        margin-bottom: 6px;
+        outline: none;
+      }
+      .category-error {
+        margin: 0;
+        color: rgb(159, 45, 45);
+        font-size: 15px;
+      }
+      .category-field form input[type="submit"] {
+        background-color: rgb(38, 110, 177);
+        border: none;
+        font-weight: 500;
+        color: white;
+        padding: 3px 8px;
+      }
+      .category-field input[type="submit"]:hover {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- nav bar -->
+    <%-include('./partials/adminNavBar.ejs')%>
+    <div class="container">
+      <div class="sidebar-left">
+        <%-include('./partials/adminSidebar.ejs')%>
+      </div>
+      <div class="content-body">
+        <div class="category-list">
+          <div class="category-head">categories</div>
+          <div class="table-row">
+            <div class="name">category</div>
+            <div class="option">option</div>
+          </div>
+          <% if(categories.length > 0) { %> <%
+          categories.forEach(function(category){ %>
+          <div class="category-card">
+            <div class="category"><%=category.category%></div>
+            <div class="edit-cata">
+              <a href="/admin/editCategory/<%=category._id%>" id="edit">edit</a>
+              <a href="/admin/deleteCategory/<%=category._id%>" id="delete"
+                >delete</a
+              >
+            </div>
+          </div>
+          <% })%> <% } else{ %>
+          <div class="no-result"></div>
+          <% } %>
+        </div>
+        <div class="new-category-section">
+          <div class="new-category">
+            <div class="new-category-head">Add New Category</div>
+            <div class="category-field-head">category name:</div>
+            <p class="category-error">
+              <%=typeof errors != 'undefined' ? errors.category : '' %>
+            </p>
+            <div class="category-field">
+              <form action="/admin/addNewCategory" method="post">
+                <input
+                  type="text"
+                  name="category"
+                  value="<%=typeof categoryData != 'undefined' ? categoryData.category : ''%>"
+                />
+                <input type="submit" />
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

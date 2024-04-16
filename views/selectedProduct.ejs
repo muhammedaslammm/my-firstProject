@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="/styles/nav.css" />
+    <title>product</title>
+    <style>
+      body {
+        font-family: "poppins", sans-serif;
+      }
+      .container-body {
+        width: 94%;
+        margin: 0 auto;
+        display: flex;
+        margin-top: 80px;
+        box-shadow: 0px 0px 9px rgb(207, 207, 207);
+        background-color: white;
+        padding: 30px;
+      }
+      .image-section {
+        width: 40%;
+        display: flex;
+        object-fit: cover;
+      }
+      .main-image {
+        width: 60%;
+      }
+      .sub-images {
+        width: 29%;
+        object-fit: contain;
+        margin-left: 15px;
+      }
+      .image3 {
+        margin-top: 15px;
+      }
+      img {
+        width: 100%;
+      }
+      /* details section */
+
+      .details-section {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+      }
+      /* head and description */
+      .details-head {
+        line-height: 20px;
+      }
+      .details-head .brand {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .details-head .description {
+        font-size: 17px;
+        font-weight: 500;
+        margin: 0;
+      }
+      .details-head .rating {
+        color: grey;
+        font-size: 14px;
+      }
+
+      /* details below the head */
+      .details-and-pin {
+        display: flex;
+      }
+
+      .product-details1 {
+        width: 65%;
+        margin-top: 15px;
+        box-sizing: border-box;
+        border-bottom: 1px solid rgb(193, 191, 191);
+      }
+
+      .price,
+      .tax-option {
+        line-height: 20px;
+      }
+      .price .selling {
+        font-size: 23px;
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+      .actual-and-offer {
+        display: flex;
+        margin-bottom: 5px;
+      }
+      .actual-and-offer .actual {
+        font-size: 15px;
+        color: grey;
+        text-decoration: line-through;
+        text-decoration-color: rgba(255, 0, 0, 0.758);
+        margin-right: 8px;
+      }
+      .actual-and-offer .offer {
+        font-size: 15px;
+        color: green;
+        font-weight: 500;
+      }
+      .tax-option {
+        display: flex;
+        justify-content: space-between;
+      }
+      .tax-option .similar a {
+        color: rgb(71, 69, 69);
+        text-decoration: none;
+        font-size: 15px;
+      }
+      /* size section */
+      .size {
+        margin-top: 20px;
+        border-top: 1px solid rgb(207, 204, 204);
+        padding: 18px 0px;
+        line-height: 24px;
+        margin-bottom: 5px;
+      }
+      .size-head {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 13px;
+      }
+      #sizes {
+        margin-bottom: 25px;
+        display: flex;
+        gap: 10px;
+      }
+      .size-button {
+        height: 34px;
+        width: 34px;
+        border: 1px solid rgb(84, 83, 83);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 15px;
+        font-weight: 500;
+      }
+      .size-button:hover {
+        cursor: pointer;
+        background-color: rgb(40, 39, 39);
+        color: white;
+        font-weight: 500;
+      }
+      .size-button.selected {
+        background-color: rgb(40, 39, 39);
+        color: white;
+        font-weight: 500;
+      }
+
+      /* quantity */
+      .quantity {
+        margin-top: 10px;
+      }
+      .quantity .quantity-box {
+        display: flex;
+        justify-content: space-between;
+      }
+      .quantity-box .stock-left {
+        font-size: 15px;
+        color: rgb(120, 118, 118);
+      }
+
+      .quantity-section .head {
+        font-size: 15px;
+        color: rgb(74, 74, 74);
+        margin-bottom: 8px;
+      }
+      .product-quantity {
+        display: flex;
+        align-items: center;
+      }
+      .product-quantity div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 10px;
+        font-size: 18px;
+      }
+      .downButton,
+      .upButton {
+        width: 30px;
+        height: 30px;
+        border: 1px solid grey;
+      }
+      .product-quantity .productQuantity {
+        margin-top: 0;
+      }
+      .product-quantity .productQuantity:hover {
+        cursor: default;
+      }
+      .downButton:hover,
+      .upButton:hover {
+        cursor: pointer;
+      }
+      /* pin section */
+      .pin-section {
+        padding: 3px 0px;
+        width: 37%;
+        display: flex;
+        justify-content: center;
+      }
+      .pin-box {
+        box-shadow: 0px 0px 5px rgb(169, 166, 166);
+        width: 90%;
+        padding: 15px 22px;
+        border-radius: 5px;
+      }
+      .pin-box-head {
+        font-size: 23px;
+        font-weight: 500;
+        margin-top: 5px;
+        margin-bottom: 8px;
+      }
+      .pin-code {
+        font-size: 15px;
+        color: rgb(131, 129, 129);
+        border: 1px solid rgb(120, 118, 118);
+        padding: 5px;
+      }
+      .change-pin {
+        margin-top: 18px;
+      }
+      .pin-box a {
+        padding: 7px 10px;
+        background-color: rgb(197, 53, 24);
+        color: white;
+        font-weight: 500;
+        font-size: 14px;
+        text-decoration: none;
+      }
+      /* details 3 */
+      .details3 {
+        display: flex;
+        margin-top: 20px;
+      }
+      .mini-details {
+        width: 65%;
+      }
+      .mini-details-head,
+      .offer-head {
+        font-weight: 500;
+        font-size: 16px;
+        margin-bottom: 5px;
+      }
+      .mini-details p {
+        margin: 0;
+        font-size: 15px;
+        color: rgb(79, 79, 79);
+      }
+
+      .Offers {
+        width: 35%;
+      }
+      /* buy buttons */
+      .buy-buttons {
+        display: flex;
+        margin-top: 40px;
+      }
+      .buy-buttons .cart-btn {
+        color: black;
+        font-weight: 500;
+        padding: 4px 80px;
+        border-radius: 3px;
+        border: 1px solid rgb(51, 51, 51);
+        cursor: pointer;
+      }
+      .buy-buttons .buy-btn {
+        border: none;
+        background-color: rgb(17, 97, 177);
+        color: white;
+        font-weight: 500;
+        padding: 4px 85px;
+        margin-left: 10px;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      .buy-buttons a:hover {
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- header -->
+    <%-include('./partials/navbar.ejs')%>
+    <!--  -->
+    <div class="container-body">
+      <div class="image-section">
+        <div class="main-image">
+          <img src="<%=product.images[0]%>" alt="" id="image1" class="zoom" />
+        </div>
+        <div class="sub-images">
+          <div class="image2">
+            <img src="<%=product.images[1]%>" alt="" id="image2" class="zoom" />
+          </div>
+          <div class="image3">
+            <img src="<%=product.images[2]%>" alt="" id="image3" class="zoom" />
+          </div>
+        </div>
+      </div>
+      <div class="details-section">
+        <!-- head -->
+        <div class="details-head">
+          <div class="brand"><%=product.brand%></div>
+          <div class="description">
+            <%=product.color%> <%=product.pattern%> <%=product.fit%> Men's
+            <%=product.productType%>
+          </div>
+          <div class="rating">rating comes here</div>
+        </div>
+        <!-- below head -->
+        <form
+          action="/category/<%=product.category%>/<%=product._id%>"
+          method="post"
+          id="selected-product-form"
+        >
+          <div class="details-and-pin">
+            <div class="product-details1">
+              <div class="price">
+                <div class="selling">MRP: Rs.<%=product.sellingPrice%></div>
+                <div class="actual-and-offer">
+                  <div class="actual">MRP: Rs.<%=product.actualPrice%></div>
+
+                  <div class="offer"><%=product.discount%>%Off</div>
+                </div>
+              </div>
+              <div class="tax-option">
+                <div class="taxNote">Inclusive of all taxes</div>
+                <div class="similar"><a href="#">view similar?</a></div>
+              </div>
+              <div class="size">
+                <div class="size-head">Select Size</div>
+                <div id="sizes">
+                  <!-- extra small -->
+                  <div
+                    id="button-extra_small"
+                    class="size-button"
+                    data-size="<%=product.extra_small%>"
+                    onclick="selectSize(event,'extra_small','<%=product._id%>')"
+                  >
+                    XS
+                  </div>
+
+                  <!-- small -->
+                  <div
+                    id="button-small"
+                    class="size-button"
+                    data-size="<%=product.small%>"
+                    onclick="selectSize(event,'small','<%=product._id%>')"
+                  >
+                    S
+                  </div>
+
+                  <!-- medium -->
+                  <div
+                    id="button-medium"
+                    class="size-button"
+                    data-size="<%=product.medium%>"
+                    onclick="selectSize(event,'medium','<%=product._id%>')"
+                  >
+                    M
+                  </div>
+
+                  <!-- large -->
+                  <div
+                    id="button-large"
+                    class="size-button"
+                    data-size="<%=product.large%>"
+                    onclick="selectSize(event,'large','<%=product._id%>')"
+                  >
+                    L
+                  </div>
+
+                  <!-- extra large -->
+                  <div
+                    id="button-extra_large"
+                    class="size-button"
+                    data-size="<%=product.extra_large%>"
+                    onclick="selectSize(event,'extra_large','<%=product._id%>')"
+                  >
+                    XL
+                  </div>
+
+                  <!-- extra extra large -->
+                  <div
+                    id="button-extra_extra_large"
+                    class="size-button"
+                    data-size="<%=product.extra_extra_large%>"
+                    onclick="selectSize(event,'extra_extra_large','<%=product._id%>')"
+                  >
+                    XXL
+                  </div>
+                </div>
+                <div class="quantity">
+                  <div class="quantity-box">
+                    <div class="quantity-section">
+                      <div class="head">Quantity</div>
+                      <div class="product-quantity">
+                        <div class="downButton">-</div>
+                        <div class="productQuantity">1</div>
+                        <div class="upButton">+</div>
+                      </div>
+                    </div>
+
+                    <div class="stock-left">
+                      stocks left: <span><%=product.quantity%></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="pin-section">
+              <div class="pin-box">
+                <div class="pin-box-head">Ship To</div>
+                <div class="pin-code">Kerala,234324</div>
+                <div class="change-pin"><a href="#">Change Pin</a></div>
+              </div>
+            </div>
+          </div>
+          <!-- details 3 -->
+          <div class="details3">
+            <div class="mini-details">
+              <div class="mini-details-head">Quick Glance</div>
+              <div class="mini-details-list">
+                <p>Fit: <%=product.fit%></p>
+                <p>Fabric: <%=product.fabric%></p>
+                <p>Wash: <%=product.wash%> Wash</p>
+              </div>
+            </div>
+            <div class="Offers">
+              <div class="offer-head">Today's Offers</div>
+            </div>
+          </div>
+          <input type="hidden" id="selectedSize" name="size" />
+          <input type="hidden" id="selectedQuantity" name="quantity" />
+          <div class="buy-buttons">
+            <button
+              class="cart-btn"
+              name="button"
+              value="<%=product.addedToCart === true ? 'viewCart' : 'addToCart'%>"
+              type="submit"
+              id="submit-button"
+            >
+              <%=product.addedToCart === true ? 'View Cart' : 'Add To Cart'%>
+            </button>
+            <button
+              class="buy-btn"
+              name="button"
+              value="buyProduct"
+              type="submit"
+            >
+              Buy Product
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
+
+    <script>
+      // zoom image;
+      document.addEventListener("DOMContentLoaded", function () {
+        const images = document.querySelectorAll(".zoom");
+        const zoomImages = mediumZoom(images, {
+          margin: 20,
+          background: "#000",
+          scrollOffset: 50,
+        });
+      });
+
+      // select size
+      async function selectSize(event, size, productID) {
+        const buttons = document.querySelectorAll(".size-button");
+        buttons.forEach(function (button) {
+          button.classList.remove("selected");
+        });
+        const selectedButton = event.target;
+        selectedButton.classList.add("selected");
+        localStorage.setItem("selectedSize", size);
+
+        // setting size for post
+        document.getElementById("selectedSize").value = size;
+
+        // getting size's quantity
+        try {
+          const response = await fetch(
+            `/getQuantity/${productID}?size=${size}`,
+            {
+              method: "GET",
+            }
+          );
+          if (!response.ok) {
+            console.log("failed to get the quantity");
+          }
+          const data = await response.json();
+          document.querySelector(".stock-left span").innerText = data.quantity;
+          localStorage.setItem("stock_left", data.quantity);
+
+          const remainingQty = localStorage.getItem("stock_left");
+          if (remainingQty == 0) {
+            document.querySelector(".productQuantity").innerText = remainingQty;
+            document.getElementById("selectedQuantity").value = 0;
+          } else {
+            document.querySelector(".productQuantity").innerText = 1;
+            document.getElementById("selectedQuantity").value = "1";
+          }
+        } catch (error) {
+          console.log("error when fetching the quantity", error);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const selectedButton = localStorage.getItem("selectedSize");
+        const remainingQty = localStorage.getItem("stock_left");
+        if (selectedButton) {
+          document
+            .getElementById(`button-${selectedButton}`)
+            .classList.add("selected");
+          document.querySelector("#selectedSize").value = selectedButton;
+          console.log(document.querySelector("#selectedSize").value);
+          document.querySelector(".stock-left span").innerText = remainingQty;
+        }
+        if (remainingQty == 0) {
+          document.querySelector(".productQuantity").innerText = remainingQty;
+        } else {
+          document.querySelector(".productQuantity").innerText = 1;
+        }
+      });
+
+      // quantity updation
+      const downButton = document.querySelector(".downButton");
+      const upButton = document.querySelector(".upButton");
+      const quantity = document.querySelector(".productQuantity");
+
+      // setting quatity when page loaded
+      document.addEventListener("DOMContentLoaded", function () {
+        const defaultQty = quantity.innerText;
+        document.getElementById("selectedQuantity").value = defaultQty;
+      });
+
+      // reduce quantity
+      downButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        let currentQty =
+          downButton.parentNode.querySelector(".productQuantity").innerText;
+        const remainingQty = localStorage.getItem("stock_left");
+        if (currentQty == 0) {
+          return "";
+        } else if (currentQty != 1) {
+          --currentQty;
+          document.querySelector(".productQuantity").innerText = currentQty;
+          document.getElementById("selectedQuantity").value = currentQty;
+        }
+      });
+
+      // increase quantity
+      upButton.addEventListener("click", function (event) {
+        let currentQty =
+          event.target.parentNode.querySelector(".productQuantity").innerText;
+        const remainingQty = localStorage.getItem("stock_left");
+
+        if (currentQty == 0) {
+          return "";
+        } else if (remainingQty > 6 && currentQty < 6) {
+          ++currentQty;
+          document.querySelector(".productQuantity").innerText = currentQty;
+          document.getElementById("selectedQuantity").value = currentQty;
+        } else if (remainingQty <= 6 && currentQty <= remainingQty) {
+          ++currentQty;
+          document.querySelector(".productQuantity").innerText = currentQty;
+          document.getElementById("selectedQuantity").value = currentQty;
+        }
+      });
+
+      // checking before submission
+      const cartButton = document.querySelector(".cart-btn");
+      cartButton.addEventListener("click", function (event) {
+        if (cartButton.value === "addToCart") {
+          if (document.getElementById("selectedSize").value === "") {
+            event.preventDefault();
+            window.alert("Choose a valid size !");
+          } else if (document.getElementById("selectedQuantity").value == 0) {
+            event.preventDefault();
+            window.alert("Choose a valid quantity");
+          }
+        }
+      });
+
+      // navbar
+      const profileButton = document.querySelector("#profile-button");
+      const content = document.querySelector(".dropdown-content");
+
+      profileButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        content.style.display =
+          content.style.display === "none" ? "block" : "none";
+      });
+    </script>
+
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+
+    <script></script>
+  </body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="/styles/nav.css" />
+    <title>checkout page</title>
+
+    <style>
+      body {
+        font-family: "poppins", sans-serif;
+        padding-bottom: 100px;
+      }
+      .cart-body {
+        width: 90%;
+        margin: 80px auto;
+        display: flex;
+        justify-content: space-between;
+        padding-top: 10px;
+      }
+      /* cart left section */
+      form {
+        width: 68%;
+      }
+      .cart-left-section {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .cart-products-section .cart-products-section-head {
+        font-size: 17.5px;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+
+      /* product card */
+      .product-card-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-row-gap: 10px;
+        grid-column-gap: 10px;
+      }
+      .product-card {
+        display: flex;
+        border: 1px solid rgb(213, 213, 213);
+        padding: 8px;
+        border-radius: 2px;
+      }
+      .image {
+        width: 18%;
+        height: auto;
+      }
+      .product-card .image img {
+        width: 100%;
+        object-fit: contain;
+      }
+      .product-card .product-details {
+        display: flex;
+        flex-direction: column;
+        line-height: 20px;
+        margin-top: 5px;
+        margin-left: 10px;
+      }
+      .product-card .product-details .product-price {
+        font-weight: 500;
+      }
+      /* total quantity */
+      .total-quantity {
+        margin-top: 20px;
+        font-size: 14px;
+        color: rgb(84, 84, 84);
+        border: 1px solid rgb(219, 218, 218);
+        display: inline-block;
+        padding: 1px 7px;
+      }
+
+      /* address section */
+      .address-section {
+        margin-top: 30px;
+      }
+      .address-section-head {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+      }
+      .change-address a {
+        font-size: 15px;
+        color: rgb(164, 31, 31);
+      }
+      .address-section-head-label {
+        font-weight: 500;
+        font-size: 17px;
+      }
+      .address-box {
+        line-height: 20px;
+        border: 1px solid rgb(213, 213, 213);
+        padding: 15px;
+        font-size: 15px;
+        color: rgb(67, 66, 66);
+        border-radius: 3px;
+      }
+      .default-address-box {
+        border: 1px solid rgb(205, 205, 205);
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .default-address-head {
+        font-weight: 500;
+        color: rgb(6, 127, 6);
+        margin-bottom: 5px;
+        font-size: 14px;
+      }
+      .address-box-head {
+        font-weight: 500;
+        font-size: 16px;
+        color: black;
+        margin-bottom: 2px;
+      }
+      #message {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 500;
+        color: rgb(167, 166, 166);
+      }
+      /* address dropdown */
+
+      .addresses {
+        margin: 0;
+        margin-top: 40px;
+        padding: 10px 8px;
+        border-radius: 3px;
+        border: 1px solid rgb(206, 204, 204);
+        background-color: rgb(246, 246, 246);
+        display: flex;
+        align-items: flex-start;
+      }
+      .addresses input:hover,
+      .addresses label:hover {
+        cursor: pointer;
+      }
+      .addresses label {
+        margin-left: 1%;
+      }
+
+      /* payment section */
+      .payment-section {
+        margin-top: 30px;
+      }
+      .payment-section-head {
+        font-weight: 500;
+        font-size: 17px;
+      }
+      .payment-options {
+        margin-top: 15px;
+      }
+      /* upi payment */
+
+      .upi-payment-dropdown,
+      .debitcard-payment-dropdown,
+      .internetBanking-payment-dropdown,
+      .COD-payment-dropdown {
+        border: 1px solid rgb(213, 213, 213);
+        padding: 5px 15px;
+        margin-bottom: 5px;
+        color: rgb(82, 82, 82);
+      }
+
+      /* label */
+      .upi-payment-dropdown label,
+      .debitcard-payment-dropdown label,
+      .internetBanking-payment-dropdown label,
+      .COD-payment-dropdown label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .upi-payment-dropdown label span,
+      .debitcard-payment-dropdown label span,
+      .internetBanking-payment-dropdown label span,
+      .COD-payment-dropdown label span {
+        font-weight: 500;
+        transform: rotate(90deg);
+      }
+      /* label hover */
+      .upi-payment-dropdown:hover label,
+      .debitcard-payment-dropdown:hover label,
+      .internetBanking-payment-dropdown:hover label,
+      .COD-payment-dropdown:hover label {
+        color: black;
+      }
+      label + input[type="radio"] {
+        display: none;
+      }
+      /* COD place order button */
+      .COD-payment-dropdown .content {
+        display: flex;
+        justify-content: end;
+      }
+      .COD-payment-dropdown .content button {
+        color: white;
+        font-weight: 500;
+        background-color: rgb(199, 166, 45);
+        font-size: 15px;
+        padding: 2px 8px;
+        border-radius: 3px;
+        border: none;
+        margin-top: 15px;
+        transition: background-color 0.5s;
+      }
+      .COD-payment-dropdown .content button:hover {
+        /* background-color: rgb(154, 132, 51); */
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      /* hide content */
+      .content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.8s;
+      }
+      .payment-section input[type="radio"]:checked + .content {
+        max-height: 400px;
+      }
+
+      /* amount section */
+      .checkout-right-section {
+        width: 29%;
+      }
+      .amount-box {
+        position: sticky;
+        top: 70px;
+        margin-top: 10px;
+        background-color: rgb(249, 249, 249);
+        box-shadow: 0px 0px 5px rgb(231, 231, 231);
+        padding: 12px 20px;
+      }
+      .total-amount {
+        font-size: 18px;
+        margin-bottom: 20px;
+        color: rgb(90, 90, 90);
+      }
+      .total-amount span {
+        font-size: 21px;
+        font-weight: 500;
+        color: black;
+      }
+      .amount-details {
+        display: flex;
+        justify-content: space-between;
+        font-size: 15px;
+      }
+      .amount-details .detail-label {
+        color: rgb(90, 90, 90);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- header -->
+    <%-include('./partials/navbar.ejs')%>
+    <div class="cart-body">
+      <form action="/place-order" method="post">
+        <div class="cart-left-section">
+          <!-- product section -->
+          <div class="cart-products-section">
+            <div class="cart-products-section-head">Your Orders</div>
+            <!-- product card -->
+            <div class="product-card-list">
+              <%userCart.forEach(function(cart){%>
+              <div class="product-card">
+                <div class="image">
+                  <img
+                    src="<%=cart.productID.images[0]%>"
+                    alt="product photo"
+                  />
+                </div>
+                <div class="product-details">
+                  <div class="product-head">
+                    <%=cart.productID.brand%> <%=cart.productID.color%>
+                    <%=cart.productID.pattern%> <%=cart.productID.productType%>
+                  </div>
+                  <div class="product-price">
+                    Rs. <%=cart.productID.sellingPrice%>
+                  </div>
+                </div>
+                <!-- cart id -->
+                <input type="hidden" name="cartID" value="<%=cart._id%>" />
+              </div>
+              <%})%>
+            </div>
+            <div class="total-quantity">total quantity: <%=totalQuantity%></div>
+          </div>
+          <!-- address section -->
+          <div class="address-section">
+            <div class="address-section-head">
+              <div class="address-section-head-label">Deliver To</div>
+              <div class="change-address">
+                <a href="/add-new-address" style="text-decoration: none"
+                  >add new address</a
+                >
+              </div>
+            </div>
+            <div class="address-box">
+              <%const address = defaultAddress ?? 'no address selected'%>
+              <%if(typeof address != 'string'){%>
+              <div class="default-address-box" data-address="<%=address%>">
+                <div class="default-address">
+                  <div class="address-box-head">
+                    <%=address.name%>, <%=address.pincode%>, <%=address.city%>
+                  </div>
+                  <div class="address"><%=address.address%></div>
+                  <div class="place-and-pin">
+                    <%=address.city%>, <%=address.pincode%>
+                  </div>
+                  <div class="address-number"><%=address.phone%></div>
+                </div>
+                <div class="default-address-head">Default Address</div>
+              </div>
+              <!-- sending address -->
+              <input
+                type="hidden"
+                name="address"
+                value="<%=address._id%>"
+                id="order-default-address"
+              />
+
+              <%}else{%>
+              <p id="message"><%=address%></p>
+              <%}%>
+
+              <!-- dropdown address -->
+              <div class="address-dropdown">
+                <form action="/manage-address">
+                  <%if(addresses.length > 0){%>
+                  <%addresses.forEach(function(address){%>
+                  <div class="addresses">
+                    <input
+                      type="radio"
+                      name="defaultAddress"
+                      id="default_<%=address._id%>"
+                      value="<%=address._id%>"
+                      onclick="setDefault('<%=address._id%>')"
+                    />
+                    <label
+                      for="default_<%=address._id%>"
+                      onclick="setDefault('<%=address._id%>')"
+                    >
+                      <div class="address-box-head">
+                        <%=address.name%>, <%=address.pincode%>,
+                        <%=address.city%>
+                      </div>
+                      <div class="address"><%=address.address%></div>
+                      <div class="place-and-pin">
+                        <%=address.city%>, <%=address.pincode%>
+                      </div>
+                      <div class="address-number"><%=address.phone%></div>
+                    </label>
+                  </div>
+                  <%})%> <%}else{%>
+                  <p class="dropdown-message">No address added</p>
+                  <%}%>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="payment-section">
+            <div class="payment-section-head">Payment Options</div>
+            <div class="payment-options">
+              <!-- upi payment -->
+              <div class="upi-payment-dropdown">
+                <label for="upi">UPI ID <span>&#x3e;</span></label>
+                <input type="radio" name="payment" id="upi" />
+                <div class="content"></div>
+              </div>
+
+              <!-- debit card payment -->
+              <div class="debitcard-payment-dropdown">
+                <label for="debitcard">Debit Card <span>&#x3e;</span></label>
+                <input type="radio" name="payment" id="debitcard" />
+                <div class="content">
+                  <a href="">lorem7</a>
+                </div>
+              </div>
+
+              <!-- internet banking -->
+              <div class="internetBanking-payment-dropdown">
+                <label for="internetBanking"
+                  >Internet Banking <span>&#x3e;</span></label
+                >
+                <input type="radio" name="payment" id="internetBanking" />
+                <div class="content"></div>
+              </div>
+
+              <!-- cash on delivery -->
+              <div class="COD-payment-dropdown">
+                <label for="COD">Cash on Delivery <span>&#x3e;</span></label>
+                <input
+                  type="radio"
+                  name="payment"
+                  id="COD"
+                  value="cash-on-delivery"
+                />
+                <div class="content">
+                  <button type="submit" id="codButton">Place Order</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div class="checkout-right-section">
+        <div class="amount-box">
+          <div class="total-amount">
+            Total: <span>Rs.</span>
+            <span class="Amount"><%=totalAmount%></span>
+          </div>
+          <div class="amount-details">
+            <div class="detail-label">Bag Total</div>
+            <div class="total"><%=totalAmount%></div>
+          </div>
+          <div class="amount-details">
+            <div class="detail-label">Delivery Charge</div>
+            <div class="total">-</div>
+          </div>
+          <div class="amount-details">
+            <div class="detail-label">GST</div>
+            <div class="total">-</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // nav bar
+      const profileButton = document.querySelector("#profile-button");
+      const content = document.querySelector(".dropdown-content");
+
+      profileButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        content.style.display =
+          content.style.display === "none" ? "block" : "none";
+      });
+      // ----------------
+
+      async function setDefault(addressID) {
+        console.log(addressID);
+        try {
+          const data = await fetch("/setDefaultAddress", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              addressID,
+            }),
+          });
+
+          const response = await data.json();
+          if (response.message) {
+            console.log(response.message);
+          } else {
+            // address head
+            document.querySelector(
+              ".address-box-head"
+            ).innerText = `${response.address.name}, ${response.address.pincode}, ${response.address.city}`;
+
+            // address
+            document.querySelector(".address").innerText =
+              response.address.address;
+
+            // place and pin
+            document.querySelector(
+              ".place-and-pin"
+            ).innerText = `${response.address.city}, ${response.address.pincode}`;
+
+            // number
+            document.querySelector(".address-number").innerText =
+              response.address.phone;
+
+            // set default address tooo
+            document.querySelector(
+              "#order-default-address"
+            ).value = `${response.address._id}`;
+          }
+        } catch (error) {
+          console.log(error, "error when setting default address via fetch");
+        }
+      }
+      const button = document.querySelector("#codButton");
+      const addressData = documnet.querySelector(".default-address-box").dataset
+        .address;
+      const address = JSON.parse(addressData);
+      button.addEventListener("click", function (event) {
+        const defaultAddress = address ?? "";
+        if (typeof defaultAddress != "object") {
+          window.alert("enter set default address");
+          event.preventDefault();
+        } else {
+          console.log("checkout completed");
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- pencile logo -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <!--  -->
+    <link rel="stylesheet" href="/styles/adminBanner.css" />
+    <link rel="stylesheet" href="/styles/adminNavBar.css" />
+
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- nav bar -->
+    <%-include('./partials/adminNavBar.ejs')%>
+    <div class="container">
+      <div class="sidebar-left">
+        <%-include('./partials/adminSidebar.ejs')%>
+      </div>
+      <div class="content-body">
+        <div class="body-bar">
+          <div class="head">Banners</div>
+          <a href="/admin/addBanner">add new banner</a>
+        </div>
+        <%if(banners.length > 0){%>
+        <div class="banner-section">
+          <%banners.forEach(function(banner){%>
+          <div class="banner-card" data-id="<%=banner._id%>">
+            <div class="banner-image">
+              <img src="<%=banner.image%>" alt="banner image" />
+            </div>
+            <div class="title">title: <span><%=banner.title%></span></div>
+            <div class="options">
+              <a href="/admin/editBanner/<%=banner._id%>" class="editBanner"
+                >click here to edit the banner
+              </a>
+              <a data-bannerid="<%=banner._id%>" class="deleteBanner"
+                ><i class="fa fa-trash-o"></i
+              ></a>
+            </div>
+          </div>
+          <%})%>
+        </div>
+        <%}else{%>
+        <p class="no-content">no banners uploaded</p>
+        <%}%>
+      </div>
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/jsFiles/bannerDelete.js"></script>
+</html>

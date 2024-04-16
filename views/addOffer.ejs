@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/adminNavBar.css" />
+    <link rel="stylesheet" href="/styles/addNewOffer.css"/>
+
+    <title>Add Offer</title>
+  </head>
+  <body>
+    <!-- nav bar -->
+    <%-include('./partials/adminNavBar.ejs')%>
+    <div class="container">
+        <div class="sidebar-left">
+          <%-include('./partials/adminSidebar.ejs')%>
+        </div>
+        <div class="content-body">
+            <div class="navigation">
+                <a href="/admin/product-offer">>Product Offers</a> <span>>Add New Offer</span>
+            </div>
+
+            <!-- add offer box -->
+            <div class="add-offer-box">
+                <div class="box-head">Add New Offer</div>
+                <form action="" id="form">
+                    <div class="offerdiv">
+                        <label for="offer">Offer <span>(in percentage)</span></label>
+                        <input type="number" class="input" id="input"><br>
+                        <p class="offer-error">error</p>
+                    </div>
+                    
+                    <div class="date">
+                        <div class="start">
+                            <label for="startDate">Start Date</label>
+                            <input type="date" id="startDate" class="input"><br>
+                            <p class="date-error">error</p>
+                        </div>
+                        <div class="end">
+                            <label for="endDate">End Date</label>
+                            <input type="date" class="input" id="endDate"><br>
+                            <p class="date-error">error</p>
+                        </div>
+                    </div>  
+                    <div class="cata-and-products">
+                      <select name="category" id="category">
+                        <%if(categories.length > 0){%>
+                          <%categories.forEach(function(cata){%>
+                            <option value="<%=cata.category%>"><%=cata.category%></option>
+                          <%})%>
+                        <%}%>
+                      </select>
+                      <select name="product" id="product"></select>
+                    </div>    
+                    <input type="submit">
+
+                </form>
+            </div>
+        </div>
+    <script src="/jsFiles/addOffer.js"></script>
+  </body>
+</html>

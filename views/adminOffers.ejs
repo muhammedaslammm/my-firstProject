@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/adminNavBar.css" />
+
+    <title>Offer Management</title>
+    <style>
+      body {
+        font-family: "poppins", sans-serif;
+        padding-bottom: 100px;
+      }
+      .container {
+        width: 95%;
+        margin: 70px auto;
+        display: flex;
+        height: 100vh;
+      }
+      .sidebar-left {
+        display: flex;
+        flex-direction: column;
+      }
+      .sidebar-left a {
+        text-decoration: none;
+        color: black;
+        padding: 15px 10px 15px 2px;
+      }
+      .sidebar-left a:hover {
+        font-weight: 500;
+      }
+
+      /* product - content */
+      .content-body {
+        width:100%;
+        margin-left: 15px;
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .product-offers{
+        width:65%;  
+      }
+      
+
+
+      .content-head {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 20px;
+      }
+      .no-offer{
+        margin:0;
+        color:rgb(60, 60, 60);
+        font-size: 18px;
+        font-weight: 500;
+        border:1px solid rgb(155, 153, 153);
+        border-radius: 5px;
+        background-color: rgb(255, 255, 243);
+        padding:10px
+      }
+
+      .add-offer{
+        width:32%;
+
+      }
+      .add-offer-box{
+        padding: 20px 15px;
+        border:1px solid rgb(199, 196, 196);
+        box-sizing: border-box;
+        margin-top: 50px;
+      }
+      .offer-box-head{
+        font-size: 17px;
+        font-weight: 500;
+        color:rgb(79, 77, 77)
+      }
+      .offer-note{
+        font-size: 15px;
+        color:rgb(104, 104, 104);
+        margin-bottom: 30px;
+        
+      }
+      .add-offer-box a{
+        text-decoration: none;
+        padding:4px 8px;
+        background-color: rgb(232, 42, 42);
+        color:white;
+        border-radius: 3px;
+        font-weight: 500;
+        transition: background-color 0.3s;               
+      }
+      .add-offer-box a:hover{
+        background-color: rgb(186, 11, 11);
+      }
+
+    </style>
+  </head>
+  <body>
+    <!-- nav bar -->
+    <%-include('./partials/adminNavBar.ejs')%>
+    <div class="container">
+        <div class="sidebar-left">
+          <%-include('./partials/adminSidebar.ejs')%>
+        </div>
+        <div class="content-body">
+            <div class="product-offers">
+                <div class="content-head">Product Offers</div>
+                <%if(offers.length > 0){%>
+
+                <%}else{%>
+                    <p class="no-offer">No Offer Added for Products</p>
+                <%}%>
+            </div>
+            <div class="add-offer">
+                <div class="add-offer-box">
+                    <div class="offer-box-head">#addOffer</div>
+                    <p class="offer-note">"Product offers drive sales and engage customers. 
+                        They provide affordability and value for buyers, 
+                        while businesses benefit from increased sales, 
+                        reduced inventory, and brand differentiation. 
+                        Offers create urgency, attracting new customers and fostering mutually beneficial 
+                        relationships between buyers and sellers."</p>
+                    <a href="/admin/add-offer">Add Offer</a>
+                </div>
+            </div>
+            
+        </div>
+  </body>
+</html>

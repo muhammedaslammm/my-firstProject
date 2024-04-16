@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="/styles/nav.css" />
+
+    <title>Document</title>
+    <style>
+      .page-container {
+        margin: 90px auto;
+        display: flex;
+        width: 95%;
+        box-sizing: border-box;
+      }
+      .page-container .page-sidebar {
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border: 1px solid rgb(203, 200, 200);
+        padding-top: 10px;
+        width: auto;
+        box-sizing: border-box;
+      }
+      .page-container .page-sidebar a {
+        padding: 12px 12px;
+        text-decoration: none;
+        color: rgb(64, 64, 64);
+        font-size: 17px;
+      }
+      .page-container .page-sidebar a:hover {
+        border-left: 2.5px solid rgb(159, 164, 247);
+      }
+      /* content */
+
+      .content-body{
+        display: flex;
+        flex-direction: column;
+        width:90%;
+        padding-left:2%;
+        
+      }  
+      .nav-links{
+        margin-bottom: 8px;
+      }  
+      .nav-links a{
+        font-size: 15px;
+        color:rgb(179, 178, 178);
+        text-decoration: none;              
+      }  
+      .nav-links span{
+        font-size: 15px;
+        text-decoration: none;
+        color: grey;
+        font-weight: 500; 
+        margin-left: 2px; 
+      }
+      .page-content {        
+        justify-content: flex;
+        flex-direction: column;
+      }
+      .edit-box {
+        border: 1px solid rgb(203, 200, 200);
+        background-color: white;
+        padding: 20px;
+        width: 40%;
+        margin-bottom: 20px;
+      }
+      .edit-box .box-head{
+        font-weight: 500;
+        margin-bottom: 8px;
+        font-size: 18px;
+      }
+      .edit-box form label{
+        display: block;
+        margin: 0;
+        margin-left: 1px;
+        margin-bottom: 5px;
+        font-size: 17px;
+      }
+      .edit-box form input[type="text"]{
+        width:78%;
+        margin-bottom: 5px;
+        border:1px solid rgb(174, 173, 173);
+        border-radius: 3px;
+        outline: none;
+        padding:5px 8px
+      }
+      form input[type="submit"]{        
+        padding:5px 8px;
+        border:none;
+        background-color: rgba(12, 12, 12, 0.788);
+        color:white;
+        border-radius: 3px;
+        font-weight: 500;
+        margin-top: 8px;
+        transition: background-color 0.3s;
+      }
+      form input[type="submit"]:hover{
+        background-color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- headers -->
+    <%-include("./partials/navbar.ejs")%>
+    <!-- -- -->    
+    
+    <div class="page-container">
+        <div class="page-sidebar">
+        <a
+          href="/user-profile"
+          style="border-left: 2.5px solid rgb(64, 67, 135)"
+          >User Profile</a
+        >
+        <a href="/address-management">Address Management</a>
+        <a href="/order-page">My Orders</a>
+        <a href="#">Payment Options</a>
+        </div>
+        <div class="content-body">
+          <div class="nav-links">
+            <a href="/user-profile">>user-profile</a> <span>>edit <%=edit%></span>
+          </div>
+          <div class="page-content">
+              <div class="edit-box">
+                <div class="box-head">change <%=edit%></div>
+                <form action="/user-profile/edit-user?edit=<%=edit%>" method="post">
+                  <label for="">Enter new <%=edit%></label>
+                  <input type="text" name="<%=edit%>">
+                  <input type="submit">
+                </form>
+              </div>
+          </div>
+        </div>
+        
+  <script>
+      const profileButton = document.querySelector("#profile-button");
+      const content = document.querySelector(".dropdown-content");
+
+      profileButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        content.style.display =
+          content.style.display === "none" ? "block" : "none";
+      });       
+  </script>
+  </body>
+</html>

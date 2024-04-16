@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>signup page</title>
+    <style>
+      body {
+        font-family: "poppins", sans-serif;
+        margin: 0;
+      }
+
+      header {
+        border-bottom: 1px solid rgb(205, 205, 205);
+        background-color: white;
+        padding: 8px 0;
+        margin: 0;
+      }
+      nav {
+        height: 32px;
+        width: 85%;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .nav-left {
+        display: flex;
+        align-items: center;
+        width: 40%;
+      }
+      .nav-left .logo a {
+        text-decoration: none;
+        color: black;
+        margin-right: 5%;
+      }
+      .nav-left input[type="search"] {
+        border: 1px solid rgb(203, 203, 203);
+        background-color: white;
+        padding: 4px;
+        border-radius: 3px;
+      }
+      .nav-left input[type="submit"] {
+        background-color: rgb(10, 112, 40);
+        padding: 4px 7.9px;
+        font-weight: 500;
+        border: none;
+        color: white;
+        border-radius: 3px;
+      }
+      .nav-right a {
+        text-decoration: none;
+        color: black;
+        font-size: 16px;
+        margin-right: 24px;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+      .nav-right a:hover {
+        color: rgb(10, 112, 40);
+      }
+      .nav-right a:last-child {
+        margin: 0;
+      }
+      .logo {
+        margin-right: 8px;
+        font-size: 22px;
+        font-weight: 500;
+      }
+      .container {
+        width: 80%;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        padding-top: 5%;
+      }
+      .signup-image {
+        width: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .signup-image img {
+        width: 70%;
+        margin-right: 20%;
+      }
+
+      .signup-section {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .signup-box {
+        background-color: white;
+        width: 98%;
+        border-radius: 7px;
+        padding: 15px 12px;
+        box-sizing: border-box;
+        border: 1px solid rgb(207, 206, 206);
+      }
+      .signup-box .signup-head {
+        font-weight: 500;
+        font-size: 19px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+      }
+      .signup-box label {
+        display: block;
+      }
+      .signup-box form input {
+        width: 94%;
+        padding: 6px;
+        border: 1px solid rgb(197, 195, 195);
+        outline: none;
+      }
+      .signup-box form input:last-child {
+        margin-top: 12px;
+        width: initial;
+        padding: 5px 13px;
+        font-weight: 700;
+        background-color: rgb(10, 112, 40);
+        color: white;
+        border: 1px solid;
+        border-radius: 3px;
+      }
+      .signup-box p {
+        margin: 0;
+        color: rgb(190, 33, 33);
+        margin-bottom: 10px;
+      }
+
+      .signup-box form input[type="submit"]:hover {
+        cursor: pointer;
+      }
+
+      .login-link p {
+        font-size: 13px;
+        margin: 0;
+        margin-top: 10px;
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <div class="nav-left">
+          <div class="logo"><a href="/">moas</a></div>
+          <form action="post">
+            <input type="search" name="search" />
+            <input type="submit" disabled />
+          </form>
+        </div>
+        <div class="nav-right">
+          <a href="">cart</a>
+          <a href="">wishlist</a>
+          <a href="">profile</a>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <div class="container">
+        <div class="signup-image">
+          <img src="/wallpapers/Mobile login-cuate.png" alt="" />
+        </div>
+        <div class="signup-section">
+          <div class="signup-box">
+            <div class="signup-head">Signup</div>
+            <form action="/signup" method="post">
+              <label for="">username</label>
+              <input
+                type="text"
+                name="username"
+                value="<%= typeof userData != 'undefined' ? userData.username:''%>"
+              />
+              <p>
+                <%if(typeof errors != 'undefined' && errors.username) { %>
+                <%=errors.username%> <% }%>
+              </p>
+              <label for="">email</label>
+              <input
+                type="email"
+                name="email"
+                value="<%= typeof userData != 'undefined' ? userData.email:''%>"
+              />
+              <p>
+                <%if(typeof errors != 'undefined' && errors.email) { %>
+                <%=errors.email%> <% }%>
+              </p>
+              <label for="">password</label>
+              <input
+                type="password"
+                name="password"
+                value="<%= typeof userData != 'undefined' ? userData.password:''%>"
+              />
+              <p>
+                <%if(typeof errors != 'undefined' && errors.password) { %>
+                <%=errors.password%> <% }%>
+              </p>
+              <label for="">confirm password</label>
+              <input
+                type="password"
+                name="confirmPassword"
+                value="<%= typeof userData != 'undefined' ? userData.confirmPassword:''%>"
+              /><br />
+              <p>
+                <%if(typeof errors != 'undefined' && errors.confirmPassword) {
+                %> <%=errors.confirmPassword%> <% }%>
+              </p>
+
+              <p>
+                <%if(typeof errors != 'undefined' && errors.otpError) { %>
+                <%=errors.otpError%> <% }%>
+              </p>
+              <input type="submit" />
+            </form>
+            <div class="login-link">
+              <p>Already have an account? <a href="/login">login</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

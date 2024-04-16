@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/adminSidebar.css" />
+    <link rel="stylesheet" href="/styles/editBanner.css" />
+    <link rel="stylesheet" href="/styles/adminNavBar.css" />
+
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- nav bar -->
+    <%-include('./partials/adminNavBar.ejs')%>
+    <div class="container">
+      <div class="sidebar-left">
+        <%-include('./partials/adminSidebar.ejs')%>
+      </div>
+
+      <div class="content-body">
+        <div class="nav-links">
+          <a href="/admin/adminBanner">>Banner Control</a
+          ><span>>edit banner</span>
+        </div>
+        <div class="content-box">
+          <div class="box-head">Edit Banner</div>
+          <form
+            action="/admin/editBanner/<%=banner._id%>"
+            method="post"
+            enctype="multipart/form-data"
+          >
+            <label for="image">Banner:</label>
+            <input type="file" name="image" id="image" accept="image/*" />
+            <p id="imageError"></p>
+
+            <input type="hidden" name="imageURL" value="<%=banner.image%>" />
+
+            <div class="image-preview">
+              <img
+                src="<%=banner.image%>"
+                alt="banner image"
+                id="imagePreview"
+              />
+            </div>
+            <p id="imageError"></p>
+            <label for="title" id="title">Title:</label>
+            <input
+              type="text"
+              name="title"
+              id="bannerText"
+              placeholder="edit title here..."
+              value="<%=banner.title%>"
+            />
+            <p id="titleError"></p>
+            <input type="submit" name="" id="submit" value="Submit Edit" />
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="/jsFiles/validateBanEdit.js"></script>
+  </body>
+</html>

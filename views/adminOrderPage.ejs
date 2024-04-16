@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/adminNavBar.css" />
+
+    <title>admin | order page</title>
+    <style>
+      body {
+        font-family: "poppins", sans-serif;
+        margin:0
+      }
+      .container {
+        width: 95%;
+        margin: 70px auto;
+        display: flex;
+        height: auto;
+      }
+      .sidebar-left {
+        display: flex;
+        flex-direction: column;
+      }
+      .sidebar-left a {
+        text-decoration: none;
+        color: black;
+        padding: 15px 10px 15px 2px;
+        font-size: 17px;
+      }
+      .sidebar-left a:hover {
+        font-weight: 500;
+      }
+      .content-body {
+        margin-left: 15px;
+        width: 100%;
+        margin-top: 10px;
+        height: auto;        
+        box-sizing: border-box;
+      }
+      .order-head{
+        font-size: 17px;
+        font-weight: 500;
+      }
+
+      /* table */
+      table{
+        border-collapse: collapse;
+      }
+      th,td{
+        border: 1px solid rgb(114, 113, 113);
+        text-align: left;
+        padding:4px 8px;
+      }
+      tr .image{
+        width:4%
+      }
+      tr .image img{
+        width:100%
+      }
+
+    </style>
+  </head>
+  <body>
+      
+    <!-- nav bar -->
+    <%-include('./partials/adminNavBar.ejs')%>
+      <div class="container">
+        <div class="sidebar-left">
+          <%-include('./partials/adminSidebar.ejs')%>
+        </div>
+        <div class="content-body">
+          <div class="order-head">User Orders</div>
+          <div class="order-table">
+            <table>
+              <tr>
+                <th style="width:10%">Ordered Date</th>
+                <th style="width:10%">username</th>
+                <th>image</th>
+                <th style="width:10%">product</th>                
+                <th style="width:1%; text-align:center;">size</th>
+                <th style="width:1%;">QTY</th>
+                <th style="width:6%">price</th>
+                <th style="width:20%">address</th>
+                <th style="width:8%">order status</th>
+              </tr>
+              <%if(orders.length > 0){%>
+                <%orders.forEach(function(order){%>
+                <tr>
+                  <td><%=order.orderedDate.toDateString()%></td>
+                  <td><%=order.username%></td>
+                  <td class="image">
+                    <img src="<%=order.orderedProduct.image%>" alt="image">
+                  </td>
+                  <td>
+                    <div class="product-detail">
+                      <%=order.orderedProduct.brand%> <%=order.orderedProduct.color%> Men's <%=order.orderedProduct.productType%>
+                    </div>
+                  </td>                  
+                  <td style="text-align:center;">
+                    <%=order.orderedProduct.size%>
+                  </td>
+                  <td style="text-align:center;"><%=order.orderedProduct.quantity%></td>
+                  <td>Rs. <%=order.orderedProduct.totalPrice%></td>
+                  <td>
+                    <div class="addName"><%=order.address.name%></div>
+                    <div class="address"><%=order.address.address%></div>
+                    <div class="addPlace"><%=order.address.city%>, <%=order.address.pincode%>, <%=order.address.district%></div>
+                    <div class="phone"><%=order.address.phone%></div>
+                  </td>
+                  <td>
+                    <div class="status"><%=order.orderedProduct.orderStatus%></div>
+                    
+                    <form action="/admin/orderStatus/<%=order._id%>/<%=order.orderedProduct.cartID%>/<%=order.orderedProduct.productID%>" method="post">
+                      <select name="status" id="<%=order._id%>" class="status" >
+                        <option value="on progress">on progress</option>
+                        <option value="shipped">shipped</option>
+                        <option value="delivered">delivered</option>
+                        <option value="cancelled">cancelled</option>
+                        <option value="returned">returned</option>
+                        <option value="pending">pending</option>
+                      </select>
+                      <input type="submit">
+                    </form>
+                  </td>
+                </tr>
+                <%})%>
+              <%}%>
+            </table>
+          </div>
+          
+        </div>
+        
+        <script>
+          // set default select on options
+          document.addEventListener('DOMContentLoaded',function(){
+            const selectElem = document.querySelectorAll('.status');
+            selectElem.forEach(function(select){
+              const selectID = select.id;
+              const selectedValue = localStorage.getItem(selectID);
+
+              select.addEventListener('change',function(event){
+                const selectedValue = event.target.value;
+                localStorage.setItem(selectID,selectedValue);
+              })
+              if(selectedValue){
+                const options = select.querySelectorAll('option');
+                options.forEach(function(option){
+                  if(option.value === selectedValue){
+                    option.selected = true
+                  }
+                })
+              }
+            })
+          })
+          
+
+          
+        </script>
+  </body>
+</html>

@@ -1,0 +1,106 @@
+body {
+    font-family: "poppins", sans-serif;
+    padding-bottom: 100px;
+  }
+  .container {
+    width: 95%;
+    margin: 70px auto;
+    display: flex;
+    height: 100vh;
+  }
+  .sidebar-left {
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar-left a {
+    text-decoration: none;
+    color: black;
+    padding: 15px 10px 15px 2px;
+  }
+  .sidebar-left a:hover {
+    font-weight: 500;
+  }
+
+  /* product - content */
+  .content-body {
+    width: 100%;
+    margin-left: 15px;
+    margin-top: 10px;
+  }
+  .content-body .navigation a{
+    text-decoration: none;
+    font-size: 12px;
+    color:rgb(153, 153, 153);
+    font-weight: 500;
+
+  }
+  .content-body .navigation span{
+    font-size: 13px;
+    color: rgb(58, 58, 58);
+    font-weight: 500;
+    margin-left: 2px;
+  }
+
+  /* add offer box */
+  .add-offer-box{
+    margin-top: 25px;
+    width:50%;
+  }
+  .add-offer-box .box-head{
+    font-size: 17px;
+    font-weight: 500;
+  }
+  .add-offer-box form label{
+    display: block;
+  }
+  .offerdiv{
+    position: relative;
+    margin-bottom: 27px;
+  }
+  .offerdiv span{
+    font-size: 14px;
+    color:rgb(71, 70, 70)
+  }
+  .offer-error{
+    position: absolute;    
+    color:rgb(208, 43, 43);
+    top:36px;
+    display: none;
+    
+  }
+  .add-offer-box form input{
+    width:100%;
+    border:1px solid rgb(173, 172, 172);
+    padding:6.5px;
+    outline: none;
+    border-radius: 2px;
+  }
+  .date{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+  }
+  .start, .end{
+    width:48%;
+    position: relative;    
+  }
+  .date-error{
+    position: absolute;
+    color:rgb(208, 43, 43);
+    top:40px;
+    display: none;
+  }
+
+  .product option{
+    width:200px
+  }
+  .productDiv{
+    display: flex;
+    width:100%
+  }
+  .productDiv .image{
+    width:7%;    
+  }
+  .productDiv .image img{
+    width:100%
+  }

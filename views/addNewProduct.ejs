@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/adminNavBar.css" />
+
+    <title>add-new-product</title>
+    <style>
+      body {
+        font-family: "poppins", sans-serif;
+      }
+      header {
+        width: 95%;
+        margin: 0 auto;
+        padding: 5px;
+        border-bottom: 1px solid rgb(171, 168, 168);
+      }
+      nav {
+        display: flex;
+      }
+      .container {
+        width: 95%;
+        margin: 70px auto;
+        display: flex;
+        height: 100vh;
+      }
+      .sidebar-left {
+        display: flex;
+        flex-direction: column;
+      }
+      .sidebar-left a {
+        text-decoration: none;
+        color: black;
+        padding: 15px 10px 15px 2px;
+      }
+      .sidebar-left a:hover {
+        font-weight: 500;
+      }
+
+      /* content */
+      .content-body {
+        margin-left: 15px;
+        width: 70%;
+      }
+      .content-body-head {
+        font-weight: 500;
+        margin-bottom: 20px;
+      }
+      .new-product form {
+        display: flex;
+        justify-content: space-between;
+        border: 1px solid rgb(193, 193, 193);
+        padding: 20px;
+      }
+      .mainImage {
+        margin-bottom: 25px;
+      }
+      .image-head {
+        font-size: 15px;
+        color: rgb(65, 64, 64);
+      }
+      .image-head span {
+        font-size: 13px;
+        color: grey;
+        font-weight: 300;
+      }
+      .main-image-preview {
+        display: none;
+      }
+      .preview-box {
+        width: 15%;
+        border: 1.2px dashed rgb(90, 88, 88);
+        padding: 3px;
+        margin-top: 5px;
+        position: relative;
+      }
+      .preview-box img {
+        width: 100%;
+      }
+      .delete-button {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        background-color: rgb(237, 50, 50);
+        border: none;
+        color: white;
+        font-weight: 500;
+        font-size: 14px;
+        padding: 0px 5px;
+      }
+      .delete-button:hover {
+        cursor: pointer;
+      }
+      .main-error {
+        font-size: 15px;
+        margin: 0;
+        color: maroon;
+        transition: display 0.3s;
+      }
+
+      /* sub images */
+      #image-previews {
+        display: flex;
+        gap: 10px;
+      }
+      .sub-preview-box {
+        width: 15%;
+        border: 1.2px dashed rgb(90, 88, 88);
+        padding: 3px;
+        margin-top: 5px;
+        position: relative;
+      }
+      .sub-preview-box img {
+        width: 100%;
+      }
+      .subDelete-button {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        background-color: rgb(237, 50, 50);
+        border: none;
+        color: white;
+        font-weight: 500;
+        font-size: 14px;
+        padding: 0px 5px;
+      }
+      .subDelete-button:hover {
+        cursor: pointer;
+      }
+      .sub-error {
+        font-size: 15px;
+        margin: 0;
+        color: maroon;
+        transition: display 0.3s;
+      }
+
+      /* form remaining section */
+      form .error {
+        margin: 0;
+        color: maroon;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+      .left-section {
+        width: 43%;
+      }
+      .left-section .decription-head {
+        margin: 0;
+      }
+
+      .description-head {
+        margin: 0px;
+        font-size: 16px;
+        font-weight: 500;
+        color: rgb(76, 75, 75);
+        margin-bottom: 10px;
+        margin-top: 20px;
+      }
+
+      .description {
+        display: flex;
+        justify-content: space-between;
+      }
+      .description-left,
+      .description-right {
+        width: 49%;
+      }
+
+      .description-left label,
+      .description-right label,
+      .right-section label {
+        display: block;
+        font-size: 15px;
+        color: rgb(22, 22, 22);
+      }
+      .description-left input,
+      .description-right input,
+      .right-section input {
+        width: 90%;
+        border: 1px solid rgb(181, 179, 179);
+        padding: 4px 8px;
+        color: rgb(53, 52, 52);
+        outline: none;
+      }
+      /* right section */
+      .right-section {
+        width: 55%;
+        display: flex;
+        flex-direction: column;
+      }
+      .size-and-qty label {
+        display: inline-block;
+      }
+      .size-and-qty input {
+        display: inline-block;
+        width: 30px;
+      }
+
+      .brand-and-type,
+      .actual-and-selling,
+      .cata-and-status {
+        display: flex;
+        justify-content: space-between;
+      }
+      .brand-and-type .brand,
+      .brand-and-type .type,
+      .actual-and-selling .actual,
+      .actual-and-selling .selling,
+      .cata-and-status .cata,
+      .cata-and-status .status,
+      .date {
+        width: 49%;
+      }
+      .brand-and-type input,
+      .actual-and-selling input,
+      .cata-and-status input,
+      .cata-and-status select,
+      .date input,
+      .date label {
+        width: 94%;
+      }
+      .size {
+        margin-bottom: 15px;
+      }
+      .size-head {
+        display: block;
+        font-size: 15px;
+        color: rgb(22, 22, 22);
+        /* margin-bottom: 10px; */
+      }
+
+      .images label {
+        font-size: 14px;
+        margin-bottom: 10px;
+        color: rgb(22, 22, 22);
+        display: block;
+      }
+      .submit-button {
+        display: flex;
+        justify-content: end;
+      }
+      input[type="submit"] {
+        margin-top: 20px;
+        background-color: rgba(22, 73, 95, 0.877);
+        color: white;
+        font-weight: 700;
+        border: none;
+        width: auto;
+      }
+      input[type="submit"]:hover {
+        cursor: pointer;
+      }
+      .cata select,
+      .size select {
+        width: 90%;
+        border: 1px solid rgb(181, 179, 179);
+        padding: 4px 8px;
+        color: rgb(53, 52, 52);
+        outline: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- nav bar -->
+    <%-include('./partials/adminNavBar.ejs')%>
+    <div class="container">
+      <div class="sidebar-left">
+        <%-include('./partials/adminSidebar.ejs')%>
+      </div>
+      <div class="content-body">
+        <div class="content-body-head">add new product</div>
+        <div class="new-product">
+          <form enctype="multipart/form-data" id="product-form">
+            <div class="left-section">
+              <!-- main image -->
+              <div class="mainImage">
+                <div class="image-head">Add Main Image</div>
+                <input
+                  type="file"
+                  name="main-image"
+                  id="main-image"
+                  accept="image/*"
+                  onchange="cropAndPreviewImage(event,'main-image-preview')"
+                />
+                <div id="main-image-preview"></div>
+                <p class="main-error"></p>
+              </div>
+
+              <!-- sub image -->
+              <div class="sub-images">
+                <div class="image-head">
+                  Sub Images <span>(select only two)</span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="sub-image-fileInput"
+                  onchange="cropAndPreviewSubImages(event)"
+                  style="display: none"
+                  multiple
+                />
+                <button id="add-images">add images</button>
+                <div class="sub-error"></div>
+                <div id="image-previews"></div>
+              </div>
+
+              <!-- description -->
+              <div class="description-head">description</div>
+              <div class="description">
+                <div class="description-left">
+                  <!-- sleeve -->
+                  <div class="sleeve">
+                    <label for="">Sleeve</label>
+                    <input
+                      type="text"
+                      name="sleeve"
+                      value="<%=typeof newProduct != 'undefined' ? newProduct.sleeve : ''%>"
+                      class="input"
+                    />
+                    <p class="error"></p>
+                  </div>
+
+                  <!-- fit -->
+                  <div class="fit">
+                    <label for="">Fit</label>
+                    <input
+                      type="text"
+                      name="fit"
+                      value="<%=typeof newProduct != 'undefined' ? newProduct.fit : ''%>"
+                      class="input"
+                    />
+                    <p class="error"></p>
+                  </div>
+
+                  <!-- pattern -->
+                  <div class="pattern">
+                    <label for="">Pattern</label>
+                    <input
+                      type="text"
+                      name="pattern"
+                      value="<%=typeof newProduct != 'undefined' ? newProduct.pattern : ''%>"
+                      class="input"
+                    />
+                    <p class="error"></p>
+                  </div>
+                </div>
+                <div class="description-right">
+                  <!-- wash -->
+                  <div class="wash">
+                    <label for="">Wash</label>
+                    <input
+                      type="text"
+                      name="wash"
+                      value="<%=typeof newProduct != 'undefined' ? newProduct.wash : ''%>"
+                      class="input"
+                    />
+                    <p class="error"></p>
+                  </div>
+
+                  <!-- color -->
+                  <div class="color">
+                    <label for="">Color</label>
+                    <input
+                      type="text"
+                      name="color"
+                      value="<%=typeof newProduct != 'undefined' ? newProduct.color : ''%>"
+                      class="input"
+                    />
+                    <p class="error"></p>
+                  </div>
+
+                  <!-- fabric -->
+                  <div class="fabric">
+                    <label for="">Fabric</label>
+                    <input
+                      type="text"
+                      name="fabric"
+                      value="<%=typeof newProduct != 'undefined' ? newProduct.fabric : ''%>"
+                      class="input"
+                    />
+                    <p class="error"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="right-section">
+              <div class="brand-and-type">
+                <div class="brand">
+                  <label for="">Brand</label>
+                  <input
+                    type="text"
+                    name="brand"
+                    value="<%=typeof newProduct != 'undefined' ? newProduct.brand : ''%>"
+                    class="input"
+                  />
+                  <p class="error"></p>
+                </div>
+                <div class="type">
+                  <label for="">Product Type</label>
+                  <input
+                    type="text"
+                    name="productType"
+                    value="<%=typeof newProduct != 'undefined' ? newProduct.productType : ''%>"
+                    class="input"
+                  />
+                  <p class="error"></p>
+                </div>
+              </div>
+              <div class="actual-and-selling">
+                <div class="actual">
+                  <label for="">Actual Price</label>
+                  <input
+                    type="number"
+                    name="actualPrice"
+                    value="<%=typeof newProduct != 'undefined' ? newProduct.actualPrice : ''%>"
+                    class="input"
+                  />
+                  <p class="error"></p>
+                </div>
+                <div class="selling">
+                  <label for="">Selling Price</label>
+                  <input
+                    type="number"
+                    name="sellingPrice"
+                    value="<%=typeof newProduct != 'undefined' ? newProduct.sellingPrice : ''%>"
+                    class="input"
+                  />
+                  <p class="error"></p>
+                </div>
+              </div>
+              <div class="cata-and-status">
+                <div class="cata">
+                  <label for="">Category</label>
+                  <select name="category" id="category">
+                    <% categories.forEach(function(category){ %>
+                    <option value="<%=category.category%>" class="input">
+                      <%=category.category%>
+                    </option>
+                    <% }) %>
+                  </select>
+                </div>
+                <div class="status">
+                  <label for="">Product Status</label>
+                  <input
+                    type="text"
+                    name="status"
+                    value="<%=typeof newProduct != 'undefined' ? newProduct.status : ''%>"
+                    class="input"
+                  />
+                  <p class="error"></p>
+                </div>
+              </div>
+              <div class="size-and-qty">
+                <!-- extra small -->
+                <div class="ex">
+                  <label for="extra-small">Extra-Small:</label><br />
+                  <input
+                    type="number"
+                    id="extra-small"
+                    name="extra_small"
+                    value="0"
+                    class="input"
+                  /><br />
+                  <p class="error"></p>
+                </div>
+
+                <!-- small -->
+                <div class="s">
+                  <label for="small">Small:</label><br />
+                  <input
+                    type="number"
+                    id="small"
+                    name="small"
+                    value="0"
+                    class="input"
+                  /><br />
+                  <p class="error"></p>
+                </div>
+
+                <!-- medium -->
+                <div class="m">
+                  <label for="medium">Medium:</label><br />
+                  <input
+                    type="number"
+                    id="medium"
+                    name="medium"
+                    value="0"
+                    class="input"
+                  /><br />
+                  <p class="error"></p>
+                </div>
+
+                <!-- large -->
+                <div class="l">
+                  <label for="large">Large:</label><br />
+                  <input
+                    type="number"
+                    id="large"
+                    name="large"
+                    value="0"
+                    class="input"
+                  /><br />
+                  <p class="error"></p>
+                </div>
+
+                <!-- extra large -->
+                <div class="xl">
+                  <label for="extra-large">Extra-Large:</label><br />
+                  <input
+                    type="number"
+                    id="extra-large"
+                    name="extra_large"
+                    value="0"
+                    class="input"
+                  /><br />
+                  <p class="error"></p>
+                </div>
+
+                <!-- extra extra large -->
+                <div class="xxl">
+                  <label for="extra-extra-large">Extra-Extra-Large:</label
+                  ><br />
+                  <input
+                    type="number"
+                    id="extra-extra-large"
+                    name="extra_extra_large"
+                    value="0"
+                    class="input"
+                  /><br />
+                  <p class="error"></p>
+                </div>
+              </div>
+
+              <!-- date -->
+              <div class="date">
+                <label for="">Publishing Date</label>
+                <input
+                  type="date"
+                  name="date"
+                  value="<%=typeof newProduct != 'undefined' ? newProduct.date : ''%>"
+                  class="input"
+                />
+                <p class="error"></p>
+              </div>
+              <div class="submit-button">
+                <input type="submit" value="submit product" />
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script src="/jsFiles/newProImgs.js"></script>
+  </body>
+</html>
