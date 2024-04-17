@@ -27,6 +27,7 @@ exports.placeOrder = async function(req,res){
         const productIDs = carts.map(function(cart){
             return cart.productID._id;
         })
+        // dhdhjdk
         const orderedProducts = [];
         const date = new Date();
         const newDate = date.setDate(date.getDate() + 3)
