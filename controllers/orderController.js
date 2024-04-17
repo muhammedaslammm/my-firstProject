@@ -28,6 +28,7 @@ exports.placeOrder = async function(req,res){
             return cart.productID._id;
         })
         const name = 'muhammed aslam';
+        const age = 22;
         const orderedProducts = [];
         const date = new Date();
         const newDate = date.setDate(date.getDate() + 3)
