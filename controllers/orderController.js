@@ -34,15 +34,9 @@ exports.placeOrder = async function(req,res){
         carts.forEach(function(cart){
             const moasOrderID = generateOrderID()
             const productDetails = {
-                cartID:cart._id,
                 productID:cart.productID._id,
                 moasOrderID,
-                deliveryDate,
-                image:cart.productID.images[0],
-                brand:cart.productID.brand,
-                color:cart.productID.color,
-                productType:cart.productID.productType,
-                sellingPrice:cart.productID.sellingPrice,
+                deliveryDate,                
                 quantity:cart.quantity,
                 size:cart.size,                
                 totalPrice:cart.productID.sellingPrice*cart.quantity

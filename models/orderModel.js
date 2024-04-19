@@ -3,13 +3,10 @@ const orderSchema = new mongoose.Schema({
     userID: {
         type: mongoose.Schema.Types.ObjectId
     },
-    username: {
-        type: String
+    username:{
+        type:String
     },
-    orderedProducts: [{
-        cartID: {
-            type: mongoose.Schema.Types.ObjectId
-        },
+    orderedProducts: [{        
         productID: {
             type: mongoose.Schema.Types.ObjectId
         },
@@ -31,22 +28,7 @@ const orderSchema = new mongoose.Schema({
         deliveredDate: {
             type: Date,
             default: null
-        },
-        image: {
-            type: String
-        },
-        brand: {
-            type: String
-        },
-        color: {
-            type: String
-        },
-        productType: {
-            type: String
-        },
-        price: {
-            type: Number
-        },
+        },        
         quantity: {
             type: Number
         },
