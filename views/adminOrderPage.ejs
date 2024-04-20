@@ -91,44 +91,46 @@
               </tr>
               <%if(orders.length > 0){%>
                 <%orders.forEach(function(order){%>
-                <tr>
-                  <td><%=order.orderedDate.toDateString()%></td>
-                  <td><%=order.username%></td>
-                  <td class="image">
-                    <img src="<%=order.orderedProduct.image%>" alt="image">
-                  </td>
-                  <td>
-                    <div class="product-detail">
-                      <%=order.orderedProduct.brand%> <%=order.orderedProduct.color%> Men's <%=order.orderedProduct.productType%>
-                    </div>
-                  </td>                  
-                  <td style="text-align:center;">
-                    <%=order.orderedProduct.size%>
-                  </td>
-                  <td style="text-align:center;"><%=order.orderedProduct.quantity%></td>
-                  <td>Rs. <%=order.orderedProduct.totalPrice%></td>
-                  <td>
-                    <div class="addName"><%=order.address.name%></div>
-                    <div class="address"><%=order.address.address%></div>
-                    <div class="addPlace"><%=order.address.city%>, <%=order.address.pincode%>, <%=order.address.district%></div>
-                    <div class="phone"><%=order.address.phone%></div>
-                  </td>
-                  <td>
-                    <div class="status"><%=order.orderedProduct.orderStatus%></div>
-                    
-                    <form action="/admin/orderStatus/<%=order._id%>/<%=order.orderedProduct.cartID%>/<%=order.orderedProduct.productID%>" method="post">
-                      <select name="status" id="<%=order._id%>" class="status" >
-                        <option value="on progress">on progress</option>
-                        <option value="shipped">shipped</option>
-                        <option value="delivered">delivered</option>
-                        <option value="cancelled">cancelled</option>
-                        <option value="returned">returned</option>
-                        <option value="pending">pending</option>
-                      </select>
-                      <input type="submit">
-                    </form>
-                  </td>
-                </tr>
+                  <%order.orderedProducts.forEach(function(orderedProduct){%>
+                    <tr>
+                      <td><%=order.orderedDate.toDateString()%></td>
+                      <td><%=order.username%></td>
+                      <td class="image">
+                        <img src="<%=orderedProduct.productID.images[0]%>" alt="image">
+                      </td>
+                      <td>
+                        <div class="product-detail">
+                          <%=orderedProduct.productID.brand%> <%=orderedProduct.productID.color%> Men's <%=orderedProduct.productID.productType%>
+                        </div>
+                      </td>                  
+                      <td style="text-align:center;">
+                        <%=orderedProduct.size%>
+                      </td>
+                      <td style="text-align:center;"><%=orderedProduct.quantity%></td>
+                      <td>Rs. <%=orderedProduct.totalPrice%></td>
+                      <td>
+                        <div class="addName"><%=order.address.name%></div>
+                        <div class="address"><%=order.address.address%></div>
+                        <div class="addPlace"><%=order.address.city%>, <%=order.address.pincode%>, <%=order.address.district%></div>
+                        <div class="phone"><%=order.address.phone%></div>
+                      </td>
+                      <td>
+                        <div class="status"><%=orderedProduct.orderStatus%></div>
+                        
+                        <form action="/admin/orderStatus/<%=order._id%>/<%=orderedProduct._id%>" method="post">
+                          <select name="status" id="<%=order._id%>" class="status" >
+                            <option value="on progress">on progress</option>
+                            <option value="shipped">shipped</option>
+                            <option value="delivered">delivered</option>
+                            <option value="cancelled">cancelled</option>
+                            <option value="returned">returned</option>
+                            <option value="pending">pending</option>
+                          </select>
+                          <input type="submit">
+                        </form>
+                      </td>
+                    </tr>
+                  <%})%>                
                 <%})%>
               <%}%>
             </table>

@@ -32,7 +32,7 @@ router.post("/editBanner/:id",validation,upload2.single("image"),adminController
 
 // admin order handling
 router.get("/orders",validation,adminController.orderPage)
-router.post("/orderStatus/:orderID/:cartID/:productID",validation,adminController.orderStatus)
+router.post("/orderStatus/:orderID/:productID",validation,adminController.orderStatus)
 
 // admin offer
 router.get('/product-offer',validation,adminController.offerPage)

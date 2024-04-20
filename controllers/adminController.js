@@ -424,26 +424,26 @@ exports.updateProduct = async function(req,res){
 exports.orderPage = async function(req,res){
     try{
         const userID = req.session.userID;
-        const orders = await Order.aggregate([
-            {$match:{userID:userID}},
-            {$unwind:"$orderedProducts"},
-            {
-                $lookup:{
-                    from:"addresses",
-                    localField:"address",
-                    foreignField:"_id",
-                    as:"deliveryAddress"
-                }
-            },
-            {$project:{
-                _id:1,
-                username:1,
-                orderedDate:1,
-                orderedProduct:"$orderedProducts",
-                address:{$arrayElemAt:["$deliveryAddress",0]}
-            }}
+        // const orders = await Order.aggregate([            
+        //     {$unwind:"$orderedProducts"},
+        //     {
+        //         $lookup:{
+        //             from:"addresses",
+        //             localField:"address",
+        //             foreignField:"_id",
+        //             as:"deliveryAddress"
+        //         }
+        //     },
+        //     {$project:{
+        //         _id:1,
+        //         username:1,
+        //         orderedDate:1,
+        //         orderedProduct:"$orderedProducts",
+        //         address:{$arrayElemAt:["$deliveryAddress",0]}
+        //     }}
             
-        ])    
+        // ])    
+        const orders = await Order.find().populate('orderedProducts.productID').populate('address')
         console.log(orders);
         res.render("adminOrderPage",{orders});
     }
@@ -457,28 +457,29 @@ exports.orderPage = async function(req,res){
 exports.orderStatus = async function(req,res){
     try{
         const userID = req.session.userID
-        const {orderID,cartID,productID} = req.params;
+        const {orderID,productID} = req.params;
         const status = req.body.status ;     
         await Order.updateOne({_id:orderID,'orderedProducts.productID':productID},{$set:{'orderedProducts.$.orderStatus':status}})
         
-        if(status === 'delivered'){
-            const deleteFromCart = await Cart.deleteOne({_id:cartID,productID})
-            const editProduct = await Product.findByIdAndUpdate({_id:productID},{addedToCart:false})            
+        if(status === 'delivered'){           
             await Order.updateOne(
-                {_id:orderID,'orderedProducts.productID':productID},
+                {_id:orderID,'orderedProducts._id':productID},
                 {$set:{
                     'orderedProducts.$.deliveredDate':new Date(),
                     'orderedProducts.$.cancelledDate':null,
-                    'orderedProducts.$.deliveryDate':null}
+                    'orderedProducts.$.deliveryDate':null,
+                    'orderedProducts.$.orderStatus':'Delivered'
+                }
                 });            
         }
         else if(status === 'cancelled'){
             await Order.updateOne(
-                {_id:orderID,'orderedProducts.productID':productID},
+                {_id:orderID,'orderedProducts._id':productID},
                 {$set:{
                     'orderedProducts.$.cancelledDate':new Date(),
                     'orderedProducts.$.deliveredDate':null,
-                    'orderedProducts.$.deliveryDate':null
+                    'orderedProducts.$.deliveryDate':null,
+                    'orderedProducts.$.orderStatus':'Cancelled'
                 }})
         }
         else if(status === 'on progress'){
@@ -486,11 +487,12 @@ exports.orderStatus = async function(req,res){
             const newDate = date.setDate(date.getDate() + 3)
             const deliveryDate = new Date(newDate)
             await Order.updateOne(
-                {_id:orderID,'orderedProducts.productID':productID},
+                {_id:orderID,'orderedProducts._id':productID},
                 {$set:{
                     'orderedProducts.$.deliveryDate':deliveryDate,
                     'orderedProducts.$.cancelledDate':null,
-                    'orderedProducts.$.deliveredDate':null
+                    'orderedProducts.$.deliveredDate':null,
+                    'orderedProducts.$.orderStatus':'On Progress'
                 }})
         }
         console.log("product status updated");
