@@ -10,7 +10,8 @@ const Product = require("./../models/productModel");
 const Order = require("./../models/orderModel");
 const Cart = require("./../models/cartModel");
 const Banner = require("./../models/bannerModel");
-const Offer = require("./../models/offerModel");
+const CategoryOfferModel = require("../models/categoryOfferModel");
+const productOfferModel = require("../models/productOfferModel")
 
 
 // admin login page
@@ -146,6 +147,9 @@ exports.addNewCategory = async function(req,res){
         console.log("server error",error);
     }
 }
+
+// giving offer to category
+
 
 // edit category page
 exports.editCategory = async function(req,res){
@@ -423,26 +427,7 @@ exports.updateProduct = async function(req,res){
 // admin order page
 exports.orderPage = async function(req,res){
     try{
-        const userID = req.session.userID;
-        // const orders = await Order.aggregate([            
-        //     {$unwind:"$orderedProducts"},
-        //     {
-        //         $lookup:{
-        //             from:"addresses",
-        //             localField:"address",
-        //             foreignField:"_id",
-        //             as:"deliveryAddress"
-        //         }
-        //     },
-        //     {$project:{
-        //         _id:1,
-        //         username:1,
-        //         orderedDate:1,
-        //         orderedProduct:"$orderedProducts",
-        //         address:{$arrayElemAt:["$deliveryAddress",0]}
-        //     }}
-            
-        // ])    
+        const userID = req.session.userID;           
         const orders = await Order.find().populate('orderedProducts.productID').populate('address')
         console.log(orders);
         res.render("adminOrderPage",{orders});
