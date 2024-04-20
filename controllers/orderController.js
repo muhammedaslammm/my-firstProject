@@ -24,9 +24,7 @@ exports.placeOrder = async function(req,res){
             carts.push(cart);
         }
         const user = await User.findById(req.session.userID);
-        const productIDs = carts.map(function(cart){
-            return cart.productID._id;
-        })      
+             
         const orderedProducts = [];
         const date = new Date();
         const newDate = date.setDate(date.getDate() + 3)
@@ -102,7 +100,8 @@ exports.orderResponsePage = async function(req,res){
             return order.hasOwnProperty('orderedProduct') && order.orderedProduct.orderStatus === 'on progress'
         })
         if(onProgress){
-            const order = await Order.findOne({_id:orderID})
+            const order = await Order.findOne({_id:orderID}).populate('orderedProducts.productID')   
+            console.log(order);
             const products = order.orderedProducts;
             const address = await Address.findById(order.address);
             const totalCartAmount = products.reduce(function(sum,product){
@@ -112,19 +111,21 @@ exports.orderResponsePage = async function(req,res){
         }
         else{
             console.log("order status not all in 'on progress'");
-        }
-        
+        }        
     }
     catch(error){
         console.log("error in order response page",error);
     }
 }
 
+
+
 // order page
 exports.orderPage = async function(req,res){
     try{
         const userID = req.session.userID
-        const orders = await Order.find({userID}).sort({orderedDate:-1});
+        const orders = await Order.find({userID}).populate('orderedProducts.productID').sort({orderedDate:-1})
+        // console.log(orders);
         const statuses = ["on progress","shipped","delivered"]
         res.render("orderPage",{orders,statuses,userID});        
     }
@@ -139,12 +140,11 @@ exports.viewOrderedProduct = async function(req,res){
     const productID = req.params.product_id;
     const userID = req.session.userID
     try{
-        const order = await Order.findById(orderID);
+        const order = await Order.findById(orderID).populate('orderedProducts.productID')
         const product = order.orderedProducts.find(function(product){
             return product._id.toString() === productID;
         })
-        console.log(product);
-
+        
         const address = await Address.findById(order.address);
         const statuses = ["on progress","shipped","pending"]
         res.render("orderedProduct",{address,product,order,statuses,userID});
@@ -160,8 +160,7 @@ exports.cancelOrder = async function(req,res){
     try{
         const orderID = req.params.order_id;
         const productID = req.params.product_id;
-        const cancelledDate = Date.now();
-        
+        const cancelledDate = Date.now();        
 
         const updateStatus = await Order.updateOne(
             {_id:orderID,'orderedProducts._id':productID},

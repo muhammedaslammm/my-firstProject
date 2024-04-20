@@ -8,7 +8,8 @@ const orderSchema = new mongoose.Schema({
     },
     orderedProducts: [{        
         productID: {
-            type: mongoose.Schema.Types.ObjectId
+            type: mongoose.Schema.Types.ObjectId,
+            ref:'Product'
         },
         moasOrderID: {
             type: String

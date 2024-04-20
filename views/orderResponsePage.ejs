@@ -138,7 +138,7 @@
 
     <!-- -------- -->
     <div class="page-body">
-      <!-- order esponse box -->
+      <!-- order response box -->
       <div class="order-response-box">
         <div class="response-message">
           <div class="message-head">Your Order is Successfully Placed</div>
@@ -169,14 +169,15 @@
       <div class="product-box">
         <div class="left-section">
           <div class="image">
-            <img src="<%=product.image%>" alt="product image" />
+            <img src="<%=product.productID.images[0]%>" alt="product image" />
           </div>
           <div class="details">
-            <div class="brand"><%=product.brand%></div>
+            <div class="brand"><%=product.productID.brand%></div>
             <div class="description">
-              <%=product.color%> Men's <%=product.productType%>
+              <%=product.productID.color%> Men's
+              <%=product.productID.productType%>
             </div>
-            <div class="color">color: <%=product.color%></div>
+            <div class="color">color: <%=product.productID.color%></div>
             <div class="quantity">quantity: <%=product.quantity%></div>
           </div>
         </div>
