@@ -468,7 +468,7 @@ exports.orderStatus = async function(req,res){
                     'orderedProducts.$.deliveredDate':new Date(),
                     'orderedProducts.$.cancelledDate':null,
                     'orderedProducts.$.deliveryDate':null,
-                    'orderedProducts.$.orderStatus':'Delivered'
+                    'orderedProducts.$.orderStatus':'delivered'
                 }
                 });            
         }
@@ -479,7 +479,7 @@ exports.orderStatus = async function(req,res){
                     'orderedProducts.$.cancelledDate':new Date(),
                     'orderedProducts.$.deliveredDate':null,
                     'orderedProducts.$.deliveryDate':null,
-                    'orderedProducts.$.orderStatus':'Cancelled'
+                    'orderedProducts.$.orderStatus':'cancelled'
                 }})
         }
         else if(status === 'on progress'){
@@ -492,7 +492,7 @@ exports.orderStatus = async function(req,res){
                     'orderedProducts.$.deliveryDate':deliveryDate,
                     'orderedProducts.$.cancelledDate':null,
                     'orderedProducts.$.deliveredDate':null,
-                    'orderedProducts.$.orderStatus':'On Progress'
+                    'orderedProducts.$.orderStatus':'on progress'
                 }})
         }
         console.log("product status updated");
