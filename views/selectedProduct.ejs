@@ -330,11 +330,17 @@
           <div class="details-and-pin">
             <div class="product-details1">
               <div class="price">
-                <div class="selling">MRP: Rs.<%=product.sellingPrice%></div>
+                <div class="selling">
+                  MRP: Rs.<%=product.productOffer ?
+                  product.productOffer.sellingPrice : product.sellingPrice%>
+                </div>
                 <div class="actual-and-offer">
                   <div class="actual">MRP: Rs.<%=product.actualPrice%></div>
 
-                  <div class="offer"><%=product.discount%>%Off</div>
+                  <div class="offer">
+                    <%=product.productOffer ? product.productOffer.offer :
+                    product.discount%>%Off
+                  </div>
                 </div>
               </div>
               <div class="tax-option">

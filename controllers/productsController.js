@@ -175,6 +175,7 @@ exports.products = async function(req,res){
         .sort(sortQuery)
         .skip((currentPage-1)*productPerPage)
         .limit(productPerPage)
+        .populate('productOffer');
 
         const totalProducts = await Product.countDocuments({category});
         const totalPages = Math.ceil(totalProducts/productPerPage);
@@ -194,7 +195,7 @@ exports.selectedProduct = async function(req,res){
         const productID = req.params.id;
         const category = req.params.category;
         const userID = req.session.userID;
-        const product = await Product.findById(productID);
+        const product = await Product.findById(productID).populate('productOffer');
         res.render("selectedProduct",{product,userID});
 
     }catch(error){

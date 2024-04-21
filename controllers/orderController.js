@@ -15,12 +15,24 @@ exports.placeOrder = async function(req,res){
         let carts = [];
         if(typeof cartID != 'string'){
             const promise = cartID.map(async function(id){
-                return await Cart.findById(id).populate('productID');
+                return await Cart.findById(id)
+                .populate({
+                    path:'productID',
+                    populate:{
+                        path:'productOffer'
+                    }
+                });
             })
             carts = await Promise.all(promise);
         }
         else{
-            const cart = await Cart.findById(cartID).populate('productID');
+            const cart = await Cart.findById(cartID)
+            .populate({
+                path:'productID',
+                populate:{
+                    path:'productOffer'
+                }
+            });
             carts.push(cart);
         }
         const user = await User.findById(req.session.userID);
@@ -31,13 +43,20 @@ exports.placeOrder = async function(req,res){
         const deliveryDate = new Date(newDate)
         carts.forEach(function(cart){
             const moasOrderID = generateOrderID()
+            let totalPrice = 0;
+            if(cart.productID.productOffer){
+                totalPrice += cart.productID.productOffer.sellingPrice * cart.quantity
+            }
+            else{
+                totalPrice += cart.productID.sellingPrice * cart.quantity
+            }
             const productDetails = {
                 productID:cart.productID._id,
                 moasOrderID,
                 deliveryDate,                
                 quantity:cart.quantity,
                 size:cart.size,                
-                totalPrice:cart.productID.sellingPrice*cart.quantity
+                totalPrice
             }
             orderedProducts.push(productDetails);
         })
@@ -104,10 +123,8 @@ exports.orderResponsePage = async function(req,res){
             console.log(order);
             const products = order.orderedProducts;
             const address = await Address.findById(order.address);
-            const totalCartAmount = products.reduce(function(sum,product){
-                return sum += product.totalPrice
-            },0)
-            res.render("orderResponsePage",{products,address,totalCartAmount,userID})
+            
+            res.render("orderResponsePage",{products,address,userID})
         }
         else{
             console.log("order status not all in 'on progress'");

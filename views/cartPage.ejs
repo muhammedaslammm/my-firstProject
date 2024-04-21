@@ -271,7 +271,7 @@
             <div class="item-sum">total items in cart: <%=totalCart%></div>
           </div>
         </div>
-        <%if(Cart.length > 0){%> <%Cart.forEach(function(cart){%>
+        <%if(carts.length > 0){%> <%carts.forEach(function(cart){%>
         <div class="cart-box" data-cart-id="<%=cart._id%>">
           <div class="image">
             <img src="<%=cart.productID.images[0]%>" alt="product image" />
@@ -283,7 +283,11 @@
               <%cart.productID.fabric%> <%=cart.productID.productType%>
             </div>
             <div class="price">
-              <div class="selling">Rs. <%=cart.productID.sellingPrice%></div>
+              <div class="selling">
+                Rs. <%=cart.productID.productOffer ?
+                cart.productID.productOffer.sellingPrice :
+                cart.productID.sellingPrice%>
+              </div>
               <div class="actual">Rs. <%=cart.productID.actualPrice%></div>
             </div>
             <div class="color">color: <%=cart.productID.color%></div>
@@ -359,7 +363,7 @@
           <a
             href="/checkout-page"
             style="text-decoration: none"
-            onclick="cartValidation(event,'<%=Cart%>')"
+            onclick="cartValidation(event,'<%=carts%>')"
             >Place Your Order</a
           >
         </div>

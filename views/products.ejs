@@ -416,9 +416,15 @@
                 </div>
               </div>
               <div class="price">
-                <div class="selling">Rs. <%=product.sellingPrice%></div>
+                <div class="selling">
+                  Rs. <%=product.productOffer ?
+                  product.productOffer.sellingPrice : product.sellingPrice%>
+                </div>
                 <div class="actual">Rs. <%=product.actualPrice%></div>
-                <div class="discount"><%=product.discount%>%off</div>
+                <div class="discount">
+                  <%=product.productOffer ? product.productOffer.offer :
+                  product.discount%>%off
+                </div>
               </div>
             </div>
           </div>

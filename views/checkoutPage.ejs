@@ -293,7 +293,9 @@
                     <%=cart.productID.pattern%> <%=cart.productID.productType%>
                   </div>
                   <div class="product-price">
-                    Rs. <%=cart.productID.sellingPrice%>
+                    Rs. <%=cart.productID.productOffer ?
+                    cart.productID.productOffer.sellingPrice :
+                    cart.productID.sellingPrice%>
                   </div>
                 </div>
                 <!-- cart id -->

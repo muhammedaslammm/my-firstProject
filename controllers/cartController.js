@@ -8,6 +8,7 @@ const User = require("./../models/userModel")
 
 
 app.use(nocache())
+
 // adding product to cart
 exports.addtoCart = async function(req,res){
     const userID = req.session.userID;
@@ -30,14 +31,27 @@ exports.addtoCart = async function(req,res){
 exports.cartPage = async function(req,res){
     const userID = req.session.userID;
     try{
-        const cart = await Cart.find({userID}).populate('productID'); 
-        const totalCart = cart.length; 
+        const carts = await Cart.find({userID})
+        .populate({
+            path:'productID',
+            populate:{
+                path:'productOffer'
+            }
+        })
+        const totalCart = carts.length; 
         
-        const totalAmount = cart.reduce(function(currrentTotal,cart){
-            return currrentTotal+=cart.productID.sellingPrice*cart.quantity
-        },0)        
+        const totalAmount = carts.reduce(function(currentTotal,cart){
+            if(cart.productID.productOffer){
+                currentTotal += cart.productID.productOffer.sellingPrice * cart.quantity;                
+            }
+            else{
+                currentTotal += cart.productID.sellingPrice * cart.quantity
+            }
+            return currentTotal
+            
+        },0)       
 
-        res.render("cartPage",{Cart:cart,totalCart:totalCart,totalAmount,userID});
+        res.render("cartPage",{carts,totalCart:totalCart,totalAmount,userID});
     }
     catch(error){
         console.log("something went wrong",error);
@@ -52,16 +66,27 @@ exports.increaseQuantity = async function(req,res){
         const userID = req.session.userID;
         const cart = await Cart.findOne({_id:cartID}).populate('productID');
         const cartSize = cart.size;
-        console.log(cartSize);
         if(cart.productID[cartSize] === 0){
             res.status(200).json({cartError:'page need redirection'})
         }
         else if(cart.productID[cartSize] > 6 &&  parseInt(currentQuantity) < 6){
             console.log(cart.productID[cartSize]);
             const qtyUpdate = await Cart.updateOne({_id:cartID},{$inc:{quantity:1}})
-            const carts = await Cart.find({userID}).populate('productID');
+            const carts = await Cart.find({userID})
+            .populate({
+                path:'productID',
+                populate:{
+                    path:'productOffer'
+                }
+            });
             const totalAmount = carts.reduce(function(currentAmount,cart){
-                return currentAmount+= cart.productID.sellingPrice * cart.quantity
+                if(cart.productID.productOffer){
+                    currentAmount += cart.productID.productOffer.sellingPrice * cart.quantity
+                }
+                else{
+                    currentAmount += cart.productID.sellingPrice * cart.quantity
+                }
+                return currentAmount
             },0)
             const currentCart = await Cart.findById(cartID)
             
@@ -101,9 +126,20 @@ exports.decreaseQuantity = async function(req,res){
         }
         else{
             const updatedCart = await Cart.findByIdAndUpdate(cartID,{$inc:{quantity:-1}});          
-            const currentCart = await Cart.findById(cartID).populate('productID');
-            const totalAmount = currentTotalPrice - currentCart.productID.sellingPrice;
-            console.log(currentCart.quantity);
+            const currentCart = await Cart.findById(cartID)
+            .populate({
+                path:'productID',
+                populate:{
+                    path:'productOffer'
+                }
+            })
+            let totalAmount = 0
+            if(currentCart.productID.productOffer){
+                totalAmount = currentTotalPrice - currentCart.productID.productOffer.sellingPrice;
+            }
+            else{
+                totalAmount = currentTotalPrice - currentCart.productID.sellingPrice;
+            }            
             res.json({totalAmount,quantity:currentCart.quantity})
         }
     }
@@ -138,12 +174,24 @@ exports.removeFromCart = async function(req,res){
 exports.checkoutPage = async function(req,res){
     const userID = req.session.userID
     try{
-        const userCart = await Cart.find({userID}).populate('productID');
+        const userCart = await Cart.find({userID})
+        .populate({
+            path:'productID',
+            populate:{
+                path:'productOffer'
+            }
+        });
         const totalQuantity = userCart.reduce(function(currentTotal,cart){
             return currentTotal += cart.quantity
         },0)
         const totalAmount = userCart.reduce(function(currentTotal,cart){
-            return currentTotal += cart.productID.sellingPrice * cart.quantity
+            if(cart.productID.productOffer){
+                currentTotal += cart.productID.productOffer.sellingPrice * cart.quantity;
+            }
+            else{   
+                currentTotal += cart.productID.sellingPrice * cart.quantity
+            }
+            return currentTotal
         },0)
 
         // user address
