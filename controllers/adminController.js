@@ -10,8 +10,9 @@ const Product = require("./../models/productModel");
 const Order = require("./../models/orderModel");
 const Cart = require("./../models/cartModel");
 const Banner = require("./../models/bannerModel");
-const CategoryOfferModel = require("../models/categoryOfferModel");
-const productOfferModel = require("../models/productOfferModel")
+const CategoryOffer = require("../models/categoryOfferModel");
+const productOffer = require("../models/productOfferModel");
+const { log } = require("console");
 
 
 // admin login page
@@ -212,9 +213,10 @@ exports.adminProductPage = async function(req,res){
     const productPerPage = 5;
     const page = parseInt(req.query.page) || 1
     try{
-        const products = await Product.find({deletedAt:null})        
+        const products = await Product.find({deletedAt:null}) 
         .skip((page-1)*productPerPage)
         .limit(productPerPage)
+        .populate('productOffer')
 
         const currentPage = page;
         const totalProducts = await Product.countDocuments()
@@ -422,6 +424,48 @@ exports.updateProduct = async function(req,res){
     }
            
 
+}
+
+// product offer page
+exports.productOfferPage = async function(req,res){
+    const productID = req.query.productID;
+    try{
+        const product = await Product.findById(productID);
+        res.render('productOffer',{productID,product})
+    }
+    catch(error){
+        console.log("error when rendering the product offer page",error);
+    }
+    
+}
+
+// add the submitted product offer
+exports.addProductOffer = async function(req,res){
+    const productID = req.query.productID;
+    const {offer,startDate,endDate} = req.body;
+
+    try{
+        const product = await Product.findById(productID);
+        const discountedAmount = product.actualPrice*(offer/100);
+        const sellingPrice = product.actualPrice - discountedAmount;
+        const newOffer = await productOffer.create({
+            offer,  
+            startDate,
+            endDate,
+            sellingPrice,
+            product:productID
+        })
+
+        // add product offer reference in the product model
+        await Product.updateOne({_id:productID},{$set:{productOffer:newOffer._id}});
+
+        console.log("offer added");
+        res.redirect("/admin/products")
+    }
+    catch(error){
+        console.log("error when adding offer to the product",error);;
+        res.redirect("/admin/products");
+    }
 }
 
 // admin order page

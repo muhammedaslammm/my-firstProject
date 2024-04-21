@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/adminNavBar.css" />
+
+    <title>product offer</title>
+    <style>
+      body {
+        font-family: "poppins", sans-serif;
+        padding-bottom: 100px;
+      }
+      .container {
+        width: 95%;
+        margin: 70px auto;
+        display: flex;
+        height: 100vh;
+      }
+      .sidebar-left {
+        display: flex;
+        flex-direction: column;
+      }
+      .sidebar-left a {
+        text-decoration: none;
+        color: black;
+        padding: 15px 10px 15px 2px;
+      }
+      .sidebar-left a:hover {
+        font-weight: 500;
+      }
+
+      /* product offer page */
+      .content-body {
+        margin-left: 15px;
+        width: 80%;
+        margin-top: 10px;
+      }
+      .section-head .head-name {
+        font-weight: 500;
+        font-size: 19px;
+      }
+      form{
+        width:100%
+      }
+      form label{
+        display: block;
+        font-size: 15px;
+      }
+      form input{
+        display: block;
+        border:1px solid rgb(162, 162, 162);
+        border-radius:3px;
+        padding:5px;
+        outline: none;
+        width:30%
+      }
+      .error{
+        margin:0;
+        margin-top: 2px;
+        color:rgb(239, 69, 69);
+        position: absolute;
+      }
+
+      /* offer and product */
+      form .offer-and-product{
+        display: flex;
+        width:100%;
+        justify-content: space-between;
+      }
+      form .offer{
+        margin: 15px 0 57px;
+        position: relative;
+        width:40%;
+      }
+      form .offer input{
+        width:50px
+      }
+      
+      form .product{
+        padding:10px;
+        border:1px solid rgb(154, 154, 154);
+        border-radius: 4px;
+        display: flex;
+      }
+      form .product .image{
+        width:11%
+      }
+      form .product .image img{
+        width:100%
+      }
+      .details{
+        margin-left: 15px;
+      }
+      .details .brand{
+        font-size: 17px;
+        font-weight: 500;
+      }
+      .details .price{
+        margin-top: 10px;
+        display: flex; 
+        align-items: center;
+      }
+      .details .price div{
+        margin-right: 10px;
+      }
+      .selling-price{
+        font-size: 24px;
+        font-weight: 500;
+        color: rgb(37, 123, 37);
+      }
+      .actual-price{
+        font-weight: 500;
+        color: rgb(92, 91, 91);
+      }
+      .product-offer{
+        color:rgb(139, 105, 20)
+      }
+
+
+      /* -------- */
+      .startDate, .endDate{
+        margin-bottom: 35px;
+        position: relative;
+      }
+      form input[type='submit']{
+        width:70px;
+        margin-top: 40px;
+        background-color: rgb(48, 47, 47);
+        color:white;
+        font-weight: 500;
+        transition: background-color 0.2s;
+      }
+      form input[type='submit']:hover{
+        cursor: pointer;
+        background-color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- nav bar -->
+    <%-include('./partials/adminNavBar.ejs')%>
+    <div class="container">
+      <div class="sidebar-left">
+        <%-include('./partials/adminSidebar.ejs')%>
+      </div>
+      <div class="content-body">
+        <div class="section-head">
+          <div class="head-name">Add Offer to the Product</div>
+        </div>
+        <form action="/admin/add-productOffer?productID=<%=productID%>" method="POST" id="productOfferForm">
+            <div class="offer-and-product">
+                <div class="offer">
+                    <label for="offer">Offer</label>
+                    <input type="number" id="offer" name="offer" class="input" onkeyup="setOffer('<%=product.discount%>','<%=product.sellingPrice%>',event)">
+                    <p class="error"></p>
+                </div>
+                <div class="product">
+                    <div class="image">
+                        <img src="<%=product.images[0]%>" alt="product image">
+                    </div>
+                    <div class="details">
+                        <div class="brand"><%=product.brand%></div>
+                        <div class="desc"><%=product.color%> Men's <%=product.fit%> Fit <%=product.productType%></div>
+                        <div class="price">
+                            <div class="selling-price">Rs. <span><%=product.sellingPrice%></span></div>
+                            <div class="actual-price">Rs. <span><%=product.actualPrice%></span></div>
+                            <div class="product-offer">Off <span><%=product.discount%></span>%</div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="startDate">
+                <label for="start">Start Date</label>
+                <input type="date" id="start" name="startDate" class="input">
+                <p class="error"></p>
+            </div>
+            <div class="endDate">
+                <label for="end">End Date</label>
+                <input type="date" id="end" name="endDate" class="input">
+                <p class="error"></p>
+            </div>
+            <input type="submit">
+            
+
+        </form>
+      </div>
+    <script>
+        // setting the offer dynamically in the productCard.    
+        function setOffer(productDiscount,sellingprice,event){
+            const sellingPrice = document.querySelector('.selling-price span')
+            const actualPrice = document.querySelector('.actual-price span')
+            const productOffer = document.querySelector('.product-offer span')
+            
+            const inputOffer = event.target.value;
+            if(inputOffer > 100){
+                sellingPrice.innerText = sellingprice;
+                productOffer.innerText = productDiscount
+            }
+            else if(Number(inputOffer) > Number(productDiscount)){
+                productOffer.innerText = inputOffer;
+                const discountPrice = actualPrice.innerText*(inputOffer/100);
+                const updatedPrice = actualPrice.innerText - discountPrice;
+                sellingPrice.innerText = updatedPrice                
+            }
+            else if(inputOffer <= productDiscount || inputOffer === ''){
+                productOffer.innerText = productDiscount;
+                sellingPrice.innerText = sellingprice
+            }
+        }   
+
+        //-----------------------
+        
+
+        // form submission
+        const form = document.getElementById('productOfferForm');
+        form.addEventListener('submit',function(event){
+            event.preventDefault();
+            const offerField = document.getElementById('offer');
+            const inputFields = document.querySelectorAll('.input');
+            const startDate = document.getElementById('start');
+            const endDate = document.getElementById('end');
+            let formValidated = true;
+            inputFields.forEach(function(input){
+                if(!input.value > 0){
+                    input.parentNode.querySelector('.error').innerText = '*Field Required'
+                    formValidated = false
+                }                
+                else{
+                    input.parentNode.querySelector('.error').innerText = ''
+                }
+            })
+            if(endDate.value < startDate.value){
+                endDate.parentNode.querySelector('.error').innerText = 'Invalid End Date'
+                formValidated = false;
+            }
+            if(offerField.value > 100){
+                offerField.parentNode.querySelector(".error").innerText = 'Enter Valid Offer';
+                formValidated = false;
+            }
+
+            if(formValidated){
+                console.log("everyThing is fine");
+                form.submit();
+            }
+            else{
+                console.log("something went wrong");
+            }
+        })
+
+        // keyup code
+        const inputFields = document.querySelectorAll('.input');
+        inputFields.forEach(function(input){
+            input.addEventListener('keyup',function(){
+                if(input.value.length > 0){
+                    input.parentNode.querySelector('.error').innerText = '';
+                }
+                else{
+                    input.parentNode.querySelector('.error').innerText = '*Field Required'
+                }
+            })
+        })
+        
+    </script>
+  </body>
+</html>

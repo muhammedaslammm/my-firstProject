@@ -104,7 +104,8 @@
         box-shadow: 0px 0px 7px rgb(215, 212, 212);
         padding: 15px 0px;
         margin-bottom: 8px;
-        overflow: hidden;
+        /* overflow: hidden; */
+        position: relative;
       }
       .product-image {
         width: 7%;
@@ -121,6 +122,37 @@
         font-weight: 500;
       }
 
+      .product-price {
+        display: flex;
+        gap: 7px;
+      }
+
+      .product-price .selling-price {
+        font-weight: 500;
+        font-size: 18px;
+      }
+      .product-price .actual-price {
+        font-size: 15px;
+        color: rgb(114, 112, 112);
+        text-decoration: line-through;
+        text-decoration-color: rgb(231, 46, 46);
+      }
+      .product-offer {
+        position: absolute;
+        font-size: 10px;
+        color: black;
+        background-color: white;
+        top: -1px;
+        left: -10px;
+        padding: 2px 4px;
+        border: 1px solid green;
+        border-radius: 2px;
+      }
+      .product-offer span {
+        font-weight: 500;
+      }
+
+      /* product card options */
       .options a {
         text-decoration: none;
         font-weight: 500;
@@ -194,8 +226,18 @@
               </div>
             </div>
             <div class="product-price">
-              <div class="selling-price">Rs. <%=product.sellingPrice%></div>
+              <div class="selling-price">
+                Rs. <%=product.productOffer ? product.productOffer.sellingPrice
+                : product.sellingPrice%>
+              </div>
               <div class="actual-price">Rs. <%=product.actualPrice%></div>
+              <!-- <div class="product-offer">
+                <span
+                  ><%=product.productOffer ? product.productOffer.offer :
+                  product.discount%>%</span
+                >
+                off
+              </div> -->
             </div>
             <div class="product-category">
               <div class="category-head">category</div>
@@ -215,6 +257,11 @@
                 >edit</a
               >
               <a
+                href="/admin/add-productOffer?productID=<%=product._id%>"
+                style="color: rgb(32, 136, 193)"
+                >add offer</a
+              >
+              <a
                 href=""
                 style="color: rgb(172, 12, 12)"
                 class="deleteButton"
@@ -222,6 +269,13 @@
               >
                 delete
               </a>
+            </div>
+            <div class="product-offer">
+              <span
+                ><%=product.productOffer ? product.productOffer.offer :
+                product.discount%>%</span
+              >
+              off
             </div>
           </div>
           <% }) %> <% } else{ %>

@@ -22,6 +22,10 @@ router.post("/addNewProduct",validation,upload.array("images"),adminController.a
 router.post("/product-delete/:id",validation,adminController.deleteProduct)
 router.get("/update-product/:id",validation,adminController.updateProductPage);
 router.post("/update-product/:id",validation,upload.fields([{name:"image1",maxCount:1},{name:"image2",maxCount:1},{name:"image3",maxCount:1}]),adminController.updateProduct);
+
+// add product offer
+router.get('/add-productOffer',validation,adminController.productOfferPage);
+router.post('/add-productOffer',validation,adminController.addProductOffer)
 router.get("/adminBanner",validation,adminController.bannerPage)
 router.get("/addBanner",validation,adminController.uploadBannerPage);
 router.post("/addBanner",validation,upload2.single("image"),adminController.uploadBanner);
@@ -34,9 +38,5 @@ router.post("/editBanner/:id",validation,upload2.single("image"),adminController
 router.get("/orders",validation,adminController.orderPage)
 router.post("/orderStatus/:orderID/:productID",validation,adminController.orderStatus)
 
-// admin offer
-router.get('/product-offer',validation,adminController.offerPage)
-router.get('/add-offer',validation,adminController.addOfferPage)
-router.post('/getProducts',validation,adminController.getProducts);
 
 module.exports = router;

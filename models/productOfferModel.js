@@ -9,6 +9,9 @@ const productOfferSchema = new mongoose.Schema({
     endDate:{
         type:Date
     },
+    sellingPrice:{
+        type:Number
+    },
     product:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Product"

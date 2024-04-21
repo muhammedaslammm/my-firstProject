@@ -16,6 +16,11 @@ const productSchema = new mongoose.Schema({
     discount:{
         type:Number
     },
+    productOffer:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'ProductOffer',
+        default:null
+    },
     rating:{
         type:Number
     },
