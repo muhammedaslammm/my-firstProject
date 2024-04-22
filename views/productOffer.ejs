@@ -42,9 +42,30 @@
         width: 80%;
         margin-top: 10px;
       }
+      .section-head{        
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+      }
       .section-head .head-name {
         font-weight: 500;
         font-size: 19px;
+      }
+      .delete-offer{        
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color:white;
+        padding: 2px 5px;
+        background-color: rgb(231, 65, 65);
+        font-weight: 500;
+        font-size: 14px;
+        transition: background-color 0.2s;
+      }
+      .delete-offer:hover{
+        background-color: rgb(193, 46, 46);
+        cursor: pointer;
       }
       form{
         width:100%
@@ -152,13 +173,17 @@
       </div>
       <div class="content-body">
         <div class="section-head">
-          <div class="head-name">Add Offer to the Product</div>
+          <div class="head-name"><%=product.productOffer ? 'Edit the Offer' : 'Add new offer'%></div>
+          <%if(product.productOffer){%> 
+            <div class="delete-offer" onclick="deleteOffer('<%=product.productOffer._id%>')">delete offer</div>
+          <%}%>
         </div>
-        <form action="/admin/add-productOffer?productID=<%=productID%>" method="POST" id="productOfferForm">
+        <form action="/admin/<%=product.productOffer ? 'edit' : 'add'%>-productOffer?productID=<%=productID%>" method="POST" id="productOfferForm">
             <div class="offer-and-product">
                 <div class="offer">
                     <label for="offer">Offer</label>
-                    <input type="number" id="offer" name="offer" class="input" onkeyup="setOffer('<%=product.discount%>','<%=product.sellingPrice%>',event)">
+                    <input type="number" id="offer" name="offer" class="input" onkeyup="setOffer('<%=product.discount%>','<%=product.sellingPrice%>',event)" 
+                     value="<%=product.productOffer ? product.productOffer.offer : ''%>">
                     <p class="error"></p>
                 </div>
                 <div class="product">
@@ -169,9 +194,9 @@
                         <div class="brand"><%=product.brand%></div>
                         <div class="desc"><%=product.color%> Men's <%=product.fit%> Fit <%=product.productType%></div>
                         <div class="price">
-                            <div class="selling-price">Rs. <span><%=product.sellingPrice%></span></div>
+                            <div class="selling-price">Rs. <span><%=product.productOffer ? product.productOffer.sellingPrice : product.sellingPrice%></span></div>
                             <div class="actual-price">Rs. <span><%=product.actualPrice%></span></div>
-                            <div class="product-offer">Off <span><%=product.discount%></span>%</div>
+                            <div class="product-offer">Off <span><%=product.productOffer ? product.productOffer.offer : product.discount%></span>%</div>
                         </div>
                     </div>
                     
@@ -179,19 +204,24 @@
             </div>
             <div class="startDate">
                 <label for="start">Start Date</label>
-                <input type="date" id="start" name="startDate" class="input">
+                <input type="date" id="start" name="startDate" class="input" value="<%=product.productOffer ? product.productOffer.startDate.toISOString().substr(0,10) : ''%>">
                 <p class="error"></p>
             </div>
             <div class="endDate">
                 <label for="end">End Date</label>
-                <input type="date" id="end" name="endDate" class="input">
+                <input type="date" id="end" name="endDate" class="input" value="<%=product.productOffer ? product.productOffer.endDate.toISOString().substr(0,10) : ''%>">
                 <p class="error"></p>
             </div>
+
+
+
+
             <input type="submit">
             
 
         </form>
       </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // setting the offer dynamically in the productCard.    
         function setOffer(productDiscount,sellingprice,event){
@@ -267,7 +297,42 @@
                 }
             })
         })
-        
+
+        // deleting the offer
+        async function deleteOffer(offerID){
+          const result = await deleteOfferConfirmation();
+          console.log(result);
+          if(result.value){
+            deleteProductOffer(offerID)
+          }
+        }
+
+        async function deleteOfferConfirmation(){
+          const result = await Swal.fire({
+              title: 'Are you sure?',
+              text: 'You are about to delete this offer!',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Confirm',
+              cancelButtonText: 'Cancel',
+          })   
+          return result; 
+        }
+        async function deleteProductOffer(offerID){
+          try{
+            const response = await fetch(`/admin/delete-productOffer?offerID=${offerID}`,{
+              method:'GET'
+            })
+            if(response.ok){
+              const data = await response.json();
+              window.location.href = '/admin/products'
+            }
+          }
+          catch(error){
+            console.log("error when deleting the product offer",error);
+            window.location.href = '/admin/products'
+          }
+        }
     </script>
   </body>
 </html>

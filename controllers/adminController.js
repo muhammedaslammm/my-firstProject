@@ -11,8 +11,7 @@ const Order = require("./../models/orderModel");
 const Cart = require("./../models/cartModel");
 const Banner = require("./../models/bannerModel");
 const CategoryOffer = require("../models/categoryOfferModel");
-const productOffer = require("../models/productOfferModel");
-const { log } = require("console");
+const ProductOffer = require("../models/productOfferModel");
 
 
 // admin login page
@@ -448,7 +447,7 @@ exports.addProductOffer = async function(req,res){
         const product = await Product.findById(productID);
         const discountedAmount = product.actualPrice*(offer/100);
         const sellingPrice = product.actualPrice - discountedAmount;
-        const newOffer = await productOffer.create({
+        const newOffer = await ProductOffer.create({
             offer,  
             startDate,
             endDate,
@@ -467,6 +466,60 @@ exports.addProductOffer = async function(req,res){
         res.redirect("/admin/products");
     }
 }
+
+// edit product offer page
+exports.editProductOfferPage = async function(req,res){
+    const productID = req.query.productID;
+    try{
+        const product = await Product.findById(productID).populate('productOffer');
+        res.render('productOffer',{productID,product})
+    }
+    catch(error){
+        console.log("error when rendering edit offer page for the product",error);
+        res.redirect("/admin/products")
+    }
+}
+
+// edit the product offer
+exports.editProductOffer = async function(req,res){
+    const productID = req.query.productID;
+    const {offer,startDate,endDate} = req.body;
+    try{
+        const product = await Product.findById(productID);
+        const sellingPrice = product.sellingPrice * (offer/100);
+        const updateProductOffer = await ProductOffer.updateOne({product:productID},{$set:{
+            offer,
+            startDate,
+            endDate,
+            sellingPrice
+        }});
+        res.redirect('/admin/products')
+    }
+    catch(error){
+        console.log("error when editing the product offer",error);
+        res.redirect('/admin/products')
+    }
+}
+
+// delete the product offer
+exports.deleteProductOffer = async function(req,res){
+    const offerID = req.query.offerID;
+    try{
+        const productOffer = await ProductOffer.findById(offerID);
+        const productID = productOffer.product;
+
+        // delete the offer
+        await ProductOffer.findByIdAndDelete(offerID);
+        await Product.findByIdAndUpdate(productID,{productOffer:null});
+        res.status(200).json({success:'product offer deleted'});
+
+    }
+    catch(error){
+        console.log("error when deleteing the product offer",error);
+        res.status(500).json({error:"failed to delete the product offer"});
+    }
+}
+
 
 // admin order page
 exports.orderPage = async function(req,res){

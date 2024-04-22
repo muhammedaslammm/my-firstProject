@@ -257,9 +257,9 @@
                 >edit</a
               >
               <a
-                href="/admin/add-productOffer?productID=<%=product._id%>"
-                style="color: rgb(32, 136, 193)"
-                >add offer</a
+                href="/admin/<%=product.productOffer ? 'edit' : 'add'%>-productOffer?productID=<%=product._id%>"
+                class="productOffer"
+                ><%=product.productOffer ? 'edit offer' : 'add offer'%></a
               >
               <a
                 href=""
@@ -270,6 +270,8 @@
                 delete
               </a>
             </div>
+
+            <%if(product.productOffer){%>
             <div class="product-offer">
               <span
                 ><%=product.productOffer ? product.productOffer.offer :
@@ -277,6 +279,7 @@
               >
               off
             </div>
+            <%}%>
           </div>
           <% }) %> <% } else{ %>
           <div class="no-product">no product available</div>
@@ -305,4 +308,16 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/jsFiles/adminProductDlt.js"></script>
   </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const offerTags = document.querySelectorAll(".productOffer");
+      offerTags.forEach(function (tag) {
+        if (tag.innerText === "add offer") {
+          tag.style.color = "green";
+        } else if (tag.innerText === "edit offer") {
+          tag.style.color = "orange";
+        }
+      });
+    });
+  </script>
 </html>

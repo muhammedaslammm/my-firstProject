@@ -26,6 +26,16 @@ router.post("/update-product/:id",validation,upload.fields([{name:"image1",maxCo
 // add product offer
 router.get('/add-productOffer',validation,adminController.productOfferPage);
 router.post('/add-productOffer',validation,adminController.addProductOffer)
+
+//edit product offer
+router.get('/edit-productOffer',validation,adminController.editProductOfferPage) 
+router.post('/edit-productOffer',validation,adminController.editProductOffer);
+
+// delete productOffer
+router.get('/delete-productOffer',validation,adminController.deleteProductOffer)
+
+
+// add banner
 router.get("/adminBanner",validation,adminController.bannerPage)
 router.get("/addBanner",validation,adminController.uploadBannerPage);
 router.post("/addBanner",validation,upload2.single("image"),adminController.uploadBanner);
