@@ -35,6 +35,9 @@ router.post('/edit-productOffer',validation,adminController.editProductOffer);
 router.get('/delete-productOffer',validation,adminController.deleteProductOffer)
 
 
+// admin coupon page
+router.get('/coupon',validation,adminController.adminCouponPage);
+
 // add banner
 router.get("/adminBanner",validation,adminController.bannerPage)
 router.get("/addBanner",validation,adminController.uploadBannerPage);

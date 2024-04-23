@@ -12,6 +12,7 @@ const Cart = require("./../models/cartModel");
 const Banner = require("./../models/bannerModel");
 const CategoryOffer = require("../models/categoryOfferModel");
 const ProductOffer = require("../models/productOfferModel");
+const Coupon = require('./../models/couponModel');
 
 
 // admin login page
@@ -678,37 +679,13 @@ exports.editBanner = async function(req,res){
     }
 }
 
-// admin offer page
-exports.offerPage = async function(req,res){
+// admin coupon page
+exports.adminCouponPage = async function(req,res){
     try{
-        const offers = await Offer.find();
-        res.render("adminOffers",{offers});
+        const coupons = await Coupon.find();
+        res.render("adminCoupon",{coupons})
     }
     catch(error){
-        console.log(error,"error in admin offers page");        
-    }
-}
-
-// add offer page
-exports.addOfferPage = async function(req,res){
-    try{     
-        const categories = await Category.find({deletedAt:null}); 
-        res.render('addOffer',{categories})
-    }
-    catch(error){
-        console.log("error when fetching offers",error);
-    }
-}
-
-// get product based on category for adding offer;
-exports.getProducts = async function(req,res){
-    const category = req.body.category;
-    try{
-        const products = await Product.find({category});
-        res.json({products});
-    }
-    catch(error){
-        console.log('error when dealing with fetching product based on category in server side...',error);
-        res.json({error:"server error"});
+        console.log("error when rendering coupon page");        
     }
 }
