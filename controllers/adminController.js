@@ -219,10 +219,7 @@ exports.adminProductPage = async function(req,res){
 
         const currentPage = page;
         const totalProducts = await Product.countDocuments()
-        const totalPages = Math.ceil(totalProducts/productPerPage);
-        console.log(totalPages);
-        console.log(typeof currentPage);
-        console.log(currentPage);
+        const totalPages = Math.ceil(totalProducts/productPerPage);        
         
         res.render("adminProductPage",{products,currentPage,totalPages})
     }

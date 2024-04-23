@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Product = require('./productModel');
 const productOfferSchema = new mongoose.Schema({
     offer:{
         type:Number
@@ -7,7 +8,8 @@ const productOfferSchema = new mongoose.Schema({
         type:Date
     },
     endDate:{
-        type:Date
+        type:Date,
+        index:{expires:'0s'}
     },
     sellingPrice:{
         type:Number
@@ -17,6 +19,19 @@ const productOfferSchema = new mongoose.Schema({
         ref:"Product"
     }
 })
+
+productOfferSchema.pre('remove',async function(next){
+    try{
+        await Product.updateOne({productOffer:this._id},{$set:{productOffer:null}});
+        console.log("product Field updated");
+        next()
+    }
+    catch(error){
+        console.log("error when updating offerfied to null",error);
+        next()
+    }
+})
+
 
 const ProdutOfferModel = mongoose.model('ProductOffer',productOfferSchema);
 module.exports = ProdutOfferModel
