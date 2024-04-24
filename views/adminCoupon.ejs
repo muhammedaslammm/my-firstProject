@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha384-xVw2WDuX5JGFK8cBaVZ8cPsIO7yo9MWJ4SQTwF3ZPAgGsF7+EAk1iqf8qdTtrB+q" crossorigin="anonymous">
     <link
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
       rel="stylesheet"
@@ -42,13 +43,103 @@
         box-sizing: border-box;
       }
 
+      /* coupon display section */
       .coupon-list {
-        width: 65%;
+        width: 70%;
       }
       .coupon-head {
         font-size: 18px;
         font-weight: 500;
         margin-bottom: 20px;
+      }
+
+      .coupons{
+        width:100%;
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .coupon-card{
+        flex:0 0 28%;
+        margin:1%;
+        padding:8px 8px 11px;
+        box-shadow: 0px 2px 7px rgb(198, 197, 197);
+      }
+      .coupon-name{
+        font-size: 17px;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+      .code-head{
+        font-size: 14px;
+      }
+      .code{
+        background-color: rgb(212, 210, 210);
+        padding:5px;
+        border-radius: 2px;
+      }
+      .coupon-card p{
+        font-size: 15.5px;
+        color: rgb(27, 27, 27);
+        margin:25px 0 8px;
+      }
+      .coupon-card p span{
+        font-weight: 500;
+      }
+      .exp-date{
+        font-size: 14px;
+        color: rgb(144, 32, 32);
+        margin-bottom: 20px;
+      }
+      .exp-date span{
+        font-weight: 500;
+      }
+      .coupon-card a{
+        text-decoration: none;
+        font-size: 14px;
+        color: black;
+        border:1px solid black;
+        padding: 2px 10px;
+      }
+
+
+
+      .no-coupon{
+        background-color: rgb(249, 249, 228);
+        border:1px solid rgb(162, 161, 161);
+        padding:10px;
+        border-radius: 5px;
+        margin:0
+      }
+
+      /* new coupon section */
+      .new-coupon-section{
+        width:30%
+      }
+      .addCoupon-box{
+        border:1px solid rgb(149, 147, 147);
+        border-radius: 4px;
+        margin-top: 50px;
+        padding:10px 10px 25px 10px
+      }
+      .newCoupon-head{
+        font-size: 17px;
+        font-weight: 500;
+      }
+      .coupon-note{
+        color:rgb(64, 63, 63);
+        margin-bottom: 30px;
+      }
+      #add-coupon{
+        text-decoration: none;
+        color:white;
+        background-color: rgb(209, 49, 49);
+        padding: 4px 6px;
+        border-radius: 3px;
+        transition: background-color 0.2s;        
+      }
+      #add-coupon:hover{
+        background-color: rgb(165, 18, 18);
       }
     </style>
   </head>
@@ -62,7 +153,40 @@
       <div class="content-body">
         <div class="coupon-list">
           <div class="coupon-head">Coupons</div>
+          <div class="coupons">
+            <%if(coupons.length > 0){%>
+              <%coupons.forEach(function(coupon){%>
+                <div class="coupon-card">
+                  <div class="coupon-name"><%=coupon.coupon_head%></div>
+                  <div class="coupon-code">
+                    <div class="code-head">code:</div>
+                    <div class="code"><%=coupon.couponCode%></div>
+                    <!-- <div class="offer"><span><%=coupon.offerAmount%></span></div> -->
+                  </div>
+                  <p>This coupon is only available to the user if there is a 
+                    minimum purchase of <span>Rs. <%=coupon.minimumAmount%></span>
+                  </p>
+                  <%const date = coupon.endDate.toDateString()%>
+                  <div class="exp-date">Expires on <span><%=date%></span> </div>
+                  <a href="/admin/edit-coupon?couponID=<%=coupon._id%>">Edit</a>                  
+                </div>
+              <%})%>
+            <%}else{%>
+                <div class="no-coupon">no coupon found</div>
+            <%}%> 
+          </div> 
         </div>
-        <div class="new-coupon-section"></div>
+        <div class="new-coupon-section">
+          <div class="addCoupon-box">
+            <div class="newCoupon-head">#addnewcoupon</div>
+            <p class="coupon-note">
+              "Boost customer satisfaction and loyalty by offering coupons! 
+              Show appreciation, encourage repeat business, and attract new customers with 
+              irresistible deals, enhancing brand reputation and driving sales growth effectively."
+            </p>
+            <a href="/admin/add-coupon" id="add-coupon">Add Coupon</a>
+          </div>
+          
+        </div>
   </body>
 </html>

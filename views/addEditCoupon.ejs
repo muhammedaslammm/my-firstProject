@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/adminNavBar.css" />
+
+    <title>Document</title>
+    <style>
+        body {
+        font-family: "poppins", sans-serif;
+        margin:0
+      }
+      .container {
+        width: 95%;
+        margin: 70px auto;
+        display: flex;
+        height: auto;
+      }
+      .sidebar-left {
+        display: flex;
+        flex-direction: column;
+      }
+      .sidebar-left a {
+        text-decoration: none;
+        color: black;
+        padding: 15px 10px 15px 2px;
+        font-size: 17px;
+      }
+      .sidebar-left a:hover {
+        font-weight: 500;
+      }
+      .content-body {
+        margin-left: 15px;
+        width: 100%;
+        margin-top: 10px;
+        height: auto;        
+        box-sizing: border-box;
+      }
+      .head-container{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width:50%;
+        margin-bottom: 20px;
+      }
+      .page-head{
+        font-size: 17px;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .delete-coupon{
+        color:white;
+        background-color: rgb(181, 22, 22);
+        padding:5px;
+        font-size: 14px;
+      }
+      .delete-coupon:hover{
+        cursor: pointer;
+      }
+
+      /* form */
+      form{
+        width:50%
+      }
+      form label{
+        display: block;
+      }
+      form input{
+        border:1px solid rgb(183, 182, 182);
+        padding:7px;
+        width:100%;
+        outline: none;
+      }
+      form input[type='submit']{
+        width:80px;
+        background-color: rgb(190, 122, 28);
+        color:white;
+        font-weight: bold;
+        border:none;
+        padding:6px;
+        margin-top: 30px;
+      }
+      form input[type='submit']:hover{
+        cursor:pointer
+      }
+      form div{        
+        position: relative;
+        margin-bottom: 30px;
+      }
+      form .amount{
+        display: flex;
+        justify-content: space-between;
+      }
+      .min-amt, .disc-amt{
+        width:48%
+      }
+      .error{
+        position: absolute;
+        margin: 0;
+        color:rgb(215, 46, 46);
+        font-size: 15px;
+      }
+    </style>
+</head>
+<body>
+    <!-- nav bar -->
+    <%-include('./partials/adminNavBar.ejs')%>
+      <div class="container">
+        <div class="sidebar-left">
+          <%-include('./partials/adminSidebar.ejs')%>
+        </div>
+        <div class="content-body">
+          <div class="head-container">
+            <div class="page-head"><%= coupon ? 'Edit Coupon' : 'Add Coupon'%></div>
+            <%if(coupon){%>
+                <div class="delete-coupon" onclick="deleteCoupon('<%=coupon._id%>')">Delete Coupon</div>
+            <%}%>
+          </div>          
+          <form action="/admin/<%=coupon ? 'edit' : 'add'%>-coupon<%=coupon ? '?couponID=' + coupon._id : ''%>" method="post" id="couponForm">
+            <div class="coupon-head">
+                <label for="head">Coupon Head</label>
+                <input type="text" id="head" class="input" name="coupon_head" value="<%=coupon ? coupon.coupon_head : ''%>">
+                <p class="error"></p>
+            </div>
+            <div class="code">
+                <label for="code">Coupon Code</label>
+                <input type="text" id="code" class="input" name="couponCode" value="<%=coupon ? coupon.couponCode : ''%>">
+                <p class="error"></p>
+            </div>
+            <div class="amount">
+                <div class="min-amt">
+                    <label for="amount">Minimum Amount</label>
+                    <input type="number" id="amount" class="input" name="minimumAmount" value="<%=coupon ? coupon.minimumAmount : ''%>" >
+                    <p class="error"></p>
+                </div>
+                <div class="disc-amt">
+                    <label for="amount">Discount Offer</label>
+                    <input type="number" id="offer-amount" class="input" name="offerAmount" value="<%=coupon ? coupon.offerAmount : ''%>">
+                    <p class="error"></p>
+                </div>
+                
+            </div>
+            <div class="start">
+                <label for="start-date">Start Date</label>
+                <input type="date" id="start-date" class="input" name="startDate" value="<%=coupon ? coupon.startDate.toISOString().substr(0,10) : ''%>">
+                <p class="error"></p>
+            </div>
+            <div class="end">
+                <label for="end-date">End Date</label>
+                <input type="date" id="end-date" class="input" name="endDate" value="<%=coupon ? coupon.endDate.toISOString().substr(0,10) : ''%>">
+                <p class="error"></p>
+            </div>
+            <input type="submit">
+            
+
+          </form>
+        </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const form = document.getElementById('couponForm')
+
+        // form submission
+        form.addEventListener('submit',function(event){
+            event.preventDefault()
+            const startDate = document.querySelector('#start-date');
+            const endDate = document.querySelector('#end-date');
+            const inputs = document.querySelectorAll('.input');
+            const amounts = document.querySelectorAll('.amount input[type="number"]')
+            let fieldValidated = true
+            inputs.forEach(function(input){
+                if(input.value === ''){
+                    input.parentNode.querySelector('.error').innerText = '*Field Required';
+                    fieldValidated = false;
+                }
+            })
+            if(endDate.value < startDate.value){
+                endDate.parentNode.querySelector('.error').innerText = 'Invalid End Date';
+                fieldValidated = false;
+            }
+            amounts.forEach(function(amount){
+                if(amount.value < 0){
+                    amount.parentNode.querySelector('.error').innerText = '*enter a valid amount price'
+                    fieldValidated = false;
+                }
+            })
+            if(fieldValidated){
+                form.submit()
+            }
+        })
+
+        // on key up
+        const inputs = document.querySelectorAll('.input');
+        inputs.forEach(function(input){
+            input.addEventListener('keyup',function(){
+                if(input.value.length > 0){
+                    input.parentNode.querySelector('.error').innerText = ''
+                }
+                else{
+                    input.parentNode.querySelector('.error').innerText = '*Field Required'
+                }
+            })
+        })
+
+        // delete coupon
+        async function deleteCoupon(couponID){
+            const result = await userResponse();
+            if(result.value){
+                deleteTheCoupon(couponID)
+            }            
+        }
+
+        async function userResponse(){
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: 'You are about to delete this Coupon!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm',
+                cancelButtonText: 'Cancel',
+            })   
+            return result; 
+        }
+
+        async function deleteTheCoupon(couponID){
+            try{
+                const response = await fetch(`/admin/delete-coupon?couponID=${couponID}`,{
+                    method:'GET'                    
+                })
+                if(response.ok){
+                    console.log(response.success);
+                    window.location.href = '/admin/coupon'
+                }
+            }
+            catch(error){
+                console.log("error when deleting coupon",error);
+                window.location.href = '/admin/coupon'
+            }
+        }
+
+    </script>
+</body>
+</html>

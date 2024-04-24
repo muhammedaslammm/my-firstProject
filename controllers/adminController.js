@@ -689,3 +689,77 @@ exports.adminCouponPage = async function(req,res){
         console.log("error when rendering coupon page");        
     }
 }
+
+// admin add coupon page
+exports.addCouponPage = async function(req,res){
+    try{
+        const coupon = ''
+        res.render('addEditCoupon',{coupon})
+    }
+    catch(error){
+        console.log("error when rendering add coupon page",error);
+    }
+    
+} 
+
+// add the coupon
+exports.addCoupon = async function(req,res){
+    const {coupon_head,couponCode,minimumAmount,startDate,endDate,offerAmount} = req.body;
+    try{
+        const newCoupon = await Coupon.create({
+            coupon_head,
+            couponCode,
+            minimumAmount,
+            offerAmount,
+            startDate,
+            endDate
+        })
+        console.log("coupon added");
+        res.redirect('/admin/coupon')
+    }
+    catch(error){
+        console.log("error when adding coupon",error);
+        res.redirect("/admin/coupon")
+    }
+}
+
+// admin edit coupon page
+exports.editCouponPage = async function(req,res){
+    const couponID = req.query.couponID;
+    try{
+        const coupon = await Coupon.findById(couponID);
+        res.render("addEditCoupon",{coupon});
+    }
+    catch(error){
+        console.log("error when rendering edit coupon page",error);
+        res.redirect("/admin/coupon")
+    }
+}
+
+// admin edit the coupon
+exports.editCoupon = async function(req,res){
+    const couponID = req.query.couponID;
+    try{
+        await Coupon.findByIdAndUpdate(couponID,req.body);
+        console.log("coupon edited");
+        res.redirect('/admin/coupon')
+    }
+    catch(error){
+        console.log("error when editing the offer",error);
+        console.log("coupon edit failed");
+        res.redirect('/admin/coupon')
+    }
+}
+
+// admin delete coupon
+exports.deleteCoupon = async function(req,res){
+    const couponID = req.query.couponID;
+    try{
+        await Coupon.findByIdAndDelete(couponID);
+        res.status(200).json({success:'deleted Success'})
+    }
+    catch(error){
+        console.log("failed to delete the coupon");
+        res.status(500).json({error:'deletion failed'});
+    }
+}
