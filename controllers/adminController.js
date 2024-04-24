@@ -13,6 +13,7 @@ const Banner = require("./../models/bannerModel");
 const CategoryOffer = require("../models/categoryOfferModel");
 const ProductOffer = require("../models/productOfferModel");
 const Coupon = require('./../models/couponModel');
+const UsedCoupon = require('./../models/usedCouponModel')
 
 
 // admin login page
@@ -761,5 +762,32 @@ exports.deleteCoupon = async function(req,res){
     catch(error){
         console.log("failed to delete the coupon");
         res.status(500).json({error:'deletion failed'});
+    }
+}
+
+// add coupon to the product
+exports.addCouponToProduct = async function(req,res){
+    const {couponCode, totalAmount} = req.body
+    try{
+        const coupon = await Coupon.findOne({couponCode});
+        if(coupon){
+            const usedCoupon = await UsedCoupon.create({
+                userID:req.session.userID,
+                couponID:coupon._id,
+                usedDate:new Date,
+                couponUsed:true
+            })
+            const discount = Math.round(totalAmount * (coupon.offerAmount/100));
+            const discountedAmount = Math.rount(totalAmount - discount)
+            res.status(200).json({discountedAmount,discount})
+        }
+        else{
+            res.status(404).json({error:'notfound'})
+        }
+        
+    }
+    catch(error){
+        console.log("error when adding coupon to product");
+        res.status(500).json({error:'failed'})
     }
 }

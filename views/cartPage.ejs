@@ -3,6 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://kit.fontawesome.com/f620fbbfb3.js"
+      crossorigin="anonymous"
+    ></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -322,15 +326,21 @@
               href="/product-addTo-wishlist/<%=cart._id%>"
               id="wishlist"
               style="text-decoration: none"
-              >add to wishlist</a
-            >
+              ><i
+                class="fa-regular fa-heart"
+                style="color: #000000; font-size: 20px"
+              ></i>
+            </a>
             <a
               href="/product-removefrom-cart/<%=cart._id%>"
               id="remove"
               onclick="removeCartItem('<%=cart._id%>',event)"
               style="text-decoration: none"
-              >remove</a
-            >
+              ><i
+                class="fa-solid fa-trash"
+                style="color: #c41717; font-size: 18px"
+              ></i
+            ></a>
           </div>
         </div>
 

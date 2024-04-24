@@ -4,7 +4,9 @@ const nocache = require("nocache");
 const Product = require("../models/productModel");
 const Cart = require("../models/cartModel");
 const Address = require("./../models/addressModel");
-const User = require("./../models/userModel")
+const User = require("./../models/userModel");
+const Coupon = require("./../models/couponModel");
+const UsedCoupon = require("./../models/usedCouponModel");
 
 
 app.use(nocache())
@@ -197,7 +199,8 @@ exports.checkoutPage = async function(req,res){
         // user address
         const defaultAddress = await Address.findOne({userID,default:true})
         const addresses = await Address.find({userID:userID});
-        res.render("checkoutPage",{userCart,totalQuantity,totalAmount,addresses,defaultAddress,userID})
+        const coupons = await Coupon.find();
+        res.render("checkoutPage",{userCart,totalQuantity,totalAmount,addresses,defaultAddress,userID,coupons})
     }
     catch(error){
         console.log("error occured when rendering checkout page",error);

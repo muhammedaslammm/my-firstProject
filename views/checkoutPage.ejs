@@ -266,6 +266,88 @@
       .amount-details .detail-label {
         color: rgb(90, 90, 90);
       }
+      .coupon-input {
+        margin-top: 27px;
+        position: relative;
+      }
+      .coupon-error {
+        position: absolute;
+        top: -22px;
+        font-size: 15px;
+        color: rgb(185, 30, 30);
+      }
+      #couponCode {
+        margin: 0px 0px 5px;
+        border: 1px solid rgb(176, 175, 175);
+        padding: 5px;
+        display: block;
+        font-size: 15px;
+        font-style: italic;
+        outline: none;
+        width: 100%;
+      }
+      #couponSubmit {
+        border: 1px solid rgb(60, 60, 60);
+        padding: 3px 5px;
+        color: black;
+        background-color: white;
+      }
+      #couponSubmit:hover {
+        cursor: pointer;
+      }
+
+      /* coupon box */
+      .coupon-box {
+        position: sticky;
+        top: 300px;
+        background-color: rgb(249, 249, 249);
+        box-shadow: 0px 0px 5px rgb(231, 231, 231);
+        padding: 5px;
+        margin-top: 15px;
+      }
+      .coupon-box-head {
+        font-size: 17px;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .coupon {
+        background-color: rgb(255, 255, 246);
+        margin-bottom: 8px;
+        padding: 7px;
+        border: 1px solid rgb(210, 210, 210);
+      }
+      .coupon-head {
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+      .criteria {
+        font-size: 15.5px;
+        color: rgb(68, 67, 67);
+      }
+      .criteria span {
+        font-weight: 500;
+        color: black;
+      }
+      .expiry-date {
+        font-size: 13px;
+        color: rgb(131, 131, 131);
+        margin-top: 3px;
+      }
+      .expiry-date span {
+        font-weight: 500;
+      }
+      .code {
+        margin-top: 10px;
+      }
+      .code-head {
+        font-size: 13px;
+      }
+      .couponCode {
+        background-color: rgb(230, 230, 230);
+        font-style: italic;
+        padding: 5px;
+        display: inline;
+      }
     </style>
   </head>
   <body>
@@ -434,6 +516,10 @@
             <div class="total"><%=totalAmount%></div>
           </div>
           <div class="amount-details">
+            <div class="detail-label">Coupon Deducted</div>
+            <div class="coupon-deducted">-</div>
+          </div>
+          <div class="amount-details">
             <div class="detail-label">Delivery Charge</div>
             <div class="total">-</div>
           </div>
@@ -441,6 +527,36 @@
             <div class="detail-label">GST</div>
             <div class="total">-</div>
           </div>
+          <div class="coupon-input">
+            <p class="coupon-error" style="margin: 0"></p>
+            <input type="text" id="couponCode" placeholder="Enter Coupon ID" />
+            <button
+              id="couponSubmit"
+              onclick="addCoupon(event,'<%=totalAmount%>')"
+            >
+              Select Coupon
+            </button>
+          </div>
+        </div>
+        <div class="coupon-box">
+          <div class="coupon-box-head">Available Coupons</div>
+          <%if(coupons.length > 0){%> <%coupons.forEach(function(coupon){%>
+          <%if(totalAmount > coupon.minimumAmount){%>
+          <div class="coupon">
+            <div class="coupon-head"><%=coupon.coupon_head%></div>
+            <div class="criteria">
+              You will have an offer of <span><%=coupon.offerAmount%>%</span>
+              for you whole purchase
+            </div>
+            <%const date = coupon.endDate.toDateString()%>
+            <div class="expiry-date">
+              Coupon Expires on <span><%=date%></span>
+            </div>
+            <div class="code">
+              <div class="couponCode"><%=coupon.couponCode%></div>
+            </div>
+          </div>
+          <%}%> <%})%> <%}%>
         </div>
       </div>
     </div>
@@ -501,7 +617,7 @@
         }
       }
       const button = document.querySelector("#codButton");
-      const addressData = documnet.querySelector(".default-address-box").dataset
+      const addressData = document.querySelector(".default-address-box").dataset
         .address;
       const address = JSON.parse(addressData);
       button.addEventListener("click", function (event) {
@@ -513,6 +629,61 @@
           console.log("checkout completed");
         }
       });
+
+      // add coupon to product
+      async function addCoupon(event, totalAmount) {
+        const couponCodeElement = document.querySelector("#couponCode");
+        const couponCode = couponCodeElement.value;
+        if (couponCodeElement.value === "") {
+          couponCodeElement.parentNode.querySelector(
+            ".coupon-error"
+          ).innerText = "Invalid Entry";
+
+          setTimeout(function () {
+            couponCodeElement.parentNode.querySelector(
+              ".coupon-error"
+            ).innerText = "";
+          }, 3000);
+        } else {
+          try {
+            const response = await fetch(`/admin/addCoupon-product`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ couponCode, totalAmount }),
+            });
+            if (response.ok) {
+              const data = await response.json();
+              document.querySelector(".total-amount .Amount").innerText =
+                data.discountedAmount;
+              localStorage.set("totalAmount", data.discountedAmount);
+              document.querySelector(".amount-details .total").innerText =
+                data.discountedAmount;
+              document.querySelector(
+                ".amount-details .coupon-deducted"
+              ).innerText = data.discount;
+              localStorage.set("discountedAmount", data.discount);
+            } else if (response.status === 404) {
+              document.querySelector(".coupon-error").innerText =
+                "Invalid Coupon Code";
+              setTimeout(function () {
+                document.querySelector(".coupon-error").innerText = "";
+              }, 3500);
+            }
+          } catch (error) {
+            console.log("error when adding coupon", error);
+          }
+        }
+      }
+      const userInput = document.querySelector("#couponCode");
+      userInput.addEventListener("keyup", function () {
+        if (userInput.value.length > 0) {
+          document.getElementById("coupon-error").innerText = "";
+        }
+      });
+
+      // page load
     </script>
   </body>
 </html>
