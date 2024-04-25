@@ -21,6 +21,7 @@
       body {
         font-family: "poppins", sans-serif;
         padding-bottom: 100px;
+        background-color: rgb(253, 253, 253);
       }
       .cart-body {
         width: 90%;
@@ -54,7 +55,8 @@
       }
       .product-card {
         display: flex;
-        border: 1px solid rgb(213, 213, 213);
+        border: 1px solid rgb(229, 229, 229);
+        background-color: white;
         padding: 8px;
         border-radius: 2px;
       }
@@ -81,7 +83,8 @@
         margin-top: 20px;
         font-size: 14px;
         color: rgb(84, 84, 84);
-        border: 1px solid rgb(219, 218, 218);
+        border: 1px solid rgb(231, 231, 231);
+        background-color: white;
         display: inline-block;
         padding: 1px 7px;
       }
@@ -106,13 +109,15 @@
       .address-box {
         line-height: 20px;
         border: 1px solid rgb(213, 213, 213);
+        background-color: white;
         padding: 15px;
         font-size: 15px;
         color: rgb(67, 66, 66);
         border-radius: 3px;
       }
       .default-address-box {
-        border: 1px solid rgb(205, 205, 205);
+        border: 1px solid rgb(230, 230, 230);
+        box-shadow: 0px 2px 5px rgb(234, 234, 234);
         padding: 10px;
         display: flex;
         justify-content: space-between;
@@ -142,10 +147,14 @@
         margin-top: 40px;
         padding: 10px 8px;
         border-radius: 3px;
-        border: 1px solid rgb(206, 204, 204);
-        background-color: rgb(246, 246, 246);
+        border: 1px solid rgb(234, 234, 234);
+        background-color: rgb(248, 248, 248);
         display: flex;
         align-items: flex-start;
+        transition: box-shadow 0.2s;
+      }
+      .addresses:hover {
+        box-shadow: 0px 2px 7px rgb(237, 237, 237);
       }
       .addresses input:hover,
       .addresses label:hover {
@@ -173,6 +182,7 @@
       .internetBanking-payment-dropdown,
       .COD-payment-dropdown {
         border: 1px solid rgb(213, 213, 213);
+        background-color: white;
         padding: 5px 15px;
         margin-bottom: 5px;
         color: rgb(82, 82, 82);
@@ -242,7 +252,7 @@
       }
       .amount-box {
         margin-top: 10px;
-        background-color: rgb(249, 249, 249);
+        background-color: rgb(255, 255, 255);
         box-shadow: 0px 0px 5px rgb(231, 231, 231);
         padding: 12px 20px;
       }
@@ -284,19 +294,46 @@
         outline: none;
         width: 100%;
       }
+      /* js generated element */
+      .couponMessage {
+        font-size: 13px;
+        margin: 0;
+        margin-bottom: 2px;
+        color: rgb(100, 98, 98);
+      }
+      #selectedCouponID {
+        margin: 0;
+        font-weight: 500;
+        font-size: 17px;
+        color: rgb(51, 51, 51);
+        margin-bottom: 5px;
+        background-color: rgb(229, 229, 229);
+        display: inline-block;
+      }
+
+      /* ---- */
       #couponSubmit {
         border: 1px solid rgb(60, 60, 60);
         padding: 3px 5px;
         color: black;
         background-color: white;
+        display: block;
+        margin-top: 7px;
+        font-size: 12px;
       }
       #couponSubmit:hover {
         cursor: pointer;
       }
 
+      #changeDisplay {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
       /* coupon box */
       .couponBox {
-        background-color: rgb(249, 249, 249);
+        background-color: rgb(255, 255, 255);
         box-shadow: 0px 0px 5px rgb(231, 231, 231);
         padding: 5px;
         margin-top: 15px;
@@ -524,9 +561,17 @@
             <div class="gst">-</div>
           </div>
           <div class="coupon-input">
-            <p class="coupon-error" style="margin: 0"></p>
-            <input type="text" id="couponCode" placeholder="Enter Coupon ID" />
-            <button id="couponSubmit">Select Coupon</button>
+            <div class="coupon-left">
+              <p class="coupon-error" style="margin: 0"></p>
+              <input
+                type="text"
+                id="couponCode"
+                placeholder="Enter Coupon ID"
+              />
+            </div>
+            <div class="coupon-right">
+              <button id="couponSubmit">Select Coupon</button>
+            </div>
           </div>
         </div>
         <div class="couponBox">
@@ -616,9 +661,7 @@
         const addressFunction = Function(
           `"use strict";return (${addressData})`
         );
-        // console.log(addressData);
         const defaultAddress = addressFunction ?? "";
-        // console.log(typeof addressFunction);
         if (typeof addressFunction != "function") {
           window.alert("enter set default address");
           event.preventDefault();
@@ -639,12 +682,12 @@
           }, 2500);
         } else {
           try {
-            // sending couponcode to the server (FETCH API)
+            // validatind and then adding couponcode to the database (FETCH API)
             const couponCode = inputField.value;
             const totalAmount = document.querySelector(
               ".total-amount .Amount"
             ).innerText;
-            const response = await fetch("/admin/check-coupon", {
+            const response = await fetch("/admin/add-coupon-product", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -656,8 +699,50 @@
               const data = await response.json();
               document.querySelector(".total-amount .Amount").innerText =
                 data.newAmount;
-              // ---
+              document.querySelector(
+                ".amount-details .coupon-deducted"
+              ).innerText = data.deductedAmount;
+
+              // setting new amount in the local storage
+              localStorage.setItem("offerAmount", data.newAmount);
+              localStorage.setItem("deductedAmount", data.deductedAmount);
+
+              // changing the input field
+              const inputField = document.querySelector("#couponCode");
+              const newElement = document.createElement("p");
+              newElement.id = "selectedCouponID";
+              newElement.textContent = couponCode;
+              inputField.parentNode.replaceChild(newElement, inputField);
+
+              // chnaging the error message
+              const existingPTag = document.querySelector(".coupon-error");
+              const newPTag = document.createElement("p");
+              newPTag.className = "couponMessage";
+              newPTag.textContent = "Selected Coupon:";
+              existingPTag.parentNode.replaceChild(newPTag, existingPTag);
+              // changing the submit button
+              const existingButton = document.querySelector("#couponSubmit");
+              const newButton = document.createElement("button");
+              newButton.id = existingButton.id;
+              newButton.style.border = "1px solid rgb(194, 32, 23)";
+              newButton.style.color = "rgb(194, 32, 23)";
+              newButton.textContent = "Cancel Coupon";
+              existingButton.parentNode.replaceChild(newButton, existingButton);
+              newButton.addEventListener("click", function () {
+                window.alert("alhamdulillah");
+              });
+
+              // changing the display of coupon section (input section)
+              const codeDiv = document.querySelector(".coupon-input");
+              codeDiv.id = "changeDisplay";
+
+              // hiding selected coupon
+              const couponBox = document.querySelector(
+                `[data-id="${data.couponID}"]`
+              );
+              couponBox.style.opacity = 0.5;
             } else if (response.status === 404) {
+              // --- wrong coupon code
               inputField.parentNode.querySelector(".coupon-error").innerText =
                 "Invalid Coupon Code";
               setTimeout(function () {
@@ -665,9 +750,17 @@
                   "";
                 inputField.value = "";
               }, 2500);
+            } else if (response.status === 409) {
+              // matching coupon code
+              inputField.parentNode.querySelector(".coupon-error").innerText =
+                "Coupon Already Used";
+              setTimeout(function () {
+                inputField.parentNode.querySelector(".coupon-error").innerText =
+                  "";
+              }, 2500);
             }
           } catch (error) {
-            console.log("error when adding coupon to product", error);
+            console.log("error in client side js", error);
           }
         }
       });

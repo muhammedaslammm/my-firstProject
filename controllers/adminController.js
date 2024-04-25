@@ -13,7 +13,8 @@ const Banner = require("./../models/bannerModel");
 const CategoryOffer = require("../models/categoryOfferModel");
 const ProductOffer = require("../models/productOfferModel");
 const Coupon = require('./../models/couponModel');
-const UsedCoupon = require('./../models/usedCouponModel')
+const UsedCoupon = require('./../models/usedCouponModel');
+const usedCouponModel = require("./../models/usedCouponModel");
 
 
 // admin login page
@@ -768,19 +769,34 @@ exports.deleteCoupon = async function(req,res){
 // add coupon to the product
 exports.checkCoupon = async function(req,res){
     const {couponCode, totalAmount} = req.body
+    const userID = req.session.userID;
     try{
-        const coupon = await Coupon.findOne({couponCode});
-        if(coupon){            
-            const deducted = Math.round(totalAmount * (coupon.offerAmount/100));
-            const newAmount = Math.round(totalAmount - deducted)
-            console.log(deducted,newAmount);
-            res.status(200).json({newAmount,deducted})
-            console.log("matched coupon found");
+        const coupon = await Coupon.findOne({couponCode});        
+        if(coupon){     
+            const usedCoupons = await UsedCoupon.find({userID});             
+            const matchingCoupon = usedCoupons.find(function(usedCoupon){
+                return usedCoupon.couponID === coupon._id;
+            })
+            if(matchingCoupon){
+                res.status(409).json({error:"coupon already in use"})
+            }
+            else{
+                // const addCoupon = await UsedCoupon.create({
+                //     userID,
+                //     couponID:coupon._id,
+                //     usedDate:new Date,
+                //     couponUsed:true
+                // });
+                const deducted = Math.round(totalAmount * (coupon.offerAmount/100));
+                const newAmount = Math.round(totalAmount - deducted)
+                const deductedAmount = -deducted
+                res.status(200).json({newAmount,deductedAmount,couponID:coupon._id});
+                console.log("matched coupon found");
+            }             
         }
         else{
-            res.status(404).json({error:'notfound'})
-        }
-        
+            res.status(404).json({error:'invalid coupon code'})
+        }        
     }
     catch(error){
         console.log("error when adding coupon to product",error);
