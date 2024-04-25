@@ -766,20 +766,16 @@ exports.deleteCoupon = async function(req,res){
 }
 
 // add coupon to the product
-exports.addCouponToProduct = async function(req,res){
+exports.checkCoupon = async function(req,res){
     const {couponCode, totalAmount} = req.body
     try{
         const coupon = await Coupon.findOne({couponCode});
-        if(coupon){
-            const usedCoupon = await UsedCoupon.create({
-                userID:req.session.userID,
-                couponID:coupon._id,
-                usedDate:new Date,
-                couponUsed:true
-            })
-            const discount = Math.round(totalAmount * (coupon.offerAmount/100));
-            const discountedAmount = Math.rount(totalAmount - discount)
-            res.status(200).json({discountedAmount,discount})
+        if(coupon){            
+            const deducted = Math.round(totalAmount * (coupon.offerAmount/100));
+            const newAmount = Math.round(totalAmount - deducted)
+            console.log(deducted,newAmount);
+            res.status(200).json({newAmount,deducted})
+            console.log("matched coupon found");
         }
         else{
             res.status(404).json({error:'notfound'})
@@ -787,7 +783,7 @@ exports.addCouponToProduct = async function(req,res){
         
     }
     catch(error){
-        console.log("error when adding coupon to product");
+        console.log("error when adding coupon to product",error);
         res.status(500).json({error:'failed'})
     }
 }

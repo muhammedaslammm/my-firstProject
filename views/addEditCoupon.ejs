@@ -173,6 +173,7 @@
             const endDate = document.querySelector('#end-date');
             const inputs = document.querySelectorAll('.input');
             const amounts = document.querySelectorAll('.amount input[type="number"]')
+            const offerAmount = document.querySelector("#offer-amount")
             let fieldValidated = true
             inputs.forEach(function(input){
                 if(input.value === ''){
@@ -184,12 +185,17 @@
                 endDate.parentNode.querySelector('.error').innerText = 'Invalid End Date';
                 fieldValidated = false;
             }
+            
             amounts.forEach(function(amount){
                 if(amount.value < 0){
                     amount.parentNode.querySelector('.error').innerText = '*enter a valid amount price'
                     fieldValidated = false;
                 }
             })
+            if(offerAmount.value > 100){
+              offerAmount.parentNode.querySelector(".error").innerText = '*Offer should not exceed 100%';
+              fieldValidated = false
+            }
             if(fieldValidated){
                 form.submit()
             }

@@ -241,8 +241,6 @@
         width: 29%;
       }
       .amount-box {
-        position: sticky;
-        top: 70px;
         margin-top: 10px;
         background-color: rgb(249, 249, 249);
         box-shadow: 0px 0px 5px rgb(231, 231, 231);
@@ -297,9 +295,7 @@
       }
 
       /* coupon box */
-      .coupon-box {
-        position: sticky;
-        top: 300px;
+      .couponBox {
         background-color: rgb(249, 249, 249);
         box-shadow: 0px 0px 5px rgb(231, 231, 231);
         padding: 5px;
@@ -521,28 +517,23 @@
           </div>
           <div class="amount-details">
             <div class="detail-label">Delivery Charge</div>
-            <div class="total">-</div>
+            <div class="delivery-charge">-</div>
           </div>
           <div class="amount-details">
             <div class="detail-label">GST</div>
-            <div class="total">-</div>
+            <div class="gst">-</div>
           </div>
           <div class="coupon-input">
             <p class="coupon-error" style="margin: 0"></p>
             <input type="text" id="couponCode" placeholder="Enter Coupon ID" />
-            <button
-              id="couponSubmit"
-              onclick="addCoupon(event,'<%=totalAmount%>')"
-            >
-              Select Coupon
-            </button>
+            <button id="couponSubmit">Select Coupon</button>
           </div>
         </div>
-        <div class="coupon-box">
+        <div class="couponBox">
           <div class="coupon-box-head">Available Coupons</div>
           <%if(coupons.length > 0){%> <%coupons.forEach(function(coupon){%>
           <%if(totalAmount > coupon.minimumAmount){%>
-          <div class="coupon">
+          <div class="coupon" data-id="<%=coupon._id%>">
             <div class="coupon-head"><%=coupon.coupon_head%></div>
             <div class="criteria">
               You will have an offer of <span><%=coupon.offerAmount%>%</span>
@@ -616,13 +607,19 @@
           console.log(error, "error when setting default address via fetch");
         }
       }
+
+      // submitting to place order
       const button = document.querySelector("#codButton");
-      const addressData = document.querySelector(".default-address-box").dataset
-        .address;
-      const address = JSON.parse(addressData);
       button.addEventListener("click", function (event) {
-        const defaultAddress = address ?? "";
-        if (typeof defaultAddress != "object") {
+        const addressData = document.querySelector(".default-address-box")
+          .dataset.address;
+        const addressFunction = Function(
+          `"use strict";return (${addressData})`
+        );
+        // console.log(addressData);
+        const defaultAddress = addressFunction ?? "";
+        // console.log(typeof addressFunction);
+        if (typeof addressFunction != "function") {
           window.alert("enter set default address");
           event.preventDefault();
         } else {
@@ -631,59 +628,49 @@
       });
 
       // add coupon to product
-      async function addCoupon(event, totalAmount) {
-        const couponCodeElement = document.querySelector("#couponCode");
-        const couponCode = couponCodeElement.value;
-        if (couponCodeElement.value === "") {
-          couponCodeElement.parentNode.querySelector(
-            ".coupon-error"
-          ).innerText = "Invalid Entry";
-
+      const submit = document.querySelector("#couponSubmit");
+      submit.addEventListener("click", async function () {
+        const inputField = document.getElementById("couponCode");
+        if (inputField.value === "") {
+          inputField.parentNode.querySelector(".coupon-error").innerText =
+            "Invalid Entry";
           setTimeout(function () {
-            couponCodeElement.parentNode.querySelector(
-              ".coupon-error"
-            ).innerText = "";
-          }, 3000);
+            inputField.parentNode.querySelector(".coupon-error").innerText = "";
+          }, 2500);
         } else {
           try {
-            const response = await fetch(`/admin/addCoupon-product`, {
+            // sending couponcode to the server (FETCH API)
+            const couponCode = inputField.value;
+            const totalAmount = document.querySelector(
+              ".total-amount .Amount"
+            ).innerText;
+            const response = await fetch("/admin/check-coupon", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({ couponCode, totalAmount }),
             });
+
             if (response.ok) {
               const data = await response.json();
               document.querySelector(".total-amount .Amount").innerText =
-                data.discountedAmount;
-              localStorage.set("totalAmount", data.discountedAmount);
-              document.querySelector(".amount-details .total").innerText =
-                data.discountedAmount;
-              document.querySelector(
-                ".amount-details .coupon-deducted"
-              ).innerText = data.discount;
-              localStorage.set("discountedAmount", data.discount);
+                data.newAmount;
+              // ---
             } else if (response.status === 404) {
-              document.querySelector(".coupon-error").innerText =
+              inputField.parentNode.querySelector(".coupon-error").innerText =
                 "Invalid Coupon Code";
               setTimeout(function () {
-                document.querySelector(".coupon-error").innerText = "";
-              }, 3500);
+                inputField.parentNode.querySelector(".coupon-error").innerText =
+                  "";
+                inputField.value = "";
+              }, 2500);
             }
           } catch (error) {
-            console.log("error when adding coupon", error);
+            console.log("error when adding coupon to product", error);
           }
         }
-      }
-      const userInput = document.querySelector("#couponCode");
-      userInput.addEventListener("keyup", function () {
-        if (userInput.value.length > 0) {
-          document.getElementById("coupon-error").innerText = "";
-        }
       });
-
-      // page load
     </script>
   </body>
 </html>
