@@ -335,7 +335,7 @@
       .couponBox {
         background-color: rgb(255, 255, 255);
         box-shadow: 0px 0px 5px rgb(231, 231, 231);
-        padding: 5px;
+        padding: 10px;
         margin-top: 15px;
       }
       .coupon-box-head {
@@ -368,6 +368,10 @@
       }
       .expiry-date span {
         font-weight: 500;
+      }
+      .no-coupon {
+        font-size: 14px;
+        color: rgb(145, 144, 144);
       }
       .code {
         margin-top: 10px;
@@ -536,6 +540,13 @@
               </div>
             </div>
           </div>
+          <!-- hidden order total -->
+          <input
+            type="hidden"
+            name="orderTotal"
+            value="<%=totalAmount%>"
+            id="orderTotal"
+          />
         </div>
       </form>
       <div class="checkout-right-section">
@@ -575,9 +586,10 @@
           </div>
         </div>
         <div class="couponBox">
+          <%if(coupons.length > 0){%>
           <div class="coupon-box-head">Available Coupons</div>
-          <%if(coupons.length > 0){%> <%coupons.forEach(function(coupon){%>
-          <%if(totalAmount > coupon.minimumAmount){%>
+          <%coupons.forEach(function(coupon){%> <%if(totalAmount >
+          coupon.minimumAmount){%>
           <div class="coupon" data-id="<%=coupon._id%>">
             <div class="coupon-head"><%=coupon.coupon_head%></div>
             <div class="criteria">
@@ -592,7 +604,9 @@
               <div class="couponCode"><%=coupon.couponCode%></div>
             </div>
           </div>
-          <%}%> <%})%> <%}%>
+          <%}%> <%})%> <%} else{%>
+          <div class="no-coupon">No coupon left for this purchase</div>
+          <%}%>
         </div>
       </div>
     </div>
@@ -666,11 +680,16 @@
           window.alert("enter set default address");
           event.preventDefault();
         } else {
+          localStorage.removeItem("couponCode");
+          localStorage.removeItem("usedCoupon");
+          localStorage.removeItem("orderTotal");
+          localStorage.removeItem("couponID");
           console.log("checkout completed");
         }
       });
 
       // add coupon to product
+
       const submit = document.querySelector("#couponSubmit");
       submit.addEventListener("click", async function () {
         const inputField = document.getElementById("couponCode");
@@ -687,7 +706,7 @@
             const totalAmount = document.querySelector(
               ".total-amount .Amount"
             ).innerText;
-            const response = await fetch("/admin/add-coupon-product", {
+            const response = await fetch("/add-coupon-product", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -697,15 +716,23 @@
 
             if (response.ok) {
               const data = await response.json();
+              const usedCouponID = data.usedCouponDoc;
+
+              // setting new amount
               document.querySelector(".total-amount .Amount").innerText =
                 data.newAmount;
+              document.querySelector("#orderTotal").value = data.newAmount;
+              localStorage.setItem("orderTotal", data.newAmount);
+
+              // setting deducted amount
               document.querySelector(
                 ".amount-details .coupon-deducted"
               ).innerText = data.deductedAmount;
+              // ---------------------------
 
-              // setting new amount in the local storage
-              localStorage.setItem("offerAmount", data.newAmount);
-              localStorage.setItem("deductedAmount", data.deductedAmount);
+              // setting fields in the local storage
+              localStorage.setItem("usedCoupon", usedCouponID);
+              localStorage.setItem("couponCode", couponCode);
 
               // changing the input field
               const inputField = document.querySelector("#couponCode");
@@ -724,12 +751,37 @@
               const existingButton = document.querySelector("#couponSubmit");
               const newButton = document.createElement("button");
               newButton.id = existingButton.id;
+              newButton.className = "cancelCoupon";
               newButton.style.border = "1px solid rgb(194, 32, 23)";
               newButton.style.color = "rgb(194, 32, 23)";
               newButton.textContent = "Cancel Coupon";
               existingButton.parentNode.replaceChild(newButton, existingButton);
-              newButton.addEventListener("click", function () {
-                window.alert("alhamdulillah");
+
+              newButton.addEventListener("click", async function () {
+                try {
+                  const response = await fetch("/cancel-coupon", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ usedCouponID }),
+                  });
+
+                  if (response.ok) {
+                    const data = await response.json();
+                    localStorage.removeItem("couponCode");
+                    localStorage.removeItem("usedCoupon");
+                    localStorage.removeItem("orderTotal");
+                    localStorage.removeItem("couponID");
+                    window.location.reload();
+                  } else {
+                    console.log(
+                      "some thing went wrong in serverside when cancelling coupon"
+                    );
+                  }
+                } catch (error) {
+                  console.log("error", error);
+                }
               });
 
               // changing the display of coupon section (input section)
@@ -740,7 +792,7 @@
               const couponBox = document.querySelector(
                 `[data-id="${data.couponID}"]`
               );
-              couponBox.style.opacity = 0.5;
+              couponBox.remove();
             } else if (response.status === 404) {
               // --- wrong coupon code
               inputField.parentNode.querySelector(".coupon-error").innerText =
@@ -761,6 +813,87 @@
             }
           } catch (error) {
             console.log("error in client side js", error);
+          }
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        const coupon = localStorage.getItem("usedCoupon");
+        const couponCode = localStorage.getItem("couponCode");
+        if (coupon) {
+          try {
+            const response = await fetch(`/get-coupon?couponID=${coupon}`, {
+              method: "GET",
+            });
+            if (response.ok) {
+              const data = await response.json();
+              document.querySelector(".total-amount .Amount").innerText =
+                data.newAmount;
+              document.querySelector("#orderTotal").value =
+                localStorage.getItem("orderTotal");
+              document.querySelector(
+                ".amount-details .coupon-deducted"
+              ).innerText = data.deductedAmount;
+
+              // changing the input field
+              const inputField = document.querySelector("#couponCode");
+              const newElement = document.createElement("p");
+              newElement.id = "selectedCouponID";
+              newElement.textContent = couponCode;
+              inputField.parentNode.replaceChild(newElement, inputField);
+
+              // chnaging the error message
+              const existingPTag = document.querySelector(".coupon-error");
+              const newPTag = document.createElement("p");
+              newPTag.className = "couponMessage";
+              newPTag.textContent = "Selected Coupon:";
+              existingPTag.parentNode.replaceChild(newPTag, existingPTag);
+
+              // changing the submit button
+              const existingButton = document.querySelector("#couponSubmit");
+              newButton = document.createElement("button");
+              newButton.id = existingButton.id;
+              newButton.className = "cancelCoupon";
+              newButton.style.border = "1px solid rgb(194, 32, 23)";
+              newButton.style.color = "rgb(194, 32, 23)";
+              newButton.textContent = "Cancel Coupon";
+              existingButton.parentNode.replaceChild(newButton, existingButton);
+
+              newButton.addEventListener("click", async function () {
+                try {
+                  const response = await fetch("/cancel-coupon", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ usedCouponID: coupon }),
+                  });
+                  if (response.ok) {
+                    const data = await response.json();
+                    localStorage.removeItem("usedCoupon");
+                    localStorage.removeItem("couponCode");
+                    localStorage.removeItem("orderTotal");
+                    localStorage.removeItem("couponID");
+                    window.location.reload();
+                  }
+                } catch (error) {
+                  console.log("error", error);
+                }
+              });
+
+              // adding id to coupon section (input section)
+              const codeDiv = document.querySelector(".coupon-input");
+              codeDiv.id = "changeDisplay";
+
+              // hiding selected coupon
+              const couponID = localStorage.getItem("couponID");
+              const couponBox = document.querySelector(
+                `[data-id="${data.couponID}"]`
+              );
+              couponBox.style.opacity = 0.5;
+            }
+          } catch (error) {
+            console.log("error when fetching coupon details", error);
           }
         }
       });

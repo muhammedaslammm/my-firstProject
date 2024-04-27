@@ -154,15 +154,14 @@ exports.decreaseQuantity = async function(req,res){
 // remove product from cart
 exports.removeFromCart = async function(req,res){
     try{
-        const cartID = req.params.id;
+        const {cartID,cartTotal} = req.body;
         const cart = await Cart.findById(cartID).populate('productID'); 
-        const deletedCartTotal = cart.quantity * cart.productID.sellingPrice       
+        const deletedCartTotal = cart.quantity * cart.productID.sellingPrice ;
+        const newCartTotal = cartTotal - deletedCartTotal      
         await Cart.findByIdAndDelete(cartID);
         await Product.findByIdAndUpdate(cart.productID,{addedToCart:false})
-        
-
         console.log("cart deleted");
-        res.status(200).json({message:'cart deleted',deletedCartTotal})
+        res.status(200).json({message:'cart deleted',newCartTotal})
     }
     catch(error){
         console.log("error in deleting cart product",error);
@@ -199,8 +198,17 @@ exports.checkoutPage = async function(req,res){
         // user address
         const defaultAddress = await Address.findOne({userID,default:true})
         const addresses = await Address.find({userID:userID});
-        const coupons = await Coupon.find();
-        res.render("checkoutPage",{userCart,totalQuantity,totalAmount,addresses,defaultAddress,userID,coupons})
+        const usedCouponsIDs = (await UsedCoupon.find({userID:req.session.userID})).map(function(usedCoupon){
+            return usedCoupon.couponID;
+        })
+        console.log(usedCouponsIDs);
+        const coupons = await Coupon.find({_id:{$nin:usedCouponsIDs}})           
+        const productCoupons = coupons.filter(function(coupon){
+            if(totalAmount > coupon.minimumAmount){
+                return coupon
+            }
+        })           
+        res.render("checkoutPage",{userCart,totalQuantity,totalAmount,addresses,defaultAddress,userID,coupons:productCoupons})
     }
     catch(error){
         console.log("error occured when rendering checkout page",error);
@@ -251,5 +259,81 @@ exports.setDefaultAddress = async function(req,res){
     }
     catch(error){
         res.status(404).json({message:error})
+    }
+}
+
+// add coupon to product
+exports.addCoupon2Product = async function(req,res){
+    const {couponCode, totalAmount} = req.body
+    const userID = req.session.userID;
+    try{
+        const coupon = await Coupon.findOne({couponCode});        
+        if(coupon){     
+            const usedCoupons = await UsedCoupon.find({userID});             
+            const matchingCoupon = usedCoupons.find(function(usedCoupon){
+                return usedCoupon.couponID === coupon._id;
+            })
+            if(matchingCoupon){
+                res.status(409).json({error:"coupon already in use"})
+            }
+            else{                
+                const deducted = Math.round(totalAmount * (coupon.offerAmount/100));
+                const newAmount = Math.round(totalAmount - deducted)
+                const deductedAmount = -deducted
+                
+                const usedCoupon = await UsedCoupon.create({
+                    userID:req.session.userID,
+                    couponID:coupon._id,
+                    purchaseAmount:totalAmount,
+                    newAmount,
+                    deductedAmount,
+                    couponUsed:true,
+                    usedDate:new Date
+                })
+                console.log(`${couponCode} used`);
+                res.status(200).json({
+                    newAmount:usedCoupon.newAmount,
+                    deductedAmount:usedCoupon.deductedAmount,
+                    usedCouponDoc:usedCoupon._id,
+                    couponID:usedCoupon.couponID
+                })
+            }             
+        }
+        else{
+            res.status(404).json({error:'invalid coupon code'})
+        }        
+    }
+    catch(error){
+        console.log("error when adding coupon to product",error);
+        res.status(500).json({error:'failed'})
+    }
+}
+
+// get coupon details
+exports.getCouponDetails = async function(req,res){
+    const usedCouponID = req.query.couponID;
+    try{
+        const usedCoupon = await UsedCoupon.findById(usedCouponID);
+        res.status(200).json({
+            newAmount:usedCoupon.newAmount,
+            deductedAmount:usedCoupon.deductedAmount,
+        })
+    }
+    catch(error){
+        console.log("error",error);
+        res.status(404).json({error:'error'})
+    }
+}
+
+// cancel the product coupon
+exports.cancelCoupon = async function(req,res){
+    const usedCouponID = req.body.usedCouponID;
+    try{
+        await UsedCoupon.findByIdAndDelete(usedCouponID);
+        console.log("coupon cancelled");
+        res.status(200).json({success:"coupon deleted"})
+    }
+    catch(error){
+        console.log("error when cancelling coupon",error);
     }
 }

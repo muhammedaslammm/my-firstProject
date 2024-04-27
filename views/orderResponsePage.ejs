@@ -40,6 +40,10 @@
         font-weight: 500;
         color: rgb(0, 138, 37);
       }
+      .message-head span {
+        font-size: 25px;
+        display: block;
+      }
 
       /* right */
       .view-order .note {
@@ -141,7 +145,10 @@
       <!-- order response box -->
       <div class="order-response-box">
         <div class="response-message">
-          <div class="message-head">Your Order is Successfully Placed</div>
+          <div class="message-head">
+            Your Order is Successfully Placed
+            <span>Rs. <%=order.orderTotal%>/-</span>
+          </div>
           <div class="message-sub"></div>
         </div>
         <div class="view-order">

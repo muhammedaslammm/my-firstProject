@@ -10,7 +10,7 @@ const generateOrderID = require('./../operations/generateOrderID');
 // placing order 'cash on delivery'
 exports.placeOrder = async function(req,res){
     try{
-        const {address,cartID,payment} = req.body;
+        const {address,cartID,payment,orderTotal} = req.body;
         const userID = req.session.userID;
         let carts = [];
         if(typeof cartID != 'string'){
@@ -68,6 +68,7 @@ exports.placeOrder = async function(req,res){
             orderedProducts,
             orderedDate:new Date(),
             address,
+            orderTotal,
             paymentMethod:payment
         })
         const orderID = order._id
@@ -124,7 +125,7 @@ exports.orderResponsePage = async function(req,res){
             const products = order.orderedProducts;
             const address = await Address.findById(order.address);
             
-            res.render("orderResponsePage",{products,address,userID})
+            res.render("orderResponsePage",{products,address,userID,order})
         }
         else{
             console.log("order status not all in 'on progress'");

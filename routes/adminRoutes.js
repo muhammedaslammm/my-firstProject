@@ -43,9 +43,6 @@ router.get("/edit-coupon",validation,adminController.editCouponPage)
 router.post('/edit-coupon',validation,adminController.editCoupon);
 router.get('/delete-coupon',validation,adminController.deleteCoupon)
 
-// addCoupon to product
-router.post('/add-coupon-product',validation,adminController.checkCoupon)
-
 // add banner
 router.get("/adminBanner",validation,adminController.bannerPage)
 router.get("/addBanner",validation,adminController.uploadBannerPage);

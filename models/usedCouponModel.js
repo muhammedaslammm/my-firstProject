@@ -6,6 +6,15 @@ const usedCouponSchema = new mongoose.Schema({
     couponID:{
         type:mongoose.Schema.Types.ObjectId
     },
+    purchaseTotal:{
+        type:Number
+    },
+    newAmount:{
+        type:Number,
+    },
+    deductedAmount:{
+        type:Number
+    },
     usedDate:{
         type:Date
     },

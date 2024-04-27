@@ -47,6 +47,9 @@ const orderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Address"
     },
+    orderTotal:{
+        type:Number
+    },
     paymentMethod: {
         type: String
     }

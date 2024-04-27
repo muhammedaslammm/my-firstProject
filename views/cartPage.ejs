@@ -329,6 +329,7 @@
               ><i
                 class="fa-regular fa-heart"
                 style="color: #000000; font-size: 20px"
+                onclick="addToWishlist(event,'<%=cart._id%>')"
               ></i>
             </a>
             <a
@@ -357,15 +358,15 @@
             Total: <span>Rs.</span> <span class="Amount"><%=totalAmount%></span>
           </div>
           <div class="amount-details">
-            <div class="detail-label">Bag Total</div>
-            <div class="total"><%=totalAmount%></div>
+            <div class="bag-label">Bag Total</div>
+            <div class="bag-total"><%=totalAmount%></div>
           </div>
           <div class="amount-details">
-            <div class="detail-label">Delivery Charge</div>
+            <div class="delivery-label">Delivery Charge</div>
             <div class="total">-</div>
           </div>
           <div class="amount-details">
-            <div class="detail-label">GST</div>
+            <div class="gst-label">GST</div>
             <div class="total">-</div>
           </div>
         </div>
@@ -386,7 +387,8 @@
       async function removeCartItem(cartID, event) {
         event.preventDefault();
 
-        const cartBox = event.target.parentElement.parentElement;
+        const cartBox = event.target.parentNode.parentNode.parentNode;
+        console.log(cartBox);
         const cartTotal = document.querySelector(
           ".total-amount .Amount"
         ).innerText;
@@ -410,17 +412,23 @@
 
       async function removeItem(cartID, cartBox, cartTotal) {
         try {
-          const response = await fetch(`/product-removefrom-cart/${cartID}`, {
-            method: "GET",
+          const response = await fetch(`/product-removefrom-cart`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ cartID, cartTotal }),
           });
           if (response.ok) {
             const data = await response.json();
-            const currentCartTotal = cartTotal - data.deletedCartTotal;
             cartBox.remove();
             localStorage.removeItem("selectedSize");
             document.querySelector(".total-amount .Amount").innerText =
-              currentCartTotal;
+              data.newCartTotal;
+            document.querySelector(".amount-details .bag-total").innerText =
+              data.newCartTotal;
             console.log("cart removed");
+            window.location.reload();
           }
         } catch (error) {
           console.log("error when removing cart item", error);
@@ -454,7 +462,7 @@
 
               document.querySelector(".total-amount .Amount").innerText =
                 cart.totalAmount;
-              document.querySelector(".amount-details .total").innerText =
+              document.querySelector(".amount-details .bag-total").innerText =
                 cart.totalAmount;
             }
           }
@@ -508,13 +516,19 @@
 
               document.querySelector(".total-amount .Amount").innerText =
                 data.totalAmount;
-              document.querySelector(".amount-details .total").innerText =
+              document.querySelector(".amount-details .bag-total").innerText =
                 data.totalAmount;
             }
           }
         } catch (error) {
           console.log("error occured in clied side js", error);
         }
+      }
+
+      // add to wishlist
+      async function addToWishlist(event, cartID) {
+        event.preventDefault();
+        window.alert("alhamdulillah");
       }
 
       // validate cart before to the checkout page
