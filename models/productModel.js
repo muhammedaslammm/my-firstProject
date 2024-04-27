@@ -95,7 +95,12 @@ const productSchema = new mongoose.Schema({
     addedToCart:{
         type:Boolean,
         default:false
+    },
+    addedToWishlist:{
+        type:Boolean,
+        default:false
     }
+
 
 })
 productSchema.plugin(paginate)

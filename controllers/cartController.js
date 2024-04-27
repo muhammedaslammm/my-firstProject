@@ -7,6 +7,7 @@ const Address = require("./../models/addressModel");
 const User = require("./../models/userModel");
 const Coupon = require("./../models/couponModel");
 const UsedCoupon = require("./../models/usedCouponModel");
+const Wishlist = require("./../models/wishlistModel");
 
 
 app.use(nocache())
@@ -169,6 +170,24 @@ exports.removeFromCart = async function(req,res){
 
     }
     
+}
+
+// add product to wishlist
+exports.addToWishlist = async function(req,res){
+    const productID = req.body.productID;
+    try{
+        const adding = await Wishlist.create({
+            userID:req.session.userID,
+            productID
+        })
+        console.log("product added to wishlist");
+        res.status(200).json({success:"success"})
+    }
+
+    catch(error){
+        console.log("error when adding product to wishlist");
+        res.status(404).json({error:"failed"})
+    }
 }
 
 // checkout- page

@@ -306,7 +306,7 @@
                 <div class="values">
                   <div
                     class="iconDown"
-                    onclick="reduceQuantity(event,'<%=cart._id%>')"
+                    onclick="reduceQuantity(event,'<%=cart.productID._id%>')"
                   >
                     -
                   </div>
@@ -526,9 +526,22 @@
       }
 
       // add to wishlist
-      async function addToWishlist(event, cartID) {
+      async function addToWishlist(event, productID) {
         event.preventDefault();
-        window.alert("alhamdulillah");
+        try {
+          const response = await fetch("/addToWishlist", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ productID }),
+          });
+          if (response.ok) {
+            alert("product added to wishlist");
+          }
+        } catch (error) {
+          console.log("error", error);
+        }
       }
 
       // validate cart before to the checkout page
