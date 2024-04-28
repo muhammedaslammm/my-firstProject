@@ -8,7 +8,7 @@ const usedCouponSchema = new mongoose.Schema({
     },
     purchaseTotal:{
         type:Number
-    },
+    },  
     newAmount:{
         type:Number,
     },

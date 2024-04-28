@@ -44,8 +44,11 @@ router.get('/getQuantity/:productID',productsController.getQuantity)
 // add address if needed
 router.post("/category/:category/:id",authentication,productsController.buttonClick);
 router.get("/product-addAddress",productsController.product_addAddress);
-router.post("/product-addAddress",productsController.addProduct_Address)
+router.post("/product-addAddress",productsController.addProduct_Address);
 
-
+// wishlist
+router.post("/addToWishlist",authentication,productsController.addToWishlist);
+router.get("/wishlist",authentication,productsController.wishlistPage);
+router.post("/removeFrom-wishlist",authentication,productsController.removeFromWishlist)
 
 module.exports = router

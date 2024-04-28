@@ -254,6 +254,58 @@ exports.buttonClick = async function(req,res){
     
 }
 
+// add product to wishlist
+exports.addToWishlist = async function(req,res){
+    const productID = req.body.productID;
+    try{
+        const product = await Product.findById(productID);
+        
+        if(product.addedToWishlist){
+            await Product.findByIdAndUpdate(productID,{addedToWishlist:false});
+            console.log("product removed from wishlist");
+            res.status(200).json({stat:"removed"});
+        }
+        else{
+            await Product.findByIdAndUpdate(productID,{addedToWishlist:true});
+            console.log("product added to wishlist");
+            res.status(200).json({stat:"added"})
+        }
+    }
+    catch(error){
+        console.log("error when adding product to wishlist",error);
+        res.status(404).json({error:"failed"})
+    }
+}
+
+// view wishlist
+exports.wishlistPage = async function(req,res){
+    try{
+        const products = await Product.find({addedToWishlist:true});
+        const totalProducts = products.length;
+        const userID = req.session.userID
+        res.render("wishlist",{products,totalProducts,userID})
+    }
+    catch(error){
+        console.log("error when rendering wishlist Page",error);
+    }
+}
+
+// remove from wishlist
+exports.removeFromWishlist = async function(req,res){
+    const productID = req.body.productID;
+    let count = req.body.count
+    try{
+        await Product.findByIdAndUpdate(productID,{$set:{addedToWishlist:false}})
+        count--
+        res.status(200).json({message:"success",count});
+    }
+    catch(error){
+        console.log("error when removing item from the wishlist", error);
+        res.status(404).json({error:"failed"})
+    }
+}
+
+
 // product address page
 exports.product_addAddress = async function(req,res){
     try{

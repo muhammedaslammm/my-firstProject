@@ -3,6 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://kit.fontawesome.com/f620fbbfb3.js"
+      crossorigin="anonymous"
+    ></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -121,9 +125,23 @@
       /* product card */
       .product-card {
         transition: box-shadow 0.5s;
+        position: relative;
+      }
+      .wishlist-button i {
+        opacity: 0;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        transition: opacity 0.4s;
+      }
+      .wishlist-button i:hover {
+        cursor: pointer;
       }
       .product-card:hover {
         box-shadow: 0px 4px 8px 2px rgb(205, 205, 205);
+      }
+      .product-card:hover .wishlist-button i {
+        opacity: 1;
       }
       img {
         width: 100%;
@@ -399,14 +417,15 @@
       </div>
       <div class="container-body">
         <% if(products.length > 0){%> <% products.forEach(function(product){%>
-        <a
-          href="/category/<%=product.category%>/<%=product._id%>"
-          class="product-link"
-        >
-          <div class="product-card">
-            <div class="image">
-              <img src="<%=product.images[0]%>" alt="product image" />
-            </div>
+
+        <div class="product-card" data-productID="<%=product._id%>">
+          <div class="image">
+            <img src="<%=product.images[0]%>" alt="product image" />
+          </div>
+          <a
+            href="/category/<%=product.category%>/<%=product._id%>"
+            class="product-link"
+          >
             <div class="details">
               <div class="description">
                 <div class="brand"><%=product.brand%></div>
@@ -427,8 +446,28 @@
                 </div>
               </div>
             </div>
+          </a>
+          <div class="wishlist-button">
+            <%if(product.addedToWishlist){%>
+            <i
+              id="solidHeart"
+              data-productID="<%=product._id%>"
+              class="fa-solid fa-heart"
+              style="color: rgb(221, 12, 12); font-size: 23px; opacity: 1"
+              onclick="selectProduct(event)"
+            ></i>
+            <%}else{%>
+            <i
+              id="regularHeart"
+              data-productID="<%=product._id%>"
+              class="fa-regular fa-heart"
+              style="color: black; font-size: 23px"
+              onclick="selectProduct(event)"
+            ></i>
+            <%}%>
           </div>
-        </a>
+        </div>
+
         <% }) %> <%}%>
       </div>
     </div>
@@ -517,6 +556,56 @@
         }
         localStorage.removeItem("selectedSize");
       });
+
+      // wishlist
+      async function selectProduct(event) {
+        const productID = event.target.dataset.productid;
+        const productCard = document.querySelector(
+          `.product-card[data-productID = "${productID}"]`
+        );
+        try {
+          const response = await fetch("/addToWishlist", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ productID }),
+          });
+          if (response.ok) {
+            const data = await response.json();
+            if (data.stat === "added") {
+              const wishlistButton = document.querySelector(
+                `.fa-regular[data-productID="${productID}"]`
+              );
+              console.log(wishlistButton);
+              wishlistButton.classList.remove("fa-regular", "fa-heart");
+              wishlistButton.classList.add("fa-solid", "fa-heart");
+              wishlistButton.style.color = "rgb(221, 12, 12)";
+              wishlistButton.style.opacity = "1";
+              productCard.addEventListener("mouseleave", function () {
+                wishlistButton.style.opacity = "1";
+              });
+              productCard.addEventListener("mouseenter", function () {
+                wishlistButton.style.opacity = "1";
+              });
+            } else if (data.stat === "removed") {
+              const wishlistButton = document.querySelector(
+                `.fa-solid[data-productID="${productID}"]`
+              );
+              console.log(wishlistButton);
+              wishlistButton.classList.remove("fa-solid", "fa-heart");
+              wishlistButton.classList.add("fa-regular", "fa-heart");
+              wishlistButton.style.color = "black";
+              productCard.addEventListener("mouseleave", function () {
+                wishlistButton.style.opacity = "0";
+              });
+              productCard.addEventListener("mouseenter", function () {
+                wishlistButton.style.opacity = "1";
+              });
+            }
+          }
+        } catch (error) {}
+      }
     </script>
     <script
       src="https://code.jquery.com/jquery-3.2.1.slim.min.js"

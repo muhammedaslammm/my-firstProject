@@ -23,7 +23,6 @@ router.get("/product-addToCart",authentication,cartController.addtoCart);
 router.get("/cart-page",authentication,cartController.cartPage)
 router.post("/increase-product-quantity",authentication,cartController.increaseQuantity)
 router.post("/decrease-product-quantity",authentication,cartController.decreaseQuantity)
-router.post("/addToWishlist",authentication,cartController.addToWishlist)
 router.post("/product-removefrom-cart",authentication,cartController.removeFromCart)
 router.post("/add-coupon-product",authentication,cartController.addCoupon2Product);
 router.get("/get-coupon",authentication,cartController.getCouponDetails)

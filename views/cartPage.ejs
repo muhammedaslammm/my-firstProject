@@ -306,7 +306,7 @@
                 <div class="values">
                   <div
                     class="iconDown"
-                    onclick="reduceQuantity(event,'<%=cart.productID._id%>')"
+                    onclick="reduceQuantity(event,'<%=cart._id%>')"
                   >
                     -
                   </div>
@@ -326,20 +326,29 @@
               href="/product-addTo-wishlist/<%=cart._id%>"
               id="wishlist"
               style="text-decoration: none"
-              ><i
-                class="fa-regular fa-heart"
-                style="color: #000000; font-size: 20px"
-                onclick="addToWishlist(event,'<%=cart._id%>')"
+              onclick="addToWishlist(event,'<%=cart.productID._id%>')"
+              ><%if(cart.productID.addedToWishlist){%>
+              <i
+                id="solidHeart"
+                class="fa-solid fa-heart"
+                style="color: rgb(190, 19, 19); font-size: 20px"
               ></i>
-            </a>
+              <%}else{%>
+              <i
+                id="regularHeart"
+                class="fa-regular fa-heart"
+                style="color: black; font-size: 20px"
+              ></i>
+              <%}%></a
+            >
             <a
               href="/product-removefrom-cart/<%=cart._id%>"
               id="remove"
               onclick="removeCartItem('<%=cart._id%>',event)"
               style="text-decoration: none"
               ><i
-                class="fa-solid fa-trash"
-                style="color: #c41717; font-size: 18px"
+                class="fa-solid fa-trash-can"
+                style="color: #000000; font-size: 18px"
               ></i
             ></a>
           </div>
@@ -537,7 +546,18 @@
             body: JSON.stringify({ productID }),
           });
           if (response.ok) {
-            alert("product added to wishlist");
+            const data = await response.json();
+            if (data.stat === "added") {
+              const element = event.target;
+              element.classList.remove("fa-regular");
+              element.classList.add("fa-solid");
+              element.style.color = "rgb(190, 19, 19)";
+            } else if (data.stat === "removed") {
+              const element = event.target;
+              element.classList.remove("fa-solid");
+              element.classList.add("fa-regular");
+              element.style.color = "black";
+            }
           }
         } catch (error) {
           console.log("error", error);
