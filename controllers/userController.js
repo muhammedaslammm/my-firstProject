@@ -2,6 +2,7 @@ const User = require("./../models/userModel");
 const Product = require("./../models/productModel");
 const Address = require("./../models/addressModel");
 const Banner = require("./../models/bannerModel");
+const Wallet = require("./../models/walletModel")
 
 const validator = require("validator");
 const bcrypt = require("bcrypt");
@@ -484,4 +485,15 @@ exports.setDefaultAddress = async function(req,res){
 
 }
 
-// 
+// wallet page
+exports.walletPage = async function(req,res){
+    const userID = req.session.userID;
+    try{        
+        const wallet  = await Wallet.find({userID});
+        console.log(wallet);
+        res.render("wallet",{userID,wallet})
+    }
+    catch(error){
+        console.log("error when rendering wallet page",error);
+    }
+}

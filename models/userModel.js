@@ -12,10 +12,7 @@ const userSchema = new mongoose.Schema({
     },
     password:{
         type:String
-    },
-    usedCoupon:{
-        type:mongoose.Schema.Types.ObjectId
-    },
+    },    
     isBlocked:{
         type:Boolean,
         default:false

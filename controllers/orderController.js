@@ -3,6 +3,7 @@ const Cart = require("./../models/cartModel");
 const Product = require("./../models/productModel");
 const User = require("../models/userModel");
 const Address = require("./../models/addressModel");
+const Wallet = require("./../models/walletModel")
 const {ObjectId} = require("mongodb");
 const generateOrderID = require('./../operations/generateOrderID');
 
@@ -176,24 +177,60 @@ exports.viewOrderedProduct = async function(req,res){
 // cancel order
 exports.cancelOrder = async function(req,res){
     try{
-        const orderID = req.params.order_id;
-        const productID = req.params.product_id;
-        const cancelledDate = Date.now();        
+        const {orderID,docID} = req.body
+        const cancelledDate = Date.now();  
+        const userID = req.session.userID  ;
 
         const updateStatus = await Order.updateOne(
-            {_id:orderID,'orderedProducts._id':productID},
+            {_id:orderID,'orderedProducts._id':docID},
             {$set:{
                 'orderedProducts.$.orderStatus':'cancelled',
                 'orderedProducts.$.cancelledDate':cancelledDate,
                 'orderedProducts.$.deliveryDate':null,                
             }}            
-        )        
+        ) 
+
+        const order = await Order.findById(orderID);
+        const cancelledProduct = order.orderedProducts.find(function(product){
+            return product._id == docID
+        })
+        const wallet = await Wallet.findOne({})
+        if(wallet){ //this means, the wallet is already added
+            const obj = {
+                amount:cancelledProduct.totalPrice,
+                date:new Date,
+                source:"Refunded"
+            }
+            const walletAmount = wallet.walletAmount + cancelledProduct.totalPrice
+            await Wallet.updateOne({_id:wallet._id},{
+                $push:{creditedDetail:obj},
+                $set:{walletAmount:walletAmount}
+            })
+        }
+        else{
+            let creditedDetail = [];
+            const details = {
+                amount:cancelledProduct.totalPrice,
+                date:new Date,
+                source:"Refunded"
+            }
+            creditedDetail.push(details);
+            const newWallet = await Wallet.create({
+                userID,
+                creditedDetail
+            });
+
+            const walletAmount = newWallet.walletAmount + cancelledProduct.totalPrice;
+            await Wallet.updateOne({_id:newWallet._id},{$set:{walletAmount}})
+        }
+        console.log("product cancelled and amount added to wallet");                
+        
         console.log("order cancelled from client side");
-        res.redirect(`/view/${orderID}/${productID}`)
+        res.status(200).json({sucess:"order cancelled"});
 
     }
     catch(error){
         console.log(error,"error when cancelling order from user side");
-        res.redirect("/order-page")
+        res.status(500).json({error:'cancellation failed'})
     }
 }

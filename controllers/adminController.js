@@ -526,7 +526,6 @@ exports.orderPage = async function(req,res){
     try{
         const userID = req.session.userID;           
         const orders = await Order.find().populate('orderedProducts.productID').populate('address')
-        console.log(orders);
         res.render("adminOrderPage",{orders});
     }
     catch(error){

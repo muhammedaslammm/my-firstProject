@@ -28,7 +28,7 @@ router.post("/place-order",authentication,orderController.placeOrder);
 router.get('/order-response-page',authentication,orderController.orderResponsePage);
 router.get("/order-page",authentication,orderController.orderPage);
 router.get("/view/:order_id/:product_id",authentication,orderController.viewOrderedProduct)
-router.post("/cancel/:order_id/:product_id",authentication,orderController.cancelOrder);
+router.post("/cancel-order",authentication,orderController.cancelOrder);
 
 
 

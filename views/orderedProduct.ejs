@@ -89,7 +89,7 @@
       .more-box {
         width: 30%;
         display: flex;
-        justify-content: end;
+        justify-content: flex-end;
       }
       .more-box #cancel {
         border: 1px solid black;
@@ -97,6 +97,7 @@
         border-radius: 3px;
         box-shadow: 0px 0px 7px rgb(223, 222, 222) inset;
         font-size: 15px;
+        height: 28px;
       }
 
       .more-box #cancel:hover {
@@ -183,9 +184,13 @@
         <div class="more-box">
           <%if(statuses.includes(product.orderStatus)){%>
           <!--statuses if from server-side array -->
-          <form action="/cancel/<%=order._id%>/<%=product._id%>" method="post">
-            <button type="submit" id="cancel">cancel your order</button>
-          </form>
+          <button
+            type="submit"
+            id="cancel"
+            onclick="cancelOrder(event,'<%=order._id%>','<%=product._id%>')"
+          >
+            cancel your order
+          </button>
           <%}else if(product.orderStatus === "cancelled"){%>
           <div class="cancelled-note" style="color: rgb(183, 24, 24)">
             <%const cancelledDate = product.cancelledDate.toDateString()%>
@@ -246,6 +251,7 @@
         </div>
       </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       // nav
       const profileButton = document.querySelector("#profile-button");
@@ -258,6 +264,47 @@
       });
 
       // ---------------------------------------------------
+
+      // cancelling the order
+      async function cancelOrder(event, orderID, docID) {
+        try {
+          const userResponse = await cancelAlert();
+          if (userResponse.value) {
+            cancelTheOrder(orderID, docID);
+          }
+        } catch (error) {
+          console.log("error", error);
+        }
+      }
+
+      async function cancelAlert() {
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "You are about to cancel this product !",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Cancel",
+        });
+        return result;
+      }
+
+      async function cancelTheOrder(orderID, docID) {
+        try {
+          const response = await fetch(`/cancel-order`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ orderID, docID }),
+          });
+          if (response.ok) {
+            window.location.reload();
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
     </script>
   </body>
 </html>

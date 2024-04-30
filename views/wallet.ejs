@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="/styles/nav.css" />
+
+    <title>Document</title>
+    <style>
+        .page-container {
+        width: 95%;
+        margin: 90px auto;
+        display: flex;
+        box-sizing: border-box;
+      }
+      .page-container .page-sidebar {
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border: 1px solid rgb(203, 200, 200);
+        padding-top: 10px;
+        width: 13%;
+        box-sizing: border-box;
+      }
+      .page-container .page-sidebar a {
+        padding: 12px 12px;
+        text-decoration: none;
+        color: rgb(64, 64, 64);
+        font-size: 17px;
+      }
+      .page-container .page-sidebar a:hover {
+        border-left: 2.5px solid rgb(159, 164, 247);
+      }
+      /* page content */
+      .page-content {
+        width: 50%;
+        margin-left: 30px;
+      }
+      .wallet-head{
+        display: flex;
+        justify-content: start;
+        margin-bottom: 15px;
+      }
+      .wallet-total{
+        font-size: 20px;
+        font-weight: 500;
+      }
+      .wallet-total span{
+        font-size: 22px;
+      }
+
+      /* wallet content */
+      .wallet-row{
+        display: flex;
+        justify-content: space-between;
+        background-color: white;
+        padding:8px;
+        border: 1px solid rgb(125, 125, 125);
+        border-radius: 3px;
+        margin-bottom: 8px;
+      }
+      .wallet-row .history{
+        color:rgb(32, 32, 32)
+      }
+      .wallet-row .history span{
+        font-weight: 500;
+      }
+      .wallet-row .amount{
+        font-size: 17px;
+        font-weight: 500;
+      }
+
+      /* empty wallet */
+      .no-wallet{
+        margin-top: 10px;
+        background-color: rgba(255, 255, 255, 0.833);
+        font-size: 17px;
+        padding:10px;
+        border:1px solid rgb(129, 128, 128);
+        border-radius: 3px;
+      }
+    </style>
+</head>
+<body>
+    <!-- headers -->
+    <%-include("./partials/navbar.ejs")%>
+    <!-- -- -->
+    <div class="page-container">
+      <div class="page-sidebar">
+        <a href="/user-profile">User Profile</a>
+        <a href="/address-management">Address Management</a>
+        <a href="/order-page">My Orders</a>
+        <a href="#">Payment Options</a>
+        <a href="/walletPage" style="border-left: 2.5px solid rgb(64, 67, 135)">user Wallet</a>
+      </div>
+      <div class="page-content">
+        
+        <div class="wallets">          
+          <%if(wallet.length > 0){%>
+            <%wallet.forEach(function(userWallet){%>
+              <div class="wallet-head">
+                <div class="wallet-total">Wallet Total: Rs. <span><%=userWallet.walletAmount ? userWallet.walletAmount : '0'%></span></div>
+              </div>
+              <%userWallet.creditedDetail.forEach(function(item){%>
+                <div class="wallet-row">
+                  <%const date = item.date.toDateString()%>
+                  <div class="history">Recieved <span><%=item.source%></span> amount on <span><%=date%></span> </div>
+                  <div class="amount">Rs. <%=item.amount%></div>
+                </div>
+              <%})%>
+            <%})%>
+          <%}else{%>
+            <div class="no-wallet">Your Wallet is Empty!</div>
+          <%}%>
+        </div>
+      </div>
+</body>
+</html>

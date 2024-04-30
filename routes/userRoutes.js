@@ -27,6 +27,7 @@ router.get("/remove-address/:id",authentication,userController.removeAddress);
 router.get("/set-as-default/:id",authentication,userController.setDefaultAddress);
 router.get("/edit-address/:id",authentication,userController.editAddressPage)
 router.post("/edit-address/:id",authentication,userController.editAddress);
+router.get("/wallet",authentication,userController.walletPage);
 router.get("/logout",userController.logout)
 
 module.exports = router;
