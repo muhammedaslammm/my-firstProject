@@ -12,7 +12,10 @@ const userSchema = new mongoose.Schema({
     },
     password:{
         type:String
-    },    
+    },  
+    referral_code:{
+        type:String,
+    },
     isBlocked:{
         type:Boolean,
         default:false

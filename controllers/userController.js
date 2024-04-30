@@ -2,7 +2,8 @@ const User = require("./../models/userModel");
 const Product = require("./../models/productModel");
 const Address = require("./../models/addressModel");
 const Banner = require("./../models/bannerModel");
-const Wallet = require("./../models/walletModel")
+const Wallet = require("./../models/walletModel");
+const referralCode = require("./../operations/generateReferralID");
 
 const validator = require("validator");
 const bcrypt = require("bcrypt");
@@ -88,6 +89,7 @@ exports.resendOTP = async function(req,res){
         const otp = req.session.otp
         await req.session.save();
         await sendMessage(otp,email);
+        console.log(otp);
         res.json({success:'otp sended',otp})
     }
     catch(error){
@@ -117,11 +119,13 @@ exports.signupOtpSubmission = async function(req,res){
             const hashedPassword = await bcrypt.hash(userPassword,10);
             console.log("hashed password created");
 
-            // then, creating user            
+            // then, creating user   
+            const referral_code = referralCode()         
             await User.create({
                 username:req.session.userData.username,
                 email:req.session.userData.email,
-                password:hashedPassword
+                password:hashedPassword,
+                referral_code
             })
             console.log("user created");        
             

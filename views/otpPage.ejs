@@ -131,8 +131,10 @@
         margin-right: 2px;
       }
       .resend-otp a {
+        pointer-events: none;
         font-size: 14px;
-        color: rgb(157, 157, 16);
+        color: rgb(193, 192, 192);
+        cursor: auto;
         text-decoration: none;
         font-weight: 500;
         margin-left: 3px;
@@ -210,7 +212,7 @@
         return startTime;
       }
 
-      const duration = 120;
+      const duration = 60;
       const element = document.querySelector("#timer");
 
       async function updateTimer() {
@@ -233,8 +235,15 @@
             console.log(error);
           }
           const button = document.querySelector("#otpSubmitButton");
+          const otpButton = document.querySelector("#resend-otp-link");
           button.disabled = true;
           button.style.backgroundColor = "rgba(94, 27, 153, 0.229)";
+
+          // otp  button styling
+          otpButton.style.pointerEvents = "auto";
+          otpButton.style.color = "rgb(157, 157, 16)";
+          otpButton.style.cursor = "pointer";
+          localStorage.removeItem("buttonBlocked");
           console.log("button disabled");
           element.innerText = "timer ended";
         } else {
@@ -253,9 +262,10 @@
       // resend OTP
       async function resendOTP(event, email) {
         event.preventDefault();
-        event.target.disabled = true;
+        event.target.style.pointerEvents = "none";
         event.target.style.color = "rgb(193, 192, 192)";
         event.target.style.cursor = "auto";
+        localStorage.setItem("buttonBlocked", true);
         const response = await fetch("/resendOTP", {
           method: "POST",
           headers: {
@@ -272,9 +282,6 @@
             const button = document.querySelector("#otpSubmitButton");
             button.disabled = false;
             button.style.backgroundColor = "rgba(94, 27, 153, 0.764)";
-            event.target.disabled = false;
-            event.target.style.cursor = "pointer";
-            event.target.style.color = "rgb(157, 157, 16)";
             updateTimer();
           }
         } else {
@@ -282,11 +289,21 @@
         }
       }
 
+      // refreshing page
+      document.addEventListener("DOMContentLoaded", function () {
+        const buttonBlocked = localStorage.getItem("buttonBlocked");
+        if (buttonBlocked) {
+          const otplink = document.querySelector("#resend-otp-link");
+          otplink.style.pointerEvents = "none";
+          otplink.style.color = "rgb(193, 192, 192)";
+          otplink.style.cursor = "auto";
+        }
+      });
+
       // otp validation
       const submit = document.querySelector("#otpSubmitButton");
       submit.addEventListener("click", async function (event) {
         event.preventDefault();
-        console.log("hey");
         const otp = document.querySelector("#inputOTP").value;
         try {
           const serverResponse = await fetch("/signup-otp", {
@@ -301,6 +318,10 @@
 
           if (data.error === "Invalid OTP") {
             document.querySelector(".error").innerText = "invalid OTP";
+            setTimeout(function () {
+              document.querySelector(".error").innerText = "";
+              document.querySelector("#inputOTP").value = "";
+            }, 2500);
           } else if (data.message) {
             localStorage.removeItem("startTime");
             window.location.href = "/";
