@@ -21,52 +21,13 @@ exports.signupPage = function(req,res){
 
 // signup page submission
 exports.signupPage_post = async function(req,res){
-    const errors = {}
+    
     req.session.userData = req.body;
-    const userData = req.body;
-    const matchingEmail = await User.findOne({email:userData.email});
-    console.log(userData);
-    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
-    for(let key in userData){
-        if(validator.isEmpty(userData[key])){
-            errors[key] = "Field Required"
-        }
-    }
-
-    if(!emailRegex.test(req.body.email)){
-        errors.email = "Invalid Email ID"
-    }
-    else{
-        if(matchingEmail){
-            errors.email = "Email Already Existing"
-        }
-    }
-    if(validator.isEmpty(userData.password)){
-        errors.password = "Field Required"
-    }
-    else if(!/(?=.*[0-9a-zA-Z!@#$%^&*()-_+=]{8,})/.test(userData.password)){
-        errors.password = "atleast 8 character required"
-    }
-    else if(!/(?=.*\d)/.test(userData.password)){
-        errors.password = "atleast one digit required"
-    }
-    else if(!/(?=.*[!@#$%^&*()-_+=])/.test(userData.password)){
-        errors.password = "atleast one special char required"
-    }
-    else if(req.body.password != req.body.confirmPassword){
-        errors.confirmPassword = "Password Not Matching"
-    }
-    console.log(errors);
-    if(Object.keys(errors).length>0){
-        res.render("signupPage",{errors,userData});
-    }else{
-        // generate otp
-        req.session.otp = generateOtp();        
-        console.log(req.session.otp);
-        sendMessage(req.session.otp,req.body.email);
-        res.redirect("/signup-otp");
-    }
+    req.session.otp = generateOtp();        
+    console.log(req.session.otp);
+    sendMessage(req.session.otp,req.body.email);
+    res.redirect("/signup-otp");
+            
 }
 
 // OTP page after signup

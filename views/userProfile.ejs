@@ -66,7 +66,8 @@
       }
       .name,
       .email,
-      .number {
+      .number,
+      .referral {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -85,6 +86,11 @@
       }
       .user-data .body {
         color: rgb(50, 50, 50);
+      }
+      .referral .body {
+        margin-top: 4px;
+        color: rgb(103, 102, 102);
+        font-style: italic;
       }
       .reset-password {
         border: 1px solid rgb(226, 224, 224);
@@ -177,6 +183,12 @@
               </div>
               <div class="user-details-edit">
                 <a href="/user-profile/edit-user?edit=number">edit number</a>
+              </div>
+            </div>
+            <div class="referral">
+              <div class="user-details">
+                <div class="head">Referral Code</div>
+                <div class="body"><%=user.referral_code%></div>
               </div>
             </div>
             <div class="reset-password">
