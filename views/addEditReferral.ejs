@@ -52,6 +52,10 @@
       form label span {
         font-weight: 500;
       }
+      .rupees {
+        font-size: 14px;
+        color: rgb(123, 123, 123);
+      }
       form input {
         outline: none;
         width: 95%;
@@ -94,12 +98,15 @@
         <div class="addEdit-box">
           <div class="box-head"><%=title%> Reward</div>
           <form
-            action="/admin/<%=reward ? 'edit' : 'add'%>"
+            action="/admin/referral/<%=reward ? 'edit' : 'add'%>"
             method="post"
             id="form"
           >
             <div class="referror-new">
-              <label for="referorNew"><span>Referror</span> New Reward:</label>
+              <label for="referorNew"
+                ><span>Referror</span> New Reward
+                <span class="rupees">(rupees)</span></label
+              >
               <input
                 type="number"
                 name="referrorNewReward"
@@ -109,7 +116,10 @@
               <div class="error"></div>
             </div>
             <div class="referee-new">
-              <label for="refereeNew"><span>Referee</span> New Reward:</label>
+              <label for="refereeNew"
+                ><span>Referee</span> New Reward
+                <span class="rupees">(rupees)</span></label
+              >
               <input
                 type="number"
                 name="refereeNewReward"
@@ -138,6 +148,20 @@
             input.parentNode.querySelector(".error").innerText =
               "Enter Valid Input";
             formValidated = false;
+          }
+          // submit form
+          if (formValidated) {
+            form.submit();
+          }
+        });
+      });
+
+      // key up;
+      const inputs = document.querySelectorAll(".input");
+      inputs.forEach(function (input) {
+        input.addEventListener("keyup", function () {
+          if (input.value.length > 0) {
+            input.parentNode.querySelector(".error").innerText = "";
           }
         });
       });

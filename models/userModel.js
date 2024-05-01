@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     referral_code:{
         type:String,
     },
-    refferalUsed:{
+    referralUsed:{
         type:Boolean,
         default:false
     },

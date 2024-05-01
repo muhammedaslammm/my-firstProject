@@ -4,6 +4,7 @@ const Address = require("./../models/addressModel");
 const Banner = require("./../models/bannerModel");
 const Wallet = require("./../models/walletModel");
 const Referral = require("./../models/referralModel");
+const referralReward = require("./../models/referralRewardModel");
 const referralCode = require("./../operations/generateReferralID");
 
 const validator = require("validator");
@@ -24,7 +25,7 @@ exports.signupPage = function(req,res){
 exports.findReferral = async function(req,res){
     const referral_code = req.query.referralCode;
     try{
-        const result = await User.findOne({referral_code});
+        const result = await User.findOne({referral_code,referralUsed:false});
         if(result){
             res.status(200).json({message:"found"});
         }
@@ -57,14 +58,12 @@ exports.validateEmail = async function(req,res){
 } 
 
 // signup page submission
-exports.signupPage_post = async function(req,res){
-    
+exports.signupPage_post = async function(req,res){    
     req.session.userData = req.body;
     req.session.otp = generateOtp();        
     console.log(req.session.otp);
     sendMessage(req.session.otp,req.body.email);
-    res.redirect("/signup-otp");
-            
+    res.redirect("/signup-otp");            
 }
 
 // OTP page after signup
@@ -109,28 +108,99 @@ exports.deleteOtp = async function(req,res){
 
 // OTP submission for signing up
 exports.signupOtpSubmission = async function(req,res){
-    const userPassword = req.session.userData.password;
-    const email = req.session.userData.email
+    const {email,password,username,referral} = req.session.userData;
     if(req.session.otp === req.body.otp){
         // creating hashed password
         try{
-            const hashedPassword = await bcrypt.hash(userPassword,10);
+            const hashedPassword = await bcrypt.hash(password,10);
             console.log("hashed password created");
 
             // then, creating user   
             const referral_code = referralCode()         
-            await User.create({
-                username:req.session.userData.username,
-                email:req.session.userData.email,
+            const newUser = await User.create({
+                username,
+                email,
                 password:hashedPassword,
                 referral_code
             })
             console.log("user created");        
             
+            // creating referral
+            if(referral){
+                const referror = await User.findOne({referral_code:referral});
+                const reward = await referralReward.findOne();
+                if(reward){
+                    const newReferral = await Referral.create({
+                        referrorID:referror._id,
+                        refereeID:newUser._id,
+                        referralCode:referral,
+                        referrorReward:reward.referrorNewReward,
+                        refereeReward:reward.refereeNewReward,
+                        Date:new Date
+                    })  
+                    console.log("new referral detail created"); 
+
+
+                    // chanaging the referral status in the user;
+                    await User.updateOne({_id:referror._id},{$set:{referralUsed:true}})                         
+
+                    // adding the referral reward to the referee;
+                    const creditedDetail = [];
+                    const detail = {
+                        amount:newReferral.refereeReward,
+                        date:new Date,
+                        source:"Refarrel"
+                    }
+                    creditedDetail.push(detail);
+                    const newWallet = await Wallet.create({
+                        userID:newUser._id,
+                        walletAmount:newReferral.refereeReward,
+                        creditedDetail
+                    })
+                    console.log("referral reward added to the referee");
+
+                    // adding referral reward to the referror
+                    const referrorWallet = await Wallet.findOne({userID:referror._id});                
+                    if(referrorWallet){    //if there exists any previous wallet
+                        let walletAmount = referrorWallet.walletAmount + newReferral.referrorReward;
+                        console.log(walletAmount);
+                        
+                        const details = {
+                            amount:newReferral.referrorReward,
+                            date:new Date,
+                            source:"Referral"
+                        }
+                        await Wallet.updateOne({_id:referrorWallet._id},{
+                            $push:{creditedDetail:details},
+                            $set:{walletAmount}
+                        })
+                        console.log("referral reward added to the referor");
+                    }
+                    else{ //if no wallet is existing for the referror
+                        let creditedDetail=[];
+                        const details = {
+                            amount:newReferral.referrorReward,
+                            date:new Date,
+                            source:"Referral"
+                        }
+                        creditedDetail.push(details);
+                        await Wallet.create({
+                            userID:referror._id,
+                            walletAmount:newReferral.referrorReward,
+                            creditedDetail
+                        })
+                        console.log("referral reward added to the referor");
+                    }
+                }  
+                else{
+                    console.log("Referral benefit failed to allocate to the referror and to the referee as no referal reward found on the website!");
+                } 
+                     
+            }
             
-            // then getting user ID for uathentication            
-            const signedUser = await User.findOne({email});
-            req.session.userID = signedUser._id;
+            
+            // then getting user ID for authentication    
+            req.session.userID = newUser._id;
             res.json({message:"user account created"})            
         }
         catch(error){
@@ -196,6 +266,8 @@ exports.loginPage_post = async function(req,res){
     }
     
 }
+
+// rendering home page
 exports.homepage = async function(req,res){
     try{
         const bannerTitles = ["T_Shirts","Shirts","Oversized","Hoodies","Formal_wear","Formals","Wedding_Wear","Home"];

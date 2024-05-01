@@ -58,10 +58,14 @@
       }
 
       .old-head,
-      .old-reward,
+      .old-reward {
+        color: rgb(89, 89, 89);
+      }
       .head,
       .date {
-        color: rgb(89, 89, 89);
+        font-size: 14px;
+        font-style: italic;
+        color: rgb(147, 146, 146);
       }
       .button {
         margin-top: 30px;
@@ -117,7 +121,8 @@
           <div class="section">
             <div class="head">Updated Date</div>
             <div class="date">
-              <%=typeof reward != 'string' ? reward.updateDate : '-'%>
+              <%=typeof reward != 'string' ? reward.updateDate.toDateString() :
+              '-'%>
             </div>
           </div>
           <div

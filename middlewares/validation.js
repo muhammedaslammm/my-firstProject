@@ -9,9 +9,11 @@ exports.authentication = async function(req,res,next){
             req.session.destroy(function(error){
                 if(error){
                     console.log("No user found! session failed to destroy");
+                    res.redirect("/login")
                 }
                 else{
                     console.log("No user Found! session destroyed");
+                    res.redirect("/login")
                 }
                 
             })

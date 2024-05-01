@@ -57,8 +57,9 @@ router.get("/orders",validation,adminController.orderPage)
 router.post("/orderStatus/:orderID/:productID",validation,adminController.orderStatus);
 
 // referral reward
-router.get("/referralReward",validation,adminController.referralReward)
-router.get("/referral/:action",validation,adminController.referralAction);
+router.get("/referralManagement",validation,adminController.referralReward)
+router.get("/referral/:action",validation,adminController.referralRewardPage);
+router.post("/referral/:action",validation,adminController.addEditReward)
 
 
 module.exports = router;

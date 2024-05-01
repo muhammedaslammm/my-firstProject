@@ -15,7 +15,7 @@ const ProductOffer = require("../models/productOfferModel");
 const Coupon = require('./../models/couponModel');
 const UsedCoupon = require('./../models/usedCouponModel');
 const usedCouponModel = require("./../models/usedCouponModel");
-const AdminReferral = require("./../models/referralRewardModel");
+const referralReward = require("./../models/referralRewardModel");
 
 
 // admin login page
@@ -770,7 +770,7 @@ exports.deleteCoupon = async function(req,res){
 // referral page
 exports.referralReward = async function(req,res){
     try{
-        const rewards = await AdminReferral.findOne();
+        const rewards = await referralReward.findOne();
         res.render("adminReward",{rewards});
 
     }
@@ -779,8 +779,8 @@ exports.referralReward = async function(req,res){
     }
 }
 
-// add referral
-exports.referralAction = async function(req,res){
+// add - edit referral reward page
+exports.referralRewardPage = async function(req,res){
     const action = req.params.action;
     try{
         if(action === "add"){
@@ -789,5 +789,25 @@ exports.referralAction = async function(req,res){
         }
     }catch(error){
         console.log("error",error);
+    }
+}
+
+// add - edit referal reward
+exports.addEditReward = async function(req,res){
+    const action = req.params.action;
+    const {referrorNewReward, refereeNewReward} = req.body;
+    try{
+        if(action === 'add'){
+            const newReward = await referralReward.create({
+                referrorNewReward,
+                refereeNewReward,
+                updateDate:new Date
+            })
+            res.redirect("/admin/referralManagement")
+        }
+    }
+    catch(error){
+        console.log("error",error);
+        res.redirect("/admin/referralManagement")
     }
 }
