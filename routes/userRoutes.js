@@ -7,6 +7,8 @@ const User = require("./../models/userModel")
 
 
 router.get("/signup",userController.signupPage);
+router.get("/findReferral",userController.findReferral);
+router.get("/validateEmail",userController.validateEmail);
 router.post("/signup",userController.signupPage_post);
 router.get("/signup-otp",userController.signupOtpPage);
 router.post('/resendOTP',userController.resendOTP)

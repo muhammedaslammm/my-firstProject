@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/adminNavBar.css" />
+    <link rel="stylesheet" href="/styles/adminSidebar.css" />
+
+    <title>Referral Reward</title>
+    <style>
+      .container {
+        width: 95%;
+        margin: 70px auto;
+        display: flex;
+        height: auto;
+      }
+
+      .content-body {
+        width: 50%;
+        margin-left: 15px;
+        margin-top: 10px;
+        height: auto;
+        display: flex;
+        justify-content: space-between;
+        box-sizing: border-box;
+        margin-left: 15px;
+      }
+      .referral-box {
+        box-shadow: 0px 2px 7px rgb(228, 228, 228);
+        background-color: white;
+        border-radius: 3px;
+        width: 60%;
+        padding: 20px;
+        height: 280px;
+      }
+      .box-head {
+        font-size: 21px;
+        margin-bottom: 18px;
+      }
+
+      /* referror section */
+
+      .section {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+      .new-head,
+      .new-reward {
+        font-weight: 500;
+        font-size: 17px;
+      }
+
+      .old-head,
+      .old-reward,
+      .head,
+      .date {
+        color: rgb(89, 89, 89);
+      }
+      .button {
+        margin-top: 30px;
+        font-size: 14px;
+        border: 1px solid rgb(212, 61, 61);
+        color: rgb(212, 61, 61);
+        font-weight: 500;
+        padding: 3px 6px;
+        display: inline-block;
+      }
+      .button:hover {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- nav bar -->
+    <%-include('./partials/adminNavBar.ejs')%>
+    <div class="container">
+      <div class="sidebar-left">
+        <%-include('./partials/adminSidebar.ejs')%>
+      </div>
+      <div class="content-body">
+        <div class="referral-box">
+          <%const reward = rewards ?? 'no rewards'%>
+          <div class="box-head">Referral Rewards</div>
+          <div class="section">
+            <div class="new-head">Referror New Reward</div>
+            <div class="new-reward">
+              Rs. <%=typeof reward != 'string' ? reward.referrorNewReward :
+              '0'%>
+            </div>
+          </div>
+          <div class="section">
+            <div class="new-head">Referee New Reward</div>
+            <div class="new-reward">
+              Rs. <%=typeof reward != 'string' ? reward.refereeNewReward : '0'%>
+            </div>
+          </div>
+          <div class="section">
+            <div class="old-head">Referror Old Reward</div>
+            <div class="old-reward">
+              Rs. <%=typeof reward != 'string' ? reward.referrorOldReward :
+              "0"%>
+            </div>
+          </div>
+          <div class="section">
+            <div class="old-head">Referee Old Reward</div>
+            <div class="old-reward">
+              Rs. <%=typeof reward != 'string' ? reward.refereeOldReward : "0"%>
+            </div>
+          </div>
+          <div class="section">
+            <div class="head">Updated Date</div>
+            <div class="date">
+              <%=typeof reward != 'string' ? reward.updateDate : '-'%>
+            </div>
+          </div>
+          <div
+            class="button"
+            onclick="addEditReward(`<%=typeof reward != 'string' ? 'edit' : 'add' %>`)"
+          >
+            <%=typeof reward != 'string' ? 'Edit Reward' : 'Add Reward'%>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      async function addEditReward(action) {
+        window.location.href = `/admin/referral/${action}`;
+      }
+    </script>
+  </body>
+</html>

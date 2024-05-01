@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/adminNavBar.css" />
+    <link rel="stylesheet" href="/styles/adminSidebar.css" />
+
+    <title><%=title%> Reward</title>
+    <style>
+      .container {
+        width: 95%;
+        margin: 70px auto;
+        display: flex;
+        height: auto;
+      }
+
+      .content-body {
+        width: 50%;
+        margin-left: 15px;
+        margin-top: 10px;
+        height: auto;
+        display: flex;
+        justify-content: space-between;
+        box-sizing: border-box;
+        margin-left: 15px;
+      }
+      .addEdit-box {
+        box-shadow: 0px 2px 7px rgb(228, 228, 228);
+        background-color: white;
+        border-radius: 3px;
+        width: 60%;
+        padding: 20px;
+        height: 280px;
+      }
+      .box-head {
+        font-size: 21px;
+        margin-bottom: 18px;
+      }
+
+      /* form */
+      form label {
+        display: block;
+        font-size: 17px;
+      }
+      form label span {
+        font-weight: 500;
+      }
+      form input {
+        outline: none;
+        width: 95%;
+        border: 1px solid rgb(185, 185, 185);
+        padding: 6px;
+      }
+      .referror-new,
+      .referee-new {
+        position: relative;
+        margin-bottom: 25px;
+      }
+      .error {
+        position: absolute;
+        font-size: 15px;
+        color: rgb(175, 47, 47);
+      }
+
+      input[type="submit"] {
+        width: 70px;
+        padding: 5px 4px;
+        border: 1px solid rgb(6, 91, 6);
+        background-color: white;
+        color: rgb(6, 91, 6);
+        font-weight: bold;
+        margin-top: 10px;
+      }
+      input[type="submit"]:hover {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- nav bar -->
+    <%-include('./partials/adminNavBar.ejs')%>
+    <div class="container">
+      <div class="sidebar-left">
+        <%-include('./partials/adminSidebar.ejs')%>
+      </div>
+      <div class="content-body">
+        <div class="addEdit-box">
+          <div class="box-head"><%=title%> Reward</div>
+          <form
+            action="/admin/<%=reward ? 'edit' : 'add'%>"
+            method="post"
+            id="form"
+          >
+            <div class="referror-new">
+              <label for="referorNew"><span>Referror</span> New Reward:</label>
+              <input
+                type="number"
+                name="referrorNewReward"
+                id="referorNew"
+                class="input"
+              />
+              <div class="error"></div>
+            </div>
+            <div class="referee-new">
+              <label for="refereeNew"><span>Referee</span> New Reward:</label>
+              <input
+                type="number"
+                name="refereeNewReward"
+                id="refereeNew"
+                class="input"
+              />
+              <div class="error"></div>
+            </div>
+            <input type="submit" />
+          </form>
+        </div>
+      </div>
+    </div>
+    <script>
+      const form = document.querySelector("#form");
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const inputs = document.querySelectorAll(".input");
+        let formValidated = true;
+        inputs.forEach(function (input) {
+          if (input.value === "") {
+            input.parentNode.querySelector(".error").innerText =
+              "Field Required";
+            formValidated = false;
+          } else if (input.value < 0) {
+            input.parentNode.querySelector(".error").innerText =
+              "Enter Valid Input";
+            formValidated = false;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -6,8 +6,10 @@ body {
   .sidebar-left {
     display: flex;
     flex-direction: column;
+    padding:5px;
     width:13%;
     background-color: white;
+    box-shadow: 0px 2px 7px rgb(228, 228, 228);
   }
   .sidebar-left a {
     text-decoration: none;

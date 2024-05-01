@@ -15,6 +15,7 @@ const ProductOffer = require("../models/productOfferModel");
 const Coupon = require('./../models/couponModel');
 const UsedCoupon = require('./../models/usedCouponModel');
 const usedCouponModel = require("./../models/usedCouponModel");
+const AdminReferral = require("./../models/referralRewardModel");
 
 
 // admin login page
@@ -762,5 +763,31 @@ exports.deleteCoupon = async function(req,res){
     catch(error){
         console.log("failed to delete the coupon");
         res.status(500).json({error:'deletion failed'});
+    }
+}
+
+
+// referral page
+exports.referralReward = async function(req,res){
+    try{
+        const rewards = await AdminReferral.findOne();
+        res.render("adminReward",{rewards});
+
+    }
+    catch(error){
+        console.log("error",error);
+    }
+}
+
+// add referral
+exports.referralAction = async function(req,res){
+    const action = req.params.action;
+    try{
+        if(action === "add"){
+            const reward = ""
+            res.render("addEditReferral",{title:'Add',reward});
+        }
+    }catch(error){
+        console.log("error",error);
     }
 }

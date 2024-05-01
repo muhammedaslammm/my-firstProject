@@ -3,6 +3,7 @@ const Product = require("./../models/productModel");
 const Address = require("./../models/addressModel");
 const Banner = require("./../models/bannerModel");
 const Wallet = require("./../models/walletModel");
+const Referral = require("./../models/referralModel");
 const referralCode = require("./../operations/generateReferralID");
 
 const validator = require("validator");
@@ -18,6 +19,42 @@ exports.signupPage = function(req,res){
         res.render("signupPage")
     }    
 }
+
+// finding matching referral
+exports.findReferral = async function(req,res){
+    const referral_code = req.query.referralCode;
+    try{
+        const result = await User.findOne({referral_code});
+        if(result){
+            res.status(200).json({message:"found"});
+        }
+        else{
+            res.status(200).json({message:"not found"})
+        }
+    }
+    catch(error){
+        console.log("error",error);;
+        res.status(500).json({error:"failed"});
+    }
+}
+
+//validating email
+exports.validateEmail = async function(req,res){
+    const email = req.query.email;
+    try{
+        const matchingMail = await User.findOne({email})
+        if(matchingMail){
+            res.status(200).json({result:"matching"});
+        }
+        else{
+            res.status(200).json({result:"notMatching"});
+        }
+    }
+    catch(error){
+        console.log("error",error);
+        res.status(500).json({result:"error"});
+    }
+} 
 
 // signup page submission
 exports.signupPage_post = async function(req,res){
