@@ -547,6 +547,7 @@
             value="<%=totalAmount%>"
             id="orderTotal"
           />
+          <input type="hidden" name="usedCouponID" id="usedCouponID" />
         </div>
       </form>
       <div class="checkout-right-section">
@@ -689,7 +690,6 @@
       });
 
       // add coupon to product
-
       const submit = document.querySelector("#couponSubmit");
       submit.addEventListener("click", async function () {
         const inputField = document.getElementById("couponCode");
@@ -717,6 +717,7 @@
             if (response.ok) {
               const data = await response.json();
               const usedCouponID = data.usedCouponDoc;
+              document.querySelector("#usedCouponID").value = usedCouponID;
 
               // setting new amount
               document.querySelector(".total-amount .Amount").innerText =
@@ -769,6 +770,7 @@
 
                   if (response.ok) {
                     const data = await response.json();
+                    document.getElementById("usedCouponID").value = "";
                     localStorage.removeItem("couponCode");
                     localStorage.removeItem("usedCoupon");
                     localStorage.removeItem("orderTotal");

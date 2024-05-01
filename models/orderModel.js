@@ -16,7 +16,6 @@ const orderSchema = new mongoose.Schema({
         },
         orderStatus: {
             type: String,
-            default: 'on progress'
         },
         cancelledDate: {
             type: Date,
@@ -42,6 +41,9 @@ const orderSchema = new mongoose.Schema({
     }],
     orderedDate: {
         type: Date
+    },
+    orderStatus:{
+        type:String,
     },
     address: {
         type: mongoose.Schema.Types.ObjectId,
