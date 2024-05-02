@@ -191,36 +191,18 @@
       async function removeItem(productID, productCount, event) {
         event.preventDefault();
         const element = event.target.parentNode.parentNode;
-        const result = await deleteAlert();
-        if (result.value) {
-          removeItemFromWishlist(productID, productCount, element);
-        }
-      }
-
-      async function deleteAlert() {
-        const result = await Swal.fire({
-          title: "Are you sure?",
-          text: "You are about to remove this product from the Wishlist!",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Remove",
-          cancelButtonText: "Cancel",
-        });
-        return result;
-      }
-
-      async function removeItemFromWishlist(productID, count, element) {
         try {
           const response = await fetch("/removeFrom-wishlist", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ productID, count }),
+            body: JSON.stringify({ productID, productCount }),
           });
           if (response.ok) {
             const data = await response.json();
-            document.querySelector(".total-count span").innerText = data.count;
+            document.querySelector(".total-count span").innerText =
+              data.productCount;
             element.remove();
           }
         } catch (error) {

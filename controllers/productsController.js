@@ -292,12 +292,11 @@ exports.wishlistPage = async function(req,res){
 
 // remove from wishlist
 exports.removeFromWishlist = async function(req,res){
-    const productID = req.body.productID;
-    let count = req.body.count
+    let {productID,productCount} = req.body
     try{
         await Product.findByIdAndUpdate(productID,{$set:{addedToWishlist:false}})
-        count--
-        res.status(200).json({message:"success",count});
+        productCount -= 1
+        res.status(200).json({message:"success",productCount});
     }
     catch(error){
         console.log("error when removing item from the wishlist", error);

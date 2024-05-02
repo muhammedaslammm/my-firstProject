@@ -182,7 +182,8 @@
           <div class="orderID"><%=product.moasOrderID%></div>
         </div>
         <div class="more-box">
-          <%if(statuses.includes(product.orderStatus)){%>
+          <%if(statuses.includes(product.orderStatus) && order.couponAdded ===
+          false){%>
           <!--statuses if from server-side array -->
           <button
             type="submit"
@@ -227,24 +228,24 @@
           </div>
         </div>
         <div class="product-stat">
-          <%if(order.orderStatus === "cancelled"){%>
+          <%if(product.orderStatus === "cancelled"){%>
           <div class="product-status" style="color: rgb(183, 24, 24)">
-            Order <%=order.orderStatus%>
+            Order <%=product.orderStatus%>
           </div>
           <div class="note">The item you ordered is cancelled</div>
-          <%}else if(order.orderStatus === "on progress"){%>
+          <%}else if(product.orderStatus === "on progress"){%>
           <div class="product-status" style="color: rgb(29, 138, 7)">
-            Order <%=order.orderStatus%>
+            Order <%=product.orderStatus%>
           </div>
           <div class="note">The item you ordered is on progress</div>
-          <%}else if(order.orderStatus === "shipped"){%>
+          <%}else if(product.orderStatus === "shipped"){%>
           <div class="product-status" style="color: rgb(29, 138, 7)">
-            Order <%=order.orderStatus%>
+            Order <%=product.orderStatus%>
           </div>
           <div class="note">The item you ordered is shipped</div>
-          <%}else if(order.orderStatus === "delivered"){%>
+          <%}else if(product.orderStatus === "delivered"){%>
           <div class="product-status" style="color: rgb(29, 138, 7)">
-            Order <%=order.orderStatus%>
+            Order <%=product.orderStatus%>
           </div>
           <div class="note">The item you ordered is delivered</div>
           <%}%>

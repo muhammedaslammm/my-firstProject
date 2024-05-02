@@ -3,6 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://kit.fontawesome.com/f620fbbfb3.js"
+      crossorigin="anonymous"
+    ></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -49,10 +53,8 @@
       }
       .page-body {
         width: 85%;
-        margin: 110px auto;
-        /* border: 1px solid grey; */
+        margin: 110px auto 20px;
         display: flex;
-        /* justify-content: space-between; */
       }
       .sidebar {
         background-color: white;
@@ -103,6 +105,9 @@
         margin-top: 30px;
         margin-bottom: 7px;
       }
+      .order-date:first-child {
+        margin-top: 50px;
+      }
 
       /* product card */
       .product-card {
@@ -116,11 +121,54 @@
         color: black;
         transition: box-shadow 0.3s;
       }
+
+      #product-card:hover {
+        cursor: pointer;
+      }
       .product-card:hover {
         text-decoration: none;
         color: black;
         box-shadow: 0px 0px 9px rgb(161, 160, 160);
       }
+      /* static card */
+      .product-left-multi .head {
+        font-size: 17px;
+      }
+      .discount-price {
+        font-weight: 500;
+        font-size: 18px;
+      }
+      .product-left-multi .date {
+        font-size: 14px;
+        color: rgb(127, 127, 127);
+        margin-top: 8px;
+        font-style: italic;
+      }
+
+      .product-right-multi {
+        display: flex;
+      }
+      .status-section {
+        margin-right: 20px;
+      }
+      .status-section button {
+        background-color: white;
+        padding: 5px;
+        border: 1px solid rgb(216, 25, 25);
+        color: rgb(216, 25, 25);
+      }
+      .status-section button:hover {
+        cursor: pointer;
+      }
+      #view-more-button {
+        background-color: white;
+        border: 1px solid black;
+        padding: 5px;
+      }
+      #view-more-button:hover {
+        cursor: pointer;
+      }
+
       /* product-left */
       .product-left {
         display: flex;
@@ -186,6 +234,11 @@
         font-weight: 500;
         color: rgb(7, 122, 7);
       }
+
+      /* hidden products */
+      #hidden-product-cards {
+        display: block;
+      }
     </style>
   </head>
   <body>
@@ -205,80 +258,166 @@
           <input type="search" placeholder="Search your order here..." />
           <input type="submit" />
         </div>
-        <%const Orders = orders ?? 'no orders found'%> <%if(typeof orders!=
-        'string'){%> <%Orders.forEach(function(order){%>
-        <div class="ordered-date">
-          <%const date = order.orderedDate.toDateString()%> <%=date%>
+        <%if(orders.length > 0){%>
+        <!-- splitting orders -->
+        <%orders.forEach(function(order){%>
+        <div class="ordered-date"><%=order.orderedDate.toDateString()%></div>
+        <%if(order.orderedProducts.length > 1){%>
+        <div class="product-card">
+          <div class="product-left-multi">
+            <div class="head">
+              Multiple products Placed For
+              <span class="discount-price">Rs. <%=order.orderTotal%></span>
+            </div>
+            <div class="date"><%=order.orderedDate.toDateString()%></div>
+          </div>
+          <div class="product-right-multi">
+            <div class="status-section">
+              <%if(order.orderStatus && order.orderStatus === 'on progress'){%>
+              <button onclick="cancelOrder('<%=order._id%>','')">
+                cancel order
+              </button>
+              <%}else if(order.orderStatus && order.orderStatus ===
+              'cancelled'){%>
+              <div class="cancelled-head">
+                <div class="cancel-note" style="color: rgb(159, 20, 20)">
+                  Order Cancelled on
+                </div>
+                <div
+                  class="cancelled-date"
+                  style="color: rgb(159, 20, 20); font-weight: 500"
+                >
+                  <%=order.cancelledDate.toDateString()%>
+                </div>
+              </div>
+              <%}%>
+            </div>
+            <div class="button">
+              <button id="view-more-button">view products</button>
+            </div>
+          </div>
         </div>
-        <%order.orderedProducts.forEach(function(product){%>
-        <!-- product card -->
-        <a class="product-card" href="/view/<%=order._id%>/<%=product._id%>">
+        <!-- splitting products -->
+        <div id="hidden-product-cards" style="display: none">
+          <%order.orderedProducts.forEach(function(product){%>
+          <div
+            class="product-card"
+            onclick="viewOrder('<%=order._id%>','<%=product._id%>')"
+            id="product-card"
+          >
+            <div class="product-left">
+              <div class="image">
+                <img
+                  src="<%=product.productID.images[0]%>"
+                  alt="product image"
+                />
+              </div>
+              <div class="product-details">
+                <div class="brand"><%=product.productID.brand%></div>
+                <div class="details">
+                  <%=product.productID.color%> Men's
+                  <%=product.productID.productType%>
+                </div>
+                <div class="color">Color: <%=product.productID.color%></div>
+              </div>
+            </div>
+            <div class="product-middle">
+              <div class="productOrderID">
+                <div class="orderID-head">Order ID</div>
+                <div class="orderID"><%=product.moasOrderID%></div>
+              </div>
+              <div class="price">Rs. <%=product.totalPrice%></div>
+            </div>
+            <div class="product-right">
+              <!-- on progress -->
+              <%if(product.orderStatus === 'on progress'){%>
+              <div class="date-note" style="color: rgb(12, 108, 12)">
+                Delivery Expected on
+              </div>
+              <div
+                class="date"
+                style="color: rgb(12, 108, 12); font-weight: 500"
+              >
+                <%=product.deliveryDate.toDateString()%>
+              </div>
+
+              <!-- cancelled -->
+              <%}else if(product.orderStatus === 'cancelled'){%>
+              <div class="date-note" style="color: rgb(159, 20, 20)">
+                Order Cancelled on
+              </div>
+              <div
+                class="date"
+                style="color: rgb(159, 20, 20); font-weight: 500"
+              >
+                <%=product.cancelledDate.toDateString()%>
+              </div>
+              <%}%>
+            </div>
+          </div>
+          <%})%>
+        </div>
+
+        <%}else{%>
+        <div
+          class="product-card"
+          id="product-card"
+          onclick="viewOrder('<%=order._id%>','<%=order.orderedProducts[0]._id%>')"
+        >
           <div class="product-left">
+            <%const product = order.orderedProducts[0].productID%>
             <div class="image">
-              <img src="<%=product.productID.images[0]%>" alt="product image" />
+              <img
+                src="<%=order.orderedProducts[0].productID.images[0]%>"
+                alt="product image"
+              />
             </div>
             <div class="product-details">
-              <div class="brand"><%=product.productID.brand%></div>
+              <div class="brand"><%=product.brand%></div>
               <div class="details">
-                <%=product.productID.color%> Men's
-                <%=product.productID.productType%>
+                <%=product.color%> Men's <%=product.productType%>
               </div>
-              <div class="color">Color: <%=product.productID.color%></div>
+              <div class="color">Color: <%=product.color%></div>
             </div>
           </div>
           <div class="product-middle">
             <div class="productOrderID">
               <div class="orderID-head">Order ID</div>
-              <div class="orderID"><%=product.moasOrderID%></div>
-            </div>
-            <div class="price">Rs. <%=product.totalPrice%></div>
-          </div>
-
-          <div class="product-right">
-            <!-- order cancel -->
-            <%if(product.orderStatus === "cancelled"){%>
-            <div class="delDate" style="color: rgb(183, 24, 24)">
-              <%const cancelledDate = product.cancelledDate.toDateString()%>
-              <div class="cancel-note" style="font-weight: 400">
-                order <%=product.orderStatus%> on
+              <div class="orderID">
+                <%=order.orderedProducts[0].moasOrderID%>
               </div>
-              <div class="cancelled-date"><%=cancelledDate%></div>
             </div>
-
-            <!-- order pending -->
-            <%}else if(product.orderStatus === "pending"){%>
-            <div class="delDate" style="color: rgb(183, 146, 24)">
-              order <%=product.orderStatus%>
+            <div class="price">
+              Rs. <%=order.orderedProducts[0].totalPrice%>
             </div>
+          </div>
+          <div class="product-right">
+            <%const productOrder = order.orderedProducts[0]%>
 
             <!-- on progress -->
-            <%}else if(product.orderStatus === 'on progress'){%> <%const
-            deliveryDate = product.deliveryDate.toDateString()%>
-            <div class="delDate" style="color: rgb(9, 142, 4)">
-              <div class="date-head" style="font-weight: 400">
-                Delivery Expected On
-              </div>
-              <div class="delivery-date"><%=deliveryDate%></div>
+            <%if(productOrder.orderStatus === 'on progress'){%>
+            <div class="date-note" style="color: rgb(12, 108, 12)">
+              Delivery Expected on
+            </div>
+            <div class="date" style="color: rgb(12, 108, 12); font-weight: 500">
+              <%=productOrder.deliveryDate.toDateString()%>
             </div>
 
-            <!-- product delivered-->
-            <%}else if(statuses.includes(product.orderStatus)){%>
-            <div class="delDate" style="color: rgb(9, 142, 4)">
-              <%const deliveredDate = product.deliveredDate.toDateString()%>
-              <div class="delievred-note" style="font-weight: 400">
-                Product Delivered
-              </div>
-              <div class="deliveredDate"><%=deliveredDate%></div>
-              order <%=product.orderStatus%>
+            <!-- cancelled -->
+            <%}else if(productOrder.orderStatus === 'cancelled'){%>
+            <div class="date-note" style="color: rgb(159, 20, 20)">
+              Order Cancelled on
+            </div>
+            <div class="date" style="color: rgb(159, 20, 20); font-weight: 500">
+              <%=productOrder.cancelledDate.toDateString()%>
             </div>
             <%}%>
           </div>
-        </a>
-        <%})%> <%})%> <%} else{%>
-        <div class="no-content"><%=Orders%></div>
-        <%}%>
+        </div>
+        <%}%> <%})%> <%}%>
       </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       const profileButton = document.querySelector("#profile-button");
       const content = document.querySelector(".dropdown-content");
@@ -288,6 +427,59 @@
         content.style.display =
           content.style.display === "none" ? "block" : "none";
       });
+
+      // hide and unhide the products
+      const viewMore = document.getElementById("view-more-button");
+      viewMore.addEventListener("click", function () {
+        const productSection = document.getElementById("hidden-product-cards");
+        viewMore.innerText =
+          viewMore.innerText === "view products"
+            ? "close products"
+            : "view products";
+        productSection.style.display =
+          productSection.style.display === "none" ? "block" : "none";
+      });
+
+      // view product
+      function viewOrder(orderID, productDocID) {
+        window.location.href = `/view/${orderID}/${productDocID}`;
+      }
+
+      // cancel order
+      async function cancelOrder(orderID, docID) {
+        const result = await cancelAlert();
+        if (result.value) {
+          cancelTheOrder(orderID, docID);
+        }
+      }
+      async function cancelAlert() {
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "You are about to cancel this order!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Remove",
+          cancelButtonText: "Cancel",
+        });
+        return result;
+      }
+
+      async function cancelTheOrder(orderID, docID) {
+        try {
+          const response = await fetch("/cancel-order", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ orderID, docID }),
+          });
+          if (response.ok) {
+            window.location.reload();
+          }
+        } catch (error) {
+          console.log("error", error);
+        }
+      }
     </script>
   </body>
 </html>

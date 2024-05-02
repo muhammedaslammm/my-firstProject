@@ -45,6 +45,9 @@ const orderSchema = new mongoose.Schema({
     orderStatus:{
         type:String,
     },
+    cancelledDate:{
+        type:Date
+    },
     address: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Address"
@@ -54,6 +57,10 @@ const orderSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String
+    },
+    couponAdded:{
+        type:Boolean,
+        default:false
     }
 })
 
