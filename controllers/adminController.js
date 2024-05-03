@@ -811,3 +811,13 @@ exports.addEditReward = async function(req,res){
         res.redirect("/admin/referralManagement")
     }
 }
+
+// admin sales report page
+exports.salesReportPage = async function(req,res){
+    try{
+        res.render("salesReport");
+    }
+    catch(error){
+        console.log("failed to log",error);
+    }
+}
