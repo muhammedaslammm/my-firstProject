@@ -14,6 +14,19 @@ const orderSchema = new mongoose.Schema({
         moasOrderID: {
             type: String
         },
+        quantity: {
+            type: Number
+        },
+        size: {
+            type: String
+        },
+        totalPrice: {
+            type: Number
+        },
+        offer:{
+            type:Number,
+            default:0
+        },
         orderStatus: {
             type: String,
         },
@@ -29,15 +42,7 @@ const orderSchema = new mongoose.Schema({
             type: Date,
             default: null
         },        
-        quantity: {
-            type: Number
-        },
-        size: {
-            type: String
-        },
-        totalPrice: {
-            type: Number
-        }
+        
     }],
     orderedDate: {
         type: Date

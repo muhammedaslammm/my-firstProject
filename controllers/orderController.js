@@ -46,19 +46,20 @@ exports.placeOrder = async function(req,res){
             const moasOrderID = generateOrderID()
             let totalPrice = 0;
             if(cart.productID.productOffer){
-                totalPrice += cart.productID.productOffer.sellingPrice * cart.quantity
+                totalPrice += cart.productID.productOffer.sellingPrice * cart.quantity;
             }
             else{
                 totalPrice += cart.productID.sellingPrice * cart.quantity
             }
             const productDetails = {
                 productID:cart.productID._id,
-                moasOrderID,
-                deliveryDate,                
+                moasOrderID,               
                 quantity:cart.quantity,
                 size:cart.size, 
                 orderStatus:"on progress",
-                totalPrice
+                totalPrice,
+                offer:cart.productID.productOffer.offer,               
+                deliveryDate,
             }
             
             orderedProducts.push(productDetails);
