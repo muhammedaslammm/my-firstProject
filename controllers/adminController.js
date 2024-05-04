@@ -815,7 +815,25 @@ exports.addEditReward = async function(req,res){
 // admin sales report page
 exports.salesReportPage = async function(req,res){
     try{
-        const orders = await Order.find();        
+        // caclulating order and sales amount total
+        const orders = await Order.find(); 
+        let totalSalesAmount = 0;
+        let totalproducts = 0;
+        orders.forEach(function(order){
+            order.orderedProducts.forEach(function(product){
+                if(product.orderStatus != 'cancelled'){
+                    totalSalesAmount += product.totalPrice
+                    totalproducts += 1;
+                }
+            })
+        })
+
+        // calculating total users
+        const totalUsers = await User.countDocuments();
+
+        // calculating total products
+        const totalOrders = await Order.countDocuments({orderStatus:{$ne:"cancelled"}});
+        console.log(`total orders:${totalOrders}`);
         res.render("salesReport");
     }
     catch(error){
