@@ -815,26 +815,39 @@ exports.addEditReward = async function(req,res){
 // admin sales report page
 exports.salesReportPage = async function(req,res){
     try{
-        // caclulating order and sales amount total
-        const orders = await Order.find(); 
+        const filetr = req.query.filter;
+        let filter = {};
+
+
+        // caclulating total products and sales amount 
+        const orders = await Order.find(filter); 
         let totalSalesAmount = 0;
-        let totalproducts = 0;
+        let totalProducts = 0;
         orders.forEach(function(order){
             order.orderedProducts.forEach(function(product){
                 if(product.orderStatus != 'cancelled'){
                     totalSalesAmount += product.totalPrice
-                    totalproducts += 1;
+                    totalProducts += 1;
                 }
             })
         })
-
         // calculating total users
         const totalUsers = await User.countDocuments();
 
         // calculating total products
         const totalOrders = await Order.countDocuments({orderStatus:{$ne:"cancelled"}});
-        console.log(`total orders:${totalOrders}`);
-        res.render("salesReport");
+
+        // filtering the order reports
+
+
+
+
+        res.render("salesReport",{
+            totalSalesAmount,
+            totalProducts,
+            totalUsers,
+            totalOrders
+        });
     }
     catch(error){
         console.log("failed to log",error);

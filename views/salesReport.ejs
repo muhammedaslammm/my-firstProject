@@ -35,13 +35,38 @@
         width: 100%;
         margin-top: 10px;
         height: auto;
-        display: flex;
-        justify-content: space-between;
         box-sizing: border-box;
       }
       .content-body .body-head {
         font-weight: 500;
         font-size: 17px;
+      }
+
+      /* stat section */
+      .stat-count-section {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 22px;
+      }
+      .statBox {
+        border: 1px solid rgb(165, 165, 165);
+        padding: 7px;
+        border-radius: 5px;
+        width: 20%;
+      }
+      .statBox .head {
+        font-size: 19px;
+      }
+      .statBox .data {
+        font-size: 32px;
+        font-weight: 500;
+      }
+      .statBox .data-price {
+        font-size: 25px;
+        font-weight: 500;
+      }
+      .statBox .data-price span {
+        font-size: 32px;
       }
     </style>
 
@@ -56,6 +81,27 @@
       </div>
       <div class="content-body">
         <div class="body-head">Sales Report</div>
+        <div class="stat-count-section">
+          <div class="statBox">
+            <div class="head">Total Sales Amount</div>
+            <div class="data-price">
+              Rs. <span><%=totalSalesAmount%>.00</span>
+            </div>
+          </div>
+          <div class="statBox">
+            <div class="head">Total Orders</div>
+            <div class="data"><%=totalOrders%></div>
+          </div>
+          <div class="statBox">
+            <div class="head">Total Products</div>
+            <div class="data"><%=totalProducts%></div>
+          </div>
+          <div class="statBox">
+            <div class="head">Total Users</div>
+            <div class="data"><%=totalUsers%></div>
+          </div>
+        </div>
+        <div class="filter-panel"></div>
       </div>
     </div>
   </body>

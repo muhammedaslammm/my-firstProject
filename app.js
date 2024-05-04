@@ -9,6 +9,7 @@ const productsRouter = require("./routes/productsRoutes")
 const adminRouter = require("./routes/adminRoutes");
 const cartRouter = require("./routes/cartRoutes");
 const orderRouter = require("./routes/orderRoutes");
+const paymentRouter = require("./routes/paymentRoutes");
 
 
 
@@ -38,6 +39,7 @@ app.use("/",userRouter);
 app.use("/",productsRouter);
 app.use("/",cartRouter);
 app.use("/",orderRouter)
+app.use("/",paymentRouter)
 
 function pageNotFound(req,res,next){
     res.status(404).render("invalidURL")

@@ -11,6 +11,7 @@ const generateOrderID = require('./../operations/generateOrderID');
 // placing order 'cash on delivery'
 exports.placeOrder = async function(req,res){
     try{
+        console.log('order controller here');
         const {address,cartID,payment,orderTotal,usedCouponID} = req.body;
         console.log(payment);
         const userID = req.session.userID;
