@@ -12,6 +12,7 @@ const generateOrderID = require('./../operations/generateOrderID');
 exports.placeOrder = async function(req,res){
     try{
         const {address,cartID,payment,orderTotal,usedCouponID} = req.body;
+        console.log(payment);
         const userID = req.session.userID;
         let carts = [];
         if(typeof cartID != 'string'){
@@ -44,12 +45,20 @@ exports.placeOrder = async function(req,res){
         const deliveryDate = new Date(newDate)
         carts.forEach(function(cart){
             const moasOrderID = generateOrderID()
+
+            // adding total price
             let totalPrice = 0;
             if(cart.productID.productOffer){
                 totalPrice += cart.productID.productOffer.sellingPrice * cart.quantity;
             }
             else{
                 totalPrice += cart.productID.sellingPrice * cart.quantity
+            }
+
+            // adding offer value
+            let offer = null;
+            if(cart.productID.productOffer){
+                offer = cart.productID.productOffer.offer
             }
             const productDetails = {
                 productID:cart.productID._id,
@@ -58,12 +67,25 @@ exports.placeOrder = async function(req,res){
                 size:cart.size, 
                 orderStatus:"on progress",
                 totalPrice,
-                offer:cart.productID.productOffer.offer,               
+                offer,              
                 deliveryDate,
             }
             
             orderedProducts.push(productDetails);
         })
+
+        // handling wallet if payment is via wallet\
+        if(payment === 'wallet'){
+            const wallet = await Wallet.findOne({userID});
+            const walletAmount = wallet.walletAmount - orderTotal
+            const newWallet = {
+                amount:orderTotal,
+                transactionType:"debited",
+                source:"Product Purchase",
+                date:new Date
+            }
+            await Wallet.updateOne({userID},{$set:{walletAmount},$push:{creditedDetail:newWallet}})
+        }
         
         // ordering data
         const order = new Order({
@@ -222,7 +244,8 @@ exports.cancelOrder = async function(req,res){
             const obj = {
                 amount,
                 date:new Date,
-                source:"Refunded"
+                source:"Refunded",
+                transactionType:"credited"
             }
             const walletAmount = wallet.walletAmount + amount
             await Wallet.updateOne({_id:wallet._id},{
@@ -236,7 +259,8 @@ exports.cancelOrder = async function(req,res){
             const details = {
                 amount,
                 date:new Date,
-                source:"Refunded"
+                source:"Refunded",
+                transactionType:"credited"
             }
             creditedDetail.push(details);
             const newWallet = await Wallet.create({

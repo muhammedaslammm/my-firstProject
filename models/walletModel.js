@@ -7,9 +7,13 @@ const walletSchema = new mongoose.Schema({
         type:Number,
         default:0
     },
-    creditedDetail:[{
+    creditedDetail:[{   
         amount:{
             type:Number
+        },
+        transactionType:{
+            type:String,
+            enem:["credited","debited","failed"]
         },
         source:{
             type:String

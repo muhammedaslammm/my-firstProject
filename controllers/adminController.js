@@ -815,6 +815,7 @@ exports.addEditReward = async function(req,res){
 // admin sales report page
 exports.salesReportPage = async function(req,res){
     try{
+        const orders = await Order.find();        
         res.render("salesReport");
     }
     catch(error){

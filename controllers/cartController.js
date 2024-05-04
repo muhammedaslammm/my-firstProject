@@ -7,6 +7,7 @@ const Address = require("./../models/addressModel");
 const User = require("./../models/userModel");
 const Coupon = require("./../models/couponModel");
 const UsedCoupon = require("./../models/usedCouponModel");
+const Wallet = require("./../models/walletModel");
 
 
 app.use(nocache())
@@ -195,21 +196,28 @@ exports.checkoutPage = async function(req,res){
             }
             return currentTotal
         },0)
+        console.log(totalAmount);
 
         // user address
         const defaultAddress = await Address.findOne({userID,default:true})
         const addresses = await Address.find({userID:userID});
+
+        // collecting wallet
+        const wallet = await Wallet.findOne({userID})
+        const walletTotal = wallet.walletAmount;
+        console.log(walletTotal);
+
+        // collecting available coupons
         const usedCouponsIDs = (await UsedCoupon.find({userID:req.session.userID})).map(function(usedCoupon){
             return usedCoupon.couponID;
         })
-        console.log(usedCouponsIDs);
         const coupons = await Coupon.find({_id:{$nin:usedCouponsIDs}})           
         const productCoupons = coupons.filter(function(coupon){
             if(totalAmount > coupon.minimumAmount){
                 return coupon
             }
         })           
-        res.render("checkoutPage",{userCart,totalQuantity,totalAmount,addresses,defaultAddress,userID,coupons:productCoupons})
+        res.render("checkoutPage",{userCart,totalQuantity,totalAmount,addresses,defaultAddress,userID,coupons:productCoupons,walletTotal})
     }
     catch(error){
         console.log("error occured when rendering checkout page",error);

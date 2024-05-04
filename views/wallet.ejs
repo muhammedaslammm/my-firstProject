@@ -114,7 +114,7 @@
               <%userWallet.creditedDetail.forEach(function(item){%>
                 <div class="wallet-row">
                   <%const date = item.date.toDateString()%>
-                  <div class="history">Recieved <span><%=item.source%></span> amount on <span><%=date%></span> </div>
+                  <div class="history"><span><%=item.source%></span> amount on <span><%=date%></span> </div>
                   <div class="amount">Rs. <%=item.amount%></div>
                 </div>
               <%})%>

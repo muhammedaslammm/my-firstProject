@@ -148,6 +148,7 @@ exports.signupOtpSubmission = async function(req,res){
                     const creditedDetail = [];
                     const detail = {
                         amount:newReferral.refereeReward,
+                        transactionType:"credited",
                         date:new Date,
                         source:"Refarrel"
                     }
@@ -167,6 +168,7 @@ exports.signupOtpSubmission = async function(req,res){
                         
                         const details = {
                             amount:newReferral.referrorReward,
+                            transactionType:"credited",
                             date:new Date,
                             source:"Referral"
                         }

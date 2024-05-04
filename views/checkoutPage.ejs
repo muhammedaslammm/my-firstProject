@@ -180,7 +180,8 @@
       .upi-payment-dropdown,
       .debitcard-payment-dropdown,
       .internetBanking-payment-dropdown,
-      .COD-payment-dropdown {
+      .COD-payment-dropdown,
+      .wallet-payment-dropdown {
         border: 1px solid rgb(213, 213, 213);
         background-color: white;
         padding: 5px 15px;
@@ -192,7 +193,8 @@
       .upi-payment-dropdown label,
       .debitcard-payment-dropdown label,
       .internetBanking-payment-dropdown label,
-      .COD-payment-dropdown label {
+      .COD-payment-dropdown label,
+      .wallet-payment-dropdown label {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -200,7 +202,8 @@
       .upi-payment-dropdown label span,
       .debitcard-payment-dropdown label span,
       .internetBanking-payment-dropdown label span,
-      .COD-payment-dropdown label span {
+      .COD-payment-dropdown label span,
+      .wallet-payment-dropdown label span {
         font-weight: 500;
         transform: rotate(90deg);
       }
@@ -208,7 +211,7 @@
       .upi-payment-dropdown:hover label,
       .debitcard-payment-dropdown:hover label,
       .internetBanking-payment-dropdown:hover label,
-      .COD-payment-dropdown:hover label {
+      .COD-payment-dropdown:hover label .wallet-payment-dropdown:hover label {
         color: black;
       }
       label + input[type="radio"] {
@@ -233,6 +236,36 @@
       .COD-payment-dropdown .content button:hover {
         /* background-color: rgb(154, 132, 51); */
         text-decoration: none;
+        cursor: pointer;
+      }
+
+      /* wallet */
+      .wallet-payment-dropdown .content {
+        display: flex;
+        justify-content: end;
+        align-items: end;
+        margin-top: 9px;
+      }
+      .wallet-payment-dropdown .content .payment-success {
+        font-weight: 500;
+      }
+      .wallet-payment-dropdown .content .order-button {
+        color: white;
+        font-weight: 500;
+        background-color: rgb(199, 166, 45);
+        font-size: 15px;
+        padding: 2px 8px;
+        border-radius: 3px;
+        border: none;
+        margin-top: 15px;
+        transition: background-color 0.5s;
+      }
+      .wallet-payment-dropdown .content .payment-error {
+        color: rgb(189, 26, 26);
+        font-size: 15px;
+      }
+
+      .wallet-payment-dropdown .content .order-button:hover {
         cursor: pointer;
       }
 
@@ -523,6 +556,22 @@
                 >
                 <input type="radio" name="payment" id="internetBanking" />
                 <div class="content"></div>
+              </div>
+
+              <!-- wallet -->
+              <div class="wallet-payment-dropdown">
+                <label for="wallet">Wallet <span>&#x3e;</span></label>
+                <input type="radio" name="payment" id="wallet" value="wallet" />
+                <div class="content">
+                  <%if(totalAmount > walletTotal){%>
+                  <div class="payment-error">
+                    You don't have sufficient amount in the
+                    <a href="/wallet">wallet</a> for this purchase!
+                  </div>
+                  <%}else{%>
+                  <button class="order-button">Place Order</button>
+                  <%}%>
+                </div>
               </div>
 
               <!-- cash on delivery -->
