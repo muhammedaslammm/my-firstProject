@@ -11,8 +11,7 @@ const generateOrderID = require('./../operations/generateOrderID');
 // placing order 'cash on delivery'
 exports.placeOrder = async function(req,res){
     try{
-        console.log('order controller here');
-        const {address,cartID,payment,orderTotal,usedCouponID} = req.body;
+        const {address,cartID,payment,orderTotal,usedCouponID} = req.body;        
         console.log(payment);
         const userID = req.session.userID;
         let carts = [];
@@ -100,6 +99,7 @@ exports.placeOrder = async function(req,res){
         })
         if(usedCouponID){
             order.couponAdded = true
+            order.couponID = usedCouponID;
             order.orderStatus = "on progress"
         }
         await order.save(); 
@@ -127,8 +127,10 @@ exports.placeOrder = async function(req,res){
 
         
         const orderID = order._id 
+        console.log("alhamdulillah");
+        console.log("order placed!");        
         res.redirect(`/order-response-page?order_id=${orderID}`);
-        console.log("order placed!");
+       
     }
     catch(error){
         console.log("some error occured",error);

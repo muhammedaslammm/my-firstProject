@@ -15,8 +15,9 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
     <link rel="stylesheet" href="/styles/nav.css" />
-    <title>checkout page</title>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <title>checkout page</title>
+    
 
     <style>
       body {
@@ -452,7 +453,7 @@
                   </div>
                 </div>
                 <!-- cart id -->
-                <input type="hidden" name="cartID" value="<%=cart._id%>" />
+                <input type="hidden" name="cartID" value="<%=cart._id%>" id="cartIDs"/>
               </div>
               <%})%>
             </div>
@@ -555,9 +556,9 @@
                 <label for="internetBanking"
                   >Internet Banking <span>&#x3e;</span></label
                 >
-                <input type="radio" name="payment" id="internetBanking" />
+                <input type="radio" name="payment" id="internetBanking" value="razorpay"/>
                 <div class="content">
-                  <button type="button" id="rzp-button1">Razorpay</button>
+                  <button type="button" id="rzp-button1">Pay Via Razorpay</button>
                 </div>
               </div>
 
@@ -875,6 +876,7 @@
       document.addEventListener("DOMContentLoaded", async function () {
         const coupon = localStorage.getItem("usedCoupon");
         const couponCode = localStorage.getItem("couponCode");
+
         if (coupon) {
           try {
             const response = await fetch(`/get-coupon?couponID=${coupon}`, {
@@ -889,6 +891,7 @@
               document.querySelector(
                 ".amount-details .coupon-deducted"
               ).innerText = data.deductedAmount;
+              document.getElementById("#usedCouponID").value = coupon;
 
               // changing the input field
               const inputField = document.querySelector("#couponCode");
@@ -952,37 +955,35 @@
           }
         }
       });
+      
 
+      // razor pay logic
       let price = document.getElementById('price')
-      let orderprice = price.getAttribute('data-totalprice')
+      let orderprice = document.getElementById("orderTotal").value;      
       document.getElementById('rzp-button1').onclick = function (e) {
 
         $(document).ready(function () {
-          console.log('ready');
-        var settings = {
-          url: "/create/orderId",
-          method: "POST",
-          timeout: 0,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          data: JSON.stringify({
-            amount: orderprice *100
-          }),
-        };
+          let settings = {
+            url: "/create/orderId",
+            method: "POST",
+            timeout: 0,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            data: JSON.stringify({
+              amount: orderprice * 100
+            }),
+          };
 
-        //creates new orderId everytime
-        $.ajax(settings).done(function (response) {
-          console.log('done');
-          console.log('response',response);
-          orderId = response.orderId;
-          orderprice = response.orderprice
-          console.log(orderprice);
-          ordresignature = response.signature;
+          //creates new orderId everytime
+          $.ajax(settings).done(function (response) {          
+            console.log('response',response);
+            orderId = response.orderId;
+            orderprice = response.orderprice;
+            ordresignature = response.signature;
+          });
         });
-      });
-      console.log('amount is',orderprice);
-                var options = {
+        let options = {
                     "key": "rzp_test_3y4jRsuaFdH2Kn",
                     "amount": orderprice * 100,
                     "currency": "INR",
@@ -991,20 +992,55 @@
                     "image": "",
                     "order_id": orderId,
                     "handler": function (response) {
+                      console.log(response);
                         // Create a form dynamically
-                        var form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = '/place-order';  // Replace with the URL you want to redirect to
+                        let form = document.createElement("form");
+                        form.method = "POST",
+                        form.action = "/place-order";
+
                         // Create an input element to hold the payment ID
                         var paymentIdInput = document.createElement('input');
                         paymentIdInput.type = 'hidden';
                         paymentIdInput.name = 'razorpay_payment_id';
                         paymentIdInput.value = response.razorpay_payment_id;
-                        // Add the input element to the form
-                        form.appendChild(paymentIdInput);
-                        // Add hidden input fields for payment mode and address details
                         
-                        document.body.appendChild(form);      // Submit the form
+
+                        // input element for adding cart ids
+                        const cartIdInput = document.createElement("input");
+                        cartIdInput.type = "hidden",
+                        cartIdInput.name = "cartID",
+                        cartIdInput.value = document.getElementById("cartIDs").value;
+                        form.appendChild(cartIdInput);
+
+                        // input element for adding address
+                        const addressInput = document.createElement("input");
+                        addressInput.type = 'hidden';
+                        addressInput.name = "address";
+                        addressInput.value = document.getElementById("order-default-address").value;
+                        form.appendChild(addressInput);
+
+                        // input element for adding payment
+                        const paymentInput = document.createElement("input");
+                        paymentInput.type = "hidden";
+                        paymentInput.name = "payment";
+                        paymentInput.value = "razorpay";
+                        form.appendChild(paymentInput);
+
+                        // input element for adding order total
+                        const orderTotalInput = document.createElement("input");
+                        orderTotalInput.type = "hidden";
+                        orderTotalInput.name = "orderTotal";
+                        orderTotalInput.value = document.getElementById("orderTotal").value;
+                        form.appendChild(orderTotalInput);
+
+                        const usedCouponIDInput = document.createElement("input");
+                        usedCouponIDInput.type = "hidden";
+                        usedCouponIDInput.name = "usedCouponID";
+                        usedCouponIDInput.value = document.getElementById("usedCouponID").value;
+                        form.appendChild(usedCouponIDInput);
+
+                        // add the hidden form to the document body
+                        document.body.appendChild(form);
                         form.submit();
                     }
                 };
@@ -1020,7 +1056,8 @@
                 });
                 rzp1.open();
                 e.preventDefault();
-            }
+                
+      }
         </script>
 
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
