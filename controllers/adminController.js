@@ -815,38 +815,89 @@ exports.addEditReward = async function(req,res){
 // admin sales report page
 exports.salesReportPage = async function(req,res){
     try{
-        const filetr = req.query.filter;
-        let filter = {};
+        const sortValue = req.query.sort;
+        const filter = {};
+        if(sortValue === "today"){
+            const currentDate = new Date();
+            currentDate.setHours(0,0,0,0);
+            const endOfDay = new Date(currentDate);
+            endOfDay.setHours(23,59,59,999);
 
+            // query for current date
+            filter.orderedDate = {$gte:currentDate,$lte:endOfDay};
+        }
+        else if(sortValue === "lastWeek"){
+            const startOfCurrentWeek = new Date();
+            startOfCurrentWeek.setDate(startOfCurrentWeek.getDate() - startOfCurrentWeek.getDay());
+
+            const endOfCurrentWeek = new Date(startOfCurrentWeek);
+            endOfCurrentWeek.setDate(endOfCurrentWeek.getDate() + 6);
+
+            // querying for last week
+            filter.orderedDate = {$gte:startOfCurrentWeek,$lte:endOfCurrentWeek}
+        }
+        else if(sortValue === "lastMonth"){
+            const currentMonthStart = new Date();
+            currentMonthStart.setDate(1);    //date seted for 1st day
+            currentMonthStart.setHours(0,0,0,0);
+
+            const currentMonthEnd = new Date(currentMonthStart);
+            currentMonthEnd.setMonth(currentMonthEnd.getMonth() + 1);
+            currentMonthEnd.setDate(0);
+            currentMonthEnd.setHours(23,59,59,999);
+
+            filter.orderedDate = {$gte:currentMonthStart,$lte:currentMonthEnd}
+        }
+        else if(sortValue === "lastYear"){
+            const currentYearStart = new Date();
+            currentYearStart.setDate(1);
+            currentYearStart.setMonth(0);
+            currentYearStart.setHours(0,0,0,0);
+
+            const currentYearEnd = new Date();
+            currentYearEnd.setDate(31);
+            currentYearEnd.setMonth(11);
+            currentYearEnd.setHours(23,59,59,999);
+
+            filter.orderedDate = {$gte:currentYearStart,$lte:currentYearEnd};
+        }
 
         // caclulating total products and sales amount 
-        const orders = await Order.find(filter); 
+        const orders = await Order.find({...filter,orderStatus:{$ne:"cancelled"}})
+            .populate("orderedProducts.productID")
+            .populate("address");
+        console.log(orders);
         let totalSalesAmount = 0;
         let totalProducts = 0;
-        orders.forEach(function(order){
-            order.orderedProducts.forEach(function(product){
-                if(product.orderStatus != 'cancelled'){
-                    totalSalesAmount += product.totalPrice
-                    totalProducts += 1;
+        let totalOrders = 0;
+        let totalUsers = 0;
+        let userID = "";
+        
+        orders.forEach(function(order){            
+            if(order.orderStatus != "cancelled"){
+                // calculating total order and total users                
+                totalOrders += 1; 
+                if(order.userID.toString() !== userID.toString()){
+                    totalUsers += 1;
+                    userID = order.userID;
                 }
-            })
+                
+                order.orderedProducts.forEach(function(product){
+                    if(product.orderStatus != 'cancelled'){
+                        totalSalesAmount += product.totalPrice
+                        totalProducts += 1;
+                    }
+                })
+            }            
         })
-        // calculating total users
-        const totalUsers = await User.countDocuments();
-
-        // calculating total products
-        const totalOrders = await Order.countDocuments({orderStatus:{$ne:"cancelled"}});
 
         // filtering the order reports
-
-
-
-
         res.render("salesReport",{
             totalSalesAmount,
             totalProducts,
             totalUsers,
-            totalOrders
+            totalOrders,
+            orders
         });
     }
     catch(error){

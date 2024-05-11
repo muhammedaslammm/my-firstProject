@@ -93,6 +93,7 @@ exports.placeOrder = async function(req,res){
             username:user.username,
             orderedProducts,
             orderedDate:new Date(),
+            orderStatus:"on progress",
             address,
             orderTotal,
             paymentMethod:payment
@@ -100,7 +101,6 @@ exports.placeOrder = async function(req,res){
         if(usedCouponID){
             order.couponAdded = true
             order.couponID = usedCouponID;
-            order.orderStatus = "on progress"
         }
         await order.save(); 
         console.log(order);
@@ -149,7 +149,8 @@ exports.orderResponsePage = async function(req,res){
             const onProgress = order.orderedProducts.every(function(order){
                 return order.orderStatus === 'on progress'
             })
-            if(onProgress){                           
+            if(onProgress){    
+                await Order.updateOne({_id:orderID},{$set:{orderStatus:"on progress"}});                       
                 res.render("orderResponsePage",{products,address,userID,order})
             }
             else{
@@ -235,6 +236,14 @@ exports.cancelOrder = async function(req,res){
                     'orderedProducts.$.deliveryDate':null,                
                 }}            
             ) 
+            const updatedOrder = await Order.findOne({_id:orderID});
+            const isCancelled = updatedOrder.orderedProducts.every(function(product){
+                return product.orderStatus === "cancelled"
+            })
+            if(isCancelled){
+                await Order.findByIdAndUpdate(orderID,{orderStatus:"cancelled"})
+            }
+
             const cancelledProduct = order.orderedProducts.find(function(product){
                 return product._id == docID
             })

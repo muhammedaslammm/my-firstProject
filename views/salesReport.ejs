@@ -39,7 +39,7 @@
       }
       .content-body .body-head {
         font-weight: 500;
-        font-size: 17px;
+        font-size: 19px;
       }
 
       /* stat section */
@@ -68,6 +68,35 @@
       .statBox .data-price span {
         font-size: 32px;
       }
+
+      /* filter panel */
+      .filter-panel {
+        margin-top: 80px;
+        display: flex;
+        margin-bottom: 30px;
+      }
+      .filter-panel-head {
+        font-size: 18px;
+      }
+      .filter-panel select {
+        margin-left: 9px;
+        width: 15%;
+      }
+
+      /* table */
+      th {
+        font-size: 17px;
+        font-weight: 500;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+        border-collapse: collapse;
+      }
+      td {
+        padding: 5px;
+      }
     </style>
 
     <title>Sales Report</title>
@@ -84,9 +113,7 @@
         <div class="stat-count-section">
           <div class="statBox">
             <div class="head">Total Sales Amount</div>
-            <div class="data-price">
-              Rs. <span><%=totalSalesAmount%>.00</span>
-            </div>
+            <div class="data-price">Rs. <span><%=totalSalesAmount%></span></div>
           </div>
           <div class="statBox">
             <div class="head">Total Orders</div>
@@ -101,8 +128,67 @@
             <div class="data"><%=totalUsers%></div>
           </div>
         </div>
-        <div class="filter-panel"></div>
+        <div class="filter-panel">
+          <div class="filter-panel-head">Filter based on</div>
+          <select name="sortOrders" id="sortOrders" onchange="sortPage(event)">
+            <option value="all">All</option>
+            <option value="today">Today</option>
+            <option value="lastWeek">Last Week</option>
+            <option value="lastMonth">Last Month</option>
+            <option value="lastYear">Last Year</option>
+          </select>
+        </div>
+        <table class="ordered-section" style="width: 95%">
+          <tr>
+            <th>Sl:no</th>
+            <th>Buyer</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Size</th>
+            <th>Price</th>
+            <th>Order Date</th>
+            <th>Address</th>
+            <th>Payment Method</th>
+          </tr>
+          <%if(orders.length > 0){%> <%let number = 0%>
+          <%orders.forEach(function(order){%>
+          <%order.orderedProducts.forEach(function(product){%>
+          <%if(product.orderStatus != "cancelled"){%> <%number += 1%>
+          <tr>
+            <td style="text-align: center"><%=number%></td>
+            <td><%=order.username%></td>
+            <td>
+              <%=product.productID.brand%> <%=product.productID.productType%>
+            </td>
+            <td style="text-align: center"><%=product.quantity%></td>
+            <td><%=product.size%></td>
+            <td>Rs. <%=product.totalPrice%></td>
+            <td><%=order.orderedDate.toDateString()%></td>
+            <td>
+              <div class="address-name"><%=order.address.name%></div>
+              <div class="address-address"><%=order.address.address%></div>
+              <div class="address-district"><%=order.address.district%></div>
+            </td>
+            <td><%=order.paymentMethod%></td>
+          </tr>
+          <%}%> <%})%> <%})%> <%}%>
+        </table>
       </div>
     </div>
+    <script>
+      function sortPage(event) {
+        const sortValue = event.target.value;
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set("sort", sortValue);
+        localStorage.setItem("sort", sortValue);
+        window.location.search = urlParams.toString();
+      }
+      document.addEventListener("DOMContentLoaded", function () {
+        const sortValue = localStorage.getItem("sort");
+        if (sortValue) {
+          document.getElementById("sortOrders").value = sortValue;
+        }
+      });
+    </script>
   </body>
 </html>

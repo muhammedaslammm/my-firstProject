@@ -453,7 +453,7 @@
                   </div>
                 </div>
                 <!-- cart id -->
-                <input type="hidden" name="cartID" value="<%=cart._id%>" id="cartIDs"/>
+                <input type="hidden" name="cartID" value="<%=cart._id%>" id="cartIDs" class="cartIDs"/>
               </div>
               <%})%>
             </div>
@@ -743,6 +743,7 @@
         }
       });
 
+      
       // add coupon to product
       const submit = document.querySelector("#couponSubmit");
       submit.addEventListener("click", async function () {
@@ -760,6 +761,7 @@
             const totalAmount = document.querySelector(
               ".total-amount .Amount"
             ).innerText;
+            
             const response = await fetch("/add-coupon-product", {
               method: "POST",
               headers: {
@@ -796,12 +798,13 @@
               newElement.textContent = couponCode;
               inputField.parentNode.replaceChild(newElement, inputField);
 
-              // chnaging the error message
+              // changing the error message
               const existingPTag = document.querySelector(".coupon-error");
               const newPTag = document.createElement("p");
               newPTag.className = "couponMessage";
               newPTag.textContent = "Selected Coupon:";
               existingPTag.parentNode.replaceChild(newPTag, existingPTag);
+
               // changing the submit button
               const existingButton = document.querySelector("#couponSubmit");
               const newButton = document.createElement("button");
@@ -871,12 +874,12 @@
             console.log("error in client side js", error);
           }
         }
-      });
+      }); 
 
       document.addEventListener("DOMContentLoaded", async function () {
         const coupon = localStorage.getItem("usedCoupon");
         const couponCode = localStorage.getItem("couponCode");
-
+        
         if (coupon) {
           try {
             const response = await fetch(`/get-coupon?couponID=${coupon}`, {
@@ -888,10 +891,13 @@
                 data.newAmount;
               document.querySelector("#orderTotal").value =
                 localStorage.getItem("orderTotal");
+
+              console.log("order total after coupon applied: ",document.querySelector("#orderTotal").value);
               document.querySelector(
                 ".amount-details .coupon-deducted"
               ).innerText = data.deductedAmount;
-              document.getElementById("#usedCouponID").value = coupon;
+              
+              document.getElementById("usedCouponID").value = coupon;
 
               // changing the input field
               const inputField = document.querySelector("#couponCode");
@@ -942,24 +948,21 @@
               // adding id to coupon section (input section)
               const codeDiv = document.querySelector(".coupon-input");
               codeDiv.id = "changeDisplay";
-
-              // hiding selected coupon
-              const couponID = localStorage.getItem("couponID");
-              const couponBox = document.querySelector(
-                `[data-id="${data.couponID}"]`
-              );
-              couponBox.style.opacity = 0.5;
+              
             }
           } catch (error) {
-            console.log("error when fetching coupon details", error);
+            console.log("error", error);
           }
         }
       });
       
-
+      
       // razor pay logic
-      let price = document.getElementById('price')
-      let orderprice = document.getElementById("orderTotal").value;      
+      let price = document.getElementById('price') 
+      const orderTotalWithoutCopuon = document.getElementById("orderTotal").value;
+      const orderTotalWithCoupon = localStorage.getItem("orderTotal");
+      let orderprice = orderTotalWithCoupon ? orderTotalWithCoupon : orderTotalWithoutCopuon;
+      console.log("order price: ",orderprice);
       document.getElementById('rzp-button1').onclick = function (e) {
 
         $(document).ready(function () {
@@ -1006,11 +1009,15 @@
                         
 
                         // input element for adding cart ids
-                        const cartIdInput = document.createElement("input");
-                        cartIdInput.type = "hidden",
-                        cartIdInput.name = "cartID",
-                        cartIdInput.value = document.getElementById("cartIDs").value;
-                        form.appendChild(cartIdInput);
+                        const cartIDs = Array.from(document.querySelectorAll(".cartIDs"))
+                        cartIDs.forEach(function(cart){
+                          const cartIdInput = document.createElement("input");
+                          cartIdInput.type = "hidden";
+                          cartIdInput.name = "cartID";
+                          cartIdInput.value = cart.value;
+
+                          form.appendChild(cartIdInput)
+                        })
 
                         // input element for adding address
                         const addressInput = document.createElement("input");

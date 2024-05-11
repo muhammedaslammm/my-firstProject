@@ -273,11 +273,11 @@
           </div>
           <div class="product-right-multi">
             <div class="status-section">
-              <%if(order.orderStatus && order.orderStatus === 'on progress'){%>
+              <%if(order.couponAdded && order.orderStatus === 'on progress'){%>
               <button onclick="cancelOrder('<%=order._id%>','')">
                 cancel order
               </button>
-              <%}else if(order.orderStatus && order.orderStatus ===
+              <%}else if(order.couponAdded && order.orderStatus ===
               'cancelled'){%>
               <div class="cancelled-head">
                 <div class="cancel-note" style="color: rgb(159, 20, 20)">

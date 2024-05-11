@@ -196,16 +196,20 @@ exports.checkoutPage = async function(req,res){
             }
             return currentTotal
         },0)
-        console.log(totalAmount);
+        console.log("total amount",totalAmount);
 
         // user address
         const defaultAddress = await Address.findOne({userID,default:true})
         const addresses = await Address.find({userID:userID});
 
         // collecting wallet
+        let walletTotal = 0;
         const wallet = await Wallet.findOne({userID})
-        const walletTotal = wallet.walletAmount;
-        console.log(walletTotal);
+        if(wallet){
+            walletTotal = wallet.walletAmount
+            console.log(walletTotal);
+        }
+        
 
         // collecting available coupons
         const usedCouponsIDs = (await UsedCoupon.find({userID:req.session.userID})).map(function(usedCoupon){
