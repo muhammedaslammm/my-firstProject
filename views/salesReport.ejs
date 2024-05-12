@@ -74,15 +74,49 @@
         margin-top: 80px;
         display: flex;
         margin-bottom: 30px;
+        justify-content: space-between;
+        align-items: center;
       }
-      .filter-panel-head {
-        font-size: 18px;
+      .left-filter,
+      .right-filter,
+      .start-date,
+      .end-date {
+        display: flex;
+      }
+      .left-filter select {
+        border: 1px solid rgb(155, 155, 155);
+        outline: none;
+      }
+      .left-filter-head {
+        font-size: 16px;
       }
       .filter-panel select {
         margin-left: 9px;
-        width: 15%;
       }
 
+      /* right filter */
+      .start-date,
+      .end-date {
+        margin-right: 20px;
+      }
+      .start-date .date-head,
+      .end-date .date-head {
+        margin-right: 10px;
+      }
+      .right-filter input {
+        transition: border-color 0.3s;
+        outline: none;
+        border: 1px solid rgb(155, 155, 155);
+      }
+      .right-filter .date-head {
+        transition: color 0.3s;
+      }
+      .custom-filter {
+        background-color: black;
+        color: white;
+        border: none;
+        padding: 3px 15px;
+      }
       /* table */
       th {
         font-size: 17px;
@@ -91,11 +125,15 @@
       table,
       th,
       td {
-        border: 1px solid black;
+        border: 1px solid rgb(191, 191, 191);
         border-collapse: collapse;
       }
+
       td {
         padding: 5px;
+      }
+      tr:nth-child(even) {
+        background-color: rgb(240, 240, 240);
       }
     </style>
 
@@ -129,16 +167,48 @@
           </div>
         </div>
         <div class="filter-panel">
-          <div class="filter-panel-head">Filter based on</div>
-          <select name="sortOrders" id="sortOrders" onchange="sortPage(event)">
-            <option value="all">All</option>
-            <option value="today">Today</option>
-            <option value="lastWeek">Last Week</option>
-            <option value="lastMonth">Last Month</option>
-            <option value="lastYear">Last Year</option>
-          </select>
+          <div class="left-filter">
+            <div class="left-filter-head">Sort based on</div>
+            <select
+              name="sortOrders"
+              id="sortOrders"
+              onchange="sortPage(event)"
+            >
+              <option value="all">All</option>
+              <option value="today">Today</option>
+              <option value="lastWeek">Last Week</option>
+              <option value="lastMonth">Last Month</option>
+              <option value="lastYear">Last Year</option>
+            </select>
+          </div>
+          <div class="right-filter">
+            <div class="start-date">
+              <div class="date-head">Start Date</div>
+              <input
+                type="date"
+                name="startDate"
+                class="date-input"
+                id="startDate"
+              />
+            </div>
+            <div class="end-date">
+              <div class="date-head">End Date</div>
+              <input
+                type="date"
+                name="endDate"
+                class="date-input"
+                id="endDate"
+              />
+            </div>
+            <button class="custom-filter" onclick="filterPage()">Filter</button>
+          </div>
+          <div class="excel-button">
+            <button onclick="download('<%=JSON.stringify(orders)%>',event)">
+              download excel
+            </button>
+          </div>
         </div>
-        <table class="ordered-section" style="width: 95%">
+        <table class="ordered-section" style="width: 100%">
           <tr>
             <th>Sl:no</th>
             <th>Buyer</th>
@@ -171,24 +241,110 @@
             </td>
             <td><%=order.paymentMethod%></td>
           </tr>
-          <%}%> <%})%> <%})%> <%}%>
+          <%}%> <%})%> <%})%> <%}else{%>
+          <tr>
+            <td colspan="9" style="text-align: center">
+              No Order Found in this time period
+            </td>
+          </tr>
+          <%}%>
         </table>
       </div>
     </div>
     <script>
+      // sort page
       function sortPage(event) {
         const sortValue = event.target.value;
         const urlParams = new URLSearchParams(window.location.search);
         urlParams.set("sort", sortValue);
         localStorage.setItem("sort", sortValue);
+        localStorage.removeItem("filter");
         window.location.search = urlParams.toString();
       }
+
+      // filter the page
+      function filterPage() {
+        let dateInputs = document.querySelectorAll(".date-input");
+        const dateRegex = /^\d{2}-\d{2}-\d{4}$/;
+        let validated = true;
+        dateInputs.forEach(function (input) {
+          if (input.value === "" || dateRegex.test(input.value)) {
+            input.style.border = "1px solid red";
+            validated = false;
+          }
+        });
+        const startDate = document.getElementById("startDate");
+        const endDate = document.getElementById("endDate");
+        if (endDate.value < startDate.value) {
+          endDate.style.border = "1px solid red";
+          endDate.parentNode.querySelector(".date-head").style.color = "red";
+          validated = false;
+        }
+        if (validated) {
+          const urlParams = new URLSearchParams(window.location.search);
+          urlParams.set("sort", `${startDate.value}/${endDate.value}`);
+          localStorage.setItem("filter", `${startDate.value}/${endDate.value}`);
+          localStorage.removeItem("sort");
+          window.location.search = urlParams.toString();
+        }
+      }
+
+      // page reload
       document.addEventListener("DOMContentLoaded", function () {
         const sortValue = localStorage.getItem("sort");
+        const filterValue = localStorage.getItem("filter");
         if (sortValue) {
           document.getElementById("sortOrders").value = sortValue;
         }
+        if (filterValue) {
+          const dates = filterValue.split("/");
+          document.getElementById("startDate").value = dates[0];
+          document.getElementById("endDate").value = dates[1];
+        }
       });
+
+      // key up
+      let dateInputs = document.querySelectorAll(".date-input");
+      dateInputs.forEach(function (input) {
+        input.addEventListener("change", function () {
+          if (input.value.length > 0) {
+            input.style.border = "1px solid rgb(155, 155, 155)";
+            input.parentNode.querySelector(".date-head").style.color = "black";
+          }
+        });
+      });
+
+      // download excel report
+      async function download(orders, event) {
+        try {
+          const response = await fetch("/admin/download-excel", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ orders }),
+          });
+          if (response.ok) {
+            // downloading the excel report
+            const excelData = await response.blob();
+            const temporaryURL = window.URL.createObjectURL(excelData);
+
+            const a = document.createElement("a");
+            a.href = temporaryURL;
+            a.download = "moas_salesReport.xlsx";
+            document.body.appendChild(a);
+            a.click();
+
+            // remove the a tag from the document body and revode the url
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(temporaryURL);
+          } else {
+            console.log("failed to download the excel doc");
+          }
+        } catch (error) {
+          console.log("error when fetching data from the server", error);
+        }
+      }
     </script>
   </body>
 </html>

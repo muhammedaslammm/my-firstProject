@@ -16,6 +16,8 @@ const Coupon = require('./../models/couponModel');
 const UsedCoupon = require('./../models/usedCouponModel');
 const usedCouponModel = require("./../models/usedCouponModel");
 const referralReward = require("./../models/referralRewardModel");
+const Excel = require("exceljs");
+
 
 
 // admin login page
@@ -861,11 +863,24 @@ exports.salesReportPage = async function(req,res){
 
             filter.orderedDate = {$gte:currentYearStart,$lte:currentYearEnd};
         }
+        else if(sortValue === "all"){
+
+        }
+        else if(sortValue){
+            let dates = sortValue.split("/");
+            const startDate = new Date(dates[0]);
+            startDate.getHours(0,0,0,0);
+            const endDate = new Date(dates[1]);
+            endDate.setHours(23,59,59,999)
+
+            filter.orderedDate = {$gte:startDate,$lte:endDate}
+        }
 
         // caclulating total products and sales amount 
         const orders = await Order.find({...filter,orderStatus:{$ne:"cancelled"}})
             .populate("orderedProducts.productID")
-            .populate("address");
+            .populate("address")
+            .sort({orderedDate:-1})
         console.log(orders);
         let totalSalesAmount = 0;
         let totalProducts = 0;
@@ -890,8 +905,6 @@ exports.salesReportPage = async function(req,res){
                 })
             }            
         })
-
-        // filtering the order reports
         res.render("salesReport",{
             totalSalesAmount,
             totalProducts,
@@ -903,4 +916,47 @@ exports.salesReportPage = async function(req,res){
     catch(error){
         console.log("failed to log",error);
     }
+}
+
+// download sales report in excel format
+exports.downloadExcel = async function(req,res){
+    try{
+        const orders = JSON.parse(req.body.orders);
+        console.log(orders);
+        const workbook = new Excel.Workbook();
+        const worksheet = workbook.addWorksheet('MOASweb Sales Report');
+
+        // adding rows
+        
+        worksheet.addRow(["S/N","Buyer","Product","Quantity","Size","Price","Order Date","Address","Payment Method"]);
+        let sn = 0;
+        orders.forEach(function(order){            
+            order.orderedProducts.forEach(function(product){
+                sn += 1;
+                const address = `${order.address.name} ${order.address.address} ${order.address.district}`
+                worksheet.addRow([
+                    sn,
+                    order.username,
+                    `${product.productID.brand} ${product.productID.color} ${product.productID.productType}`,
+                    product.quantity,
+                    product.size,
+                    product.totalPrice,
+                    order.orderedDate,
+                    address,
+                    order.paymentMethod
+                ])
+            })
+        })
+
+        res.setHeader('Content-Type','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition','attchment; filename="moas_salesReport.xlsx"')
+
+        await workbook.xlsx.write(res);
+        res.end();        
+    }
+    catch(error){
+        console.log(error);
+        res.status(500).json({error:"failed"});
+    }
+    
 }
