@@ -202,9 +202,18 @@
             </div>
             <button class="custom-filter" onclick="filterPage()">Filter</button>
           </div>
-          <div class="excel-button">
-            <button onclick="download('<%=JSON.stringify(orders)%>',event)">
-              download excel
+          <div class="download-buttons">
+            <button
+              onclick="download('<%=JSON.stringify(orders)%>','excel',event)"
+              id="excel-button"
+            >
+              Download Excel
+            </button>
+            <button
+              onclick="download('<%=JSON.stringify(orders)%>','pdf',event)"
+              id="pdf-button"
+            >
+              Download PDF
             </button>
           </div>
         </div>
@@ -314,10 +323,10 @@
         });
       });
 
-      // download excel report
-      async function download(orders, event) {
+      // download sales report
+      async function download(orders, format, event) {
         try {
-          const response = await fetch("/admin/download-excel", {
+          const response = await fetch(`/admin/download-${format}`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -326,12 +335,15 @@
           });
           if (response.ok) {
             // downloading the excel report
-            const excelData = await response.blob();
-            const temporaryURL = window.URL.createObjectURL(excelData);
+            const data = await response.blob();
+            const temporaryURL = window.URL.createObjectURL(data);
 
             const a = document.createElement("a");
             a.href = temporaryURL;
-            a.download = "moas_salesReport.xlsx";
+            a.download =
+              format === "excel"
+                ? "moas_salesReport.xlsx"
+                : "moasweb_salesReport.pdf";
             document.body.appendChild(a);
             a.click();
 

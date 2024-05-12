@@ -65,5 +65,5 @@ router.post("/referral/:action",validation,adminController.addEditReward)
 // admin sales report
 router.get("/sales-report",validation,adminController.salesReportPage);
 router.post("/download-excel",validation,adminController.downloadExcel)
-
+router.post("/download-pdf",validation,adminController.downloadPdf);
 module.exports = router;
