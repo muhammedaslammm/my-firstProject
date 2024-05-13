@@ -293,12 +293,21 @@
               <%}%>
             </div>
             <div class="button">
-              <button id="view-more-button">view products</button>
+              <button
+                id="view-more-button"
+                onclick="viewMore(event,'<%=order._id%>')"
+              >
+                view products
+              </button>
             </div>
           </div>
         </div>
         <!-- splitting products -->
-        <div id="hidden-product-cards" style="display: none">
+        <div
+          id="hidden-product-cards"
+          data-orderID="<%=order._id%>"
+          style="display: none"
+        >
           <%order.orderedProducts.forEach(function(product){%>
           <div
             class="product-card"
@@ -419,6 +428,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+      // nav
       const profileButton = document.querySelector("#profile-button");
       const content = document.querySelector(".dropdown-content");
 
@@ -429,16 +439,18 @@
       });
 
       // hide and unhide the products
-      const viewMore = document.getElementById("view-more-button");
-      viewMore.addEventListener("click", function () {
-        const productSection = document.getElementById("hidden-product-cards");
-        viewMore.innerText =
-          viewMore.innerText === "view products"
+      function viewMore(event, orderID) {
+        const buttonElement = event.target;
+        const productSection = document.querySelector(
+          `[data-orderID='${orderID}']`
+        );
+        buttonElement.innerText =
+          buttonElement.innerText === "view products"
             ? "close products"
             : "view products";
         productSection.style.display =
           productSection.style.display === "none" ? "block" : "none";
-      });
+      }
 
       // view product
       function viewOrder(orderID, productDocID) {

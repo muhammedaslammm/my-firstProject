@@ -66,9 +66,16 @@ exports.placeOrder = async function(req,res){
                 quantity:cart.quantity,
                 size:cart.size, 
                 orderStatus:"on progress",
-                totalPrice,
                 offer,              
                 deliveryDate,
+            }
+
+            // setting the product price with respect to the usage of coupons.
+            if(carts.length === 1){
+                productDetails.totalPrice = orderTotal;
+            }
+            else{
+                productDetails.totalPrice = totalPrice;
             }
             
             orderedProducts.push(productDetails);
@@ -100,7 +107,6 @@ exports.placeOrder = async function(req,res){
         })
         if(usedCouponID){
             order.couponAdded = true
-            order.couponID = usedCouponID;
         }
         await order.save(); 
         console.log(order);

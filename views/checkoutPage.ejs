@@ -426,7 +426,7 @@
     <!-- header -->
     <%-include('./partials/navbar.ejs')%>
     <div class="cart-body">
-      <form action="/place-order" method="post">
+      <form action="/place-order" method="post" id="form">
         <div class="cart-left-section">
           <!-- product section -->
           <div class="cart-products-section">
@@ -472,7 +472,7 @@
             <div class="address-box">
               <%const address = defaultAddress ?? 'no address selected'%>
               <%if(typeof address != 'string'){%>
-              <div class="default-address-box" data-address="<%=address%>">
+              <div class="default-address-box" data-address="<%=address._id%>">
                 <div class="default-address">
                   <div class="address-box-head">
                     <%=address.name%>, <%=address.pincode%>, <%=address.city%>
@@ -573,7 +573,7 @@
                     <a href="/wallet">wallet</a> for this purchase!
                   </div>
                   <%}else{%>
-                  <button class="order-button">Place Order</button>
+                  <button class="order-button" type="submit" onclick="placeOrder(event)">Place Order</button>
                   <%}%>
                 </div>
               </div>
@@ -588,7 +588,7 @@
                   value="cash-on-delivery"
                 />
                 <div class="content">
-                  <button type="submit" id="codButton">Place Order</button>
+                  <button type="submit" id="codButton" onclick="placeOrder(event)">Place Order</button>
                 </div>
               </div>
             </div>
@@ -696,26 +696,29 @@
           } else {
             // address head
             document.querySelector(
-              ".address-box-head"
+              ".default-address-box .address-box-head"
             ).innerText = `${response.address.name}, ${response.address.pincode}, ${response.address.city}`;
 
             // address
-            document.querySelector(".address").innerText =
+            document.querySelector(".default-address-box .address").innerText =
               response.address.address;
 
             // place and pin
             document.querySelector(
-              ".place-and-pin"
+              ".default-address-box .place-and-pin"
             ).innerText = `${response.address.city}, ${response.address.pincode}`;
 
             // number
-            document.querySelector(".address-number").innerText =
+            document.querySelector(".default-address-box .address-number").innerText =
               response.address.phone;
 
             // set default address tooo
             document.querySelector(
               "#order-default-address"
             ).value = `${response.address._id}`;
+
+            // setting the dataset value for the default address box
+            document.querySelector(".default-address-box").dataset.address = `${response.address._id}`
           }
         } catch (error) {
           console.log(error, "error when setting default address via fetch");
@@ -723,25 +726,22 @@
       }
 
       // submitting to place order
-      const button = document.querySelector("#codButton");
-      button.addEventListener("click", function (event) {
-        const addressData = document.querySelector(".default-address-box")
-          .dataset.address;
-        const addressFunction = Function(
-          `"use strict";return (${addressData})`
-        );
-        const defaultAddress = addressFunction ?? "";
-        if (typeof addressFunction != "function") {
-          window.alert("enter set default address");
-          event.preventDefault();
-        } else {
-          localStorage.removeItem("couponCode");
-          localStorage.removeItem("usedCoupon");
-          localStorage.removeItem("orderTotal");
-          localStorage.removeItem("couponID");
-          console.log("checkout completed");
-        }
-      });
+      function placeOrder(event){
+        console.log("trigerred element",event.target);
+        const form = document.getElementById("form");
+        const addressData = document.getElementById("order-default-address").value
+          const addressFunction = Function(
+            `"use strict";return (${addressData})`
+          );
+          const defaultAddress = addressFunction ?? "";
+          if (typeof addressFunction != "function") {
+            window.alert("Select an Address for Payment");
+            event.preventDefault();
+          } 
+      }
+      
+          
+      
 
       
       // add coupon to product
@@ -756,7 +756,7 @@
           }, 2500);
         } else {
           try {
-            // validatind and then adding couponcode to the database (FETCH API)
+            // validating and then adding couponcode to the database (FETCH API)
             const couponCode = inputField.value;
             const totalAmount = document.querySelector(
               ".total-amount .Amount"
@@ -773,13 +773,17 @@
             if (response.ok) {
               const data = await response.json();
               const usedCouponID = data.usedCouponDoc;
-              document.querySelector("#usedCouponID").value = usedCouponID;
+              document.querySelector("#usedCouponID").value = usedCouponID;  
+              
+              // storing new amount in the local storage
+              localStorage.setItem("orderTotal", data.newAmount);
+              console.log("stored amount",localStorage.getItem("orderTotal"))        
 
               // setting new amount
               document.querySelector(".total-amount .Amount").innerText =
                 data.newAmount;
               document.querySelector("#orderTotal").value = data.newAmount;
-              localStorage.setItem("orderTotal", data.newAmount);
+              
 
               // setting deducted amount
               document.querySelector(
@@ -947,8 +951,7 @@
 
               // adding id to coupon section (input section)
               const codeDiv = document.querySelector(".coupon-input");
-              codeDiv.id = "changeDisplay";
-              
+              codeDiv.id = "changeDisplay";              
             }
           } catch (error) {
             console.log("error", error);
@@ -960,12 +963,15 @@
       // razor pay logic
       let price = document.getElementById('price') 
       const orderTotalWithoutCopuon = document.getElementById("orderTotal").value;
-      const orderTotalWithCoupon = localStorage.getItem("orderTotal");
+      const orderTotalWithCoupon = localStorage.getItem("orderTotal");      
       let orderprice = orderTotalWithCoupon ? orderTotalWithCoupon : orderTotalWithoutCopuon;
-      console.log("order price: ",orderprice);
+      
       document.getElementById('rzp-button1').onclick = function (e) {
 
         $(document).ready(function () {
+          console.log("raw amount",orderTotalWithoutCopuon);
+          console.log("coupon amount",orderTotalWithCoupon);
+          console.log("order price in razorpay: ",orderprice);
           let settings = {
             url: "/create/orderId",
             method: "POST",
@@ -1040,6 +1046,7 @@
                         orderTotalInput.value = document.getElementById("orderTotal").value;
                         form.appendChild(orderTotalInput);
 
+                        // input element for adding couponID
                         const usedCouponIDInput = document.createElement("input");
                         usedCouponIDInput.type = "hidden";
                         usedCouponIDInput.name = "usedCouponID";
@@ -1048,6 +1055,15 @@
 
                         // add the hidden form to the document body
                         document.body.appendChild(form);
+
+                        // clearing local storage values
+                        localStorage.removeItem("couponCode");
+                        localStorage.removeItem("usedCoupon");
+                        localStorage.removeItem("orderTotal");
+                        localStorage.removeItem("couponID");
+                        console.log("checkout completed");
+
+                        // submit hidden form
                         form.submit();
                     }
                 };

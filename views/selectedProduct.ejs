@@ -165,9 +165,18 @@
       .quantity {
         margin-top: 10px;
       }
+
       .quantity .quantity-box {
         display: flex;
         justify-content: space-between;
+        position: relative;
+        margin-bottom: 9px;
+      }
+      #error-text {
+        position: absolute;
+        color: rgb(197, 53, 24);
+        top: 66px;
+        font-size: 15px;
       }
       .quantity-box .stock-left {
         font-size: 15px;
@@ -419,6 +428,7 @@
                         <div class="productQuantity">1</div>
                         <div class="upButton">+</div>
                       </div>
+                      <div id="error-text"></div>
                     </div>
 
                     <div class="stock-left">
@@ -522,7 +532,7 @@
             document.getElementById("selectedQuantity").value = 0;
           } else {
             document.querySelector(".productQuantity").innerText = 1;
-            document.getElementById("selectedQuantity").value = "1";
+            document.getElementById("selectedQuantity").value = 1;
           }
         } catch (error) {
           console.log("error when fetching the quantity", error);
@@ -580,15 +590,25 @@
         const remainingQty = localStorage.getItem("stock_left");
 
         if (currentQty == 0) {
-          return "";
+          const errorNote = document.getElementById("error-text");
+          errorNote.innerText = "insufficient quantity";
+          setTimeout(function () {
+            errorNote.innerText = "";
+          }, 2500);
         } else if (remainingQty > 6 && currentQty < 6) {
           ++currentQty;
           document.querySelector(".productQuantity").innerText = currentQty;
           document.getElementById("selectedQuantity").value = currentQty;
-        } else if (remainingQty <= 6 && currentQty <= remainingQty) {
+        } else if (remainingQty <= 6 && currentQty < remainingQty) {
           ++currentQty;
           document.querySelector(".productQuantity").innerText = currentQty;
           document.getElementById("selectedQuantity").value = currentQty;
+        } else if (currentQty == 6 || currentQty === remainingQty) {
+          const errorNote = document.getElementById("error-text");
+          errorNote.innerText = "Quantity limit reached";
+          setTimeout(function () {
+            errorNote.innerText = "";
+          }, 2500);
         }
       });
 

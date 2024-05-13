@@ -183,8 +183,7 @@
         </div>
         <div class="more-box">
           <%if(statuses.includes(product.orderStatus) && order.couponAdded ===
-          false){%>
-          <!--statuses if from server-side array -->
+          true && order.orderedProducts.length === 1 ){%>
           <button
             type="submit"
             id="cancel"
@@ -192,6 +191,7 @@
           >
             cancel your order
           </button>
+
           <%}else if(product.orderStatus === "cancelled"){%>
           <div class="cancelled-note" style="color: rgb(183, 24, 24)">
             <%const cancelledDate = product.cancelledDate.toDateString()%>
@@ -205,6 +205,15 @@
           <form action="/return/<%=order._id%>" method="post">
             <button type="submit">return product</button>
           </form>
+          <%}else if(statuses.includes(product.orderStatus) && order.couponAdded
+          != true){%>
+          <button
+            type="submit"
+            id="cancel"
+            onclick="cancelOrder(event,'<%=order._id%>','<%=product._id%>')"
+          >
+            cancel your order
+          </button>
           <%}%>
         </div>
       </div>

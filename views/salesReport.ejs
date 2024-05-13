@@ -225,6 +225,7 @@
             <th>Quantity</th>
             <th>Size</th>
             <th>Price</th>
+            <th>Coupon</th>
             <th>Order Date</th>
             <th>Address</th>
             <th>Payment Method</th>
@@ -242,6 +243,9 @@
             <td style="text-align: center"><%=product.quantity%></td>
             <td><%=product.size%></td>
             <td>Rs. <%=product.totalPrice%></td>
+            <td style="text-align: center">
+              <%=order.couponAdded ? 'Added' : '-'%>
+            </td>
             <td><%=order.orderedDate.toDateString()%></td>
             <td>
               <div class="address-name"><%=order.address.name%></div>

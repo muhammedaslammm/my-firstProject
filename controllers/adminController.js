@@ -709,7 +709,11 @@ exports.addCouponPage = async function(req,res){
 
 // add the coupon
 exports.addCoupon = async function(req,res){
-    const {coupon_head,couponCode,minimumAmount,startDate,endDate,offerAmount} = req.body;
+    const {coupon_head,couponCode,minimumAmount,offerAmount} = req.body;
+    const startDate = new Date(req.body.startDate);
+    startDate.setUTCHours(0,0,0,0);
+    const endDate = new Date(req.body.endDate);
+    endDate.setHours(23,59,59,999);
     try{
         const newCoupon = await Coupon.create({
             coupon_head,
@@ -744,8 +748,20 @@ exports.editCouponPage = async function(req,res){
 // admin edit the coupon
 exports.editCoupon = async function(req,res){
     const couponID = req.query.couponID;
+    const {coupon_head,couponCode,minimumAmount,offerAmount} = req.body;
+    const startDate = new Date(req.body.startDate);
+    startDate.setUTCHours(0,0,0,0);
+    const endDate = new Date(req.body.endDate);
+    endDate.setHours(23,59,59,999);
     try{
-        await Coupon.findByIdAndUpdate(couponID,req.body);
+        await Coupon.updateOne({_id:couponID},{$set:{
+            coupon_head,
+            couponCode,
+            minimumAmount,
+            offerAmount,
+            startDate,
+            endDate
+        }});
         console.log("coupon edited");
         res.redirect('/admin/coupon')
     }
@@ -928,12 +944,13 @@ exports.downloadExcel = async function(req,res){
         const worksheet = workbook.addWorksheet('MOASweb Sales Report');
 
         // adding rows        
-        worksheet.addRow(["S/N","Buyer","Product","Quantity","Size","Price","Order Date","Address","Payment Method"]);
+        worksheet.addRow(["S/N","Buyer","Product","Quantity","Size","Price","Coupon","Order Date","Address","Payment Method"]);
         let sn = 0;
         orders.forEach(function(order){            
             order.orderedProducts.forEach(function(product){
                 sn += 1;
-                const address = `${order.address.name} ${order.address.address} ${order.address.district}`
+                const address = `${order.address.name} ${order.address.address} ${order.address.district}`;
+                const couponData = order.couponAdded ? 'Added' : '-';
                 worksheet.addRow([
                     sn,
                     order.username,
@@ -941,6 +958,7 @@ exports.downloadExcel = async function(req,res){
                     product.quantity,
                     product.size,
                     product.totalPrice,
+                    couponData,
                     order.orderedDate,
                     address,
                     order.paymentMethod
@@ -980,8 +998,9 @@ exports.downloadPdf = async function(req,res){
         let x = 50
         let y = 130
         orders.forEach(function(order){
-            order.orderedProducts.forEach(function(product){
+            order.orderedProducts.forEach(function(product){                
                 itemno += 1;
+                const couponData = order.couponAdded ? 'Added' : '-'
                 const date = new Date(order.orderedDate);
                 pdfdoc.text(`${itemno}`,x,y);
                 pdfdoc.text(`Purchased Product : ${product.productID.brand} ${product.productID.color} ${product.productID.productType}`,x,y+25)
@@ -989,10 +1008,11 @@ exports.downloadPdf = async function(req,res){
                 pdfdoc.text(`Purchase Total : ${product.totalPrice}`,x,y+65)
                 pdfdoc.text(`Purchased Quantity : ${product.quantity}`,x,y+85)
                 pdfdoc.text(`Product Size : ${product.size}`,x,y+105);
-                pdfdoc.text(`Payment Method : ${order.paymentMethod}`,x,y+125);
-                pdfdoc.text(`Product delivery address : ${order.address.address}, ${order.address.district}`,x,y+145);
-                pdfdoc.text(`Delivery address name : ${order.address.name}`,x,y+186);
-                pdfdoc.text(`Purchase made through the account of ${order.username}`,x,y+206);
+                pdfdoc.text(`Coupon Added: ${couponData}`,x,y+125)
+                pdfdoc.text(`Payment Method : ${order.paymentMethod}`,x,y+145);
+                pdfdoc.text(`Product delivery address : ${order.address.address}, ${order.address.district}`,x,y+165);
+                pdfdoc.text(`Delivery address name : ${order.address.name}`,x,y+205);
+                pdfdoc.text(`Purchase made through the account of ${order.username}`,x,y+225);
                 
                 y += 300
             })

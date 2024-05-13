@@ -447,7 +447,7 @@ exports.addNewAddress = async function(req,res){
         error.pincode = "invalid pincode"
     }
     if(Object.keys(error).length > 0){
-        res.render("newAddress",{error,data:req.body})
+        res.render("newAddress",{error,data:req.body,userID})
     }
     else{
         for(let key in req.body){

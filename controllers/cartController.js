@@ -196,7 +196,6 @@ exports.checkoutPage = async function(req,res){
             }
             return currentTotal
         },0)
-        console.log("total amount",totalAmount);
 
         // user address
         const defaultAddress = await Address.findOne({userID,default:true})
@@ -207,7 +206,7 @@ exports.checkoutPage = async function(req,res){
         const wallet = await Wallet.findOne({userID})
         if(wallet){
             walletTotal = wallet.walletAmount
-            console.log(walletTotal);
+            console.log("wallet total ",walletTotal);
         }
         
 
@@ -220,7 +219,9 @@ exports.checkoutPage = async function(req,res){
             if(totalAmount > coupon.minimumAmount){
                 return coupon
             }
-        })           
+        })    
+        console.log("total amount",totalAmount);
+        console.log("available coupons: ",productCoupons);       
         res.render("checkoutPage",{userCart,totalQuantity,totalAmount,addresses,defaultAddress,userID,coupons:productCoupons,walletTotal})
     }
     catch(error){

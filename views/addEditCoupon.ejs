@@ -192,8 +192,8 @@
                     fieldValidated = false;
                 }
             })
-            if(offerAmount.value > 100){
-              offerAmount.parentNode.querySelector(".error").innerText = '*Offer should not exceed 100%';
+            if(offerAmount.value >= 100 ){
+              offerAmount.parentNode.querySelector(".error").innerText = '*Offer should not exceed 99%';
               fieldValidated = false
             }
             if(fieldValidated){
