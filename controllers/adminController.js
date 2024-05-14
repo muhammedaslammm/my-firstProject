@@ -488,9 +488,10 @@ exports.editProductOfferPage = async function(req,res){
 exports.editProductOffer = async function(req,res){
     const productID = req.query.productID;
     const {offer,startDate,endDate} = req.body;
+    console.log(offer);
     try{
         const product = await Product.findById(productID);
-        const sellingPrice = product.sellingPrice * (offer/100);
+        const sellingPrice = Math.floor(Number(product.actualPrice) - Number(product.actualPrice) * (offer/100));
         const updateProductOffer = await ProductOffer.updateOne({product:productID},{$set:{
             offer,
             startDate,

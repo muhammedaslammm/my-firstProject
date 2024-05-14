@@ -236,8 +236,8 @@
             }
             else if(Number(inputOffer) > Number(productDiscount)){
                 productOffer.innerText = inputOffer;
-                const discountPrice = actualPrice.innerText*(inputOffer/100);
-                const updatedPrice = actualPrice.innerText - discountPrice;
+                const discountPrice = Math.floor(Number(actualPrice.innerText)*(Number(inputOffer)/100));
+                const updatedPrice = Number(actualPrice.innerText) - discountPrice;
                 sellingPrice.innerText = updatedPrice                
             }
             else if(inputOffer <= productDiscount || inputOffer === ''){
