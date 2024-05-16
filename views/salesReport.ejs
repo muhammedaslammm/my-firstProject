@@ -39,7 +39,7 @@
       }
       .content-body .body-head {
         font-weight: 500;
-        font-size: 19px;
+        font-size: 21px;
       }
 
       /* stat section */
@@ -49,7 +49,8 @@
         margin-top: 22px;
       }
       .statBox {
-        border: 1px solid rgb(165, 165, 165);
+        /* border: 1px solid rgb(165, 165, 165); */
+        box-shadow: 0px 1px 5px rgb(198, 198, 198);
         padding: 7px;
         border-radius: 5px;
         width: 20%;
@@ -70,12 +71,14 @@
       }
 
       /* filter panel */
+
       .filter-panel {
-        margin-top: 80px;
+        margin-top: 50px;
         display: flex;
-        margin-bottom: 30px;
+        margin-bottom: 15px;
         justify-content: space-between;
-        align-items: center;
+        align-items: end;
+        border-radius: 5px;
       }
       .left-filter,
       .right-filter,
@@ -83,41 +86,91 @@
       .end-date {
         display: flex;
       }
+
+      /* left filter */
+
       .left-filter select {
-        border: 1px solid rgb(155, 155, 155);
+        border: none;
+        border: 1px solid rgb(142, 142, 142);
+        /* padding: 2px; */
+        border-radius: 3px;
         outline: none;
+        font-family: "poppins", sans-serif;
       }
       .left-filter-head {
         font-size: 16px;
+        color: rgb(73, 73, 73);
       }
       .filter-panel select {
         margin-left: 9px;
       }
 
       /* right filter */
+
       .start-date,
       .end-date {
-        margin-right: 20px;
+        margin-right: 17px;
+        color: rgb(73, 73, 73);
       }
       .start-date .date-head,
       .end-date .date-head {
-        margin-right: 10px;
+        margin-right: 8px;
+        font-size: 16px;
       }
       .right-filter input {
         transition: border-color 0.3s;
         outline: none;
-        border: 1px solid rgb(155, 155, 155);
+        border: 1px solid rgb(142, 142, 142);
+        /* padding: 2px; */
+        border-radius: 3px;
+        color: rgb(94, 94, 94);
+        font-family: "poppins", sans-serif;
       }
       .right-filter .date-head {
         transition: color 0.3s;
       }
-      .custom-filter {
-        background-color: black;
-        color: white;
-        border: none;
-        padding: 3px 15px;
+      #custom-filter {
+        background-color: white;
+        color: black;
+        border: 1px solid black;
+        font-weight: bold;
+        padding: 4px 15px;
+        border-radius: 3px;
+      }
+
+      /* download-buttons */
+
+      #excel-button {
+        color: rgb(24, 99, 24);
+        background-color: white;
+        border: 1px solid rgb(24, 99, 24);
+        padding: 2px 5px;
+        font-family: "poppins", sans-serif;
+        font-weight: 500;
+        border-radius: 3px;
+      }
+      #pdf-button {
+        color: rgb(162, 22, 22);
+        background-color: white;
+        border: 1.5px solid rgb(162, 22, 22);
+        padding: 2px 5px;
+        font-family: "poppins", sans-serif;
+        font-weight: 500;
+        border-radius: 3px;
+      }
+      #excel-button:hover {
+        cursor: pointer;
+      }
+      #pdf-button:hover {
+        cursor: pointer;
       }
       /* table */
+      /* .table {
+        margin-top: 10px;
+        border-radius: 9px;
+        padding: 20px;
+        box-shadow: 0px 1px 5px rgb(198, 198, 198);
+      } */
       th {
         font-size: 17px;
         font-weight: 500;
@@ -125,7 +178,7 @@
       table,
       th,
       td {
-        border: 1px solid rgb(191, 191, 191);
+        border: 1px solid rgb(204, 204, 204);
         border-collapse: collapse;
       }
 
@@ -166,6 +219,7 @@
             <div class="data"><%=totalUsers%></div>
           </div>
         </div>
+
         <div class="filter-panel">
           <div class="left-filter">
             <div class="left-filter-head">Sort based on</div>
@@ -200,7 +254,7 @@
                 id="endDate"
               />
             </div>
-            <button class="custom-filter" onclick="filterPage()">Filter</button>
+            <button id="custom-filter" onclick="filterPage()">Filter</button>
           </div>
           <div class="download-buttons">
             <button
@@ -217,51 +271,57 @@
             </button>
           </div>
         </div>
-        <table class="ordered-section" style="width: 100%">
-          <tr>
-            <th>Sl:no</th>
-            <th>Buyer</th>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Size</th>
-            <th>Price</th>
-            <th>Coupon</th>
-            <th>Order Date</th>
-            <th>Address</th>
-            <th>Payment Method</th>
-          </tr>
-          <%if(orders.length > 0){%> <%let number = 0%>
-          <%orders.forEach(function(order){%>
-          <%order.orderedProducts.forEach(function(product){%>
-          <%if(product.orderStatus != "cancelled"){%> <%number += 1%>
-          <tr>
-            <td style="text-align: center"><%=number%></td>
-            <td><%=order.username%></td>
-            <td>
-              <%=product.productID.brand%> <%=product.productID.productType%>
-            </td>
-            <td style="text-align: center"><%=product.quantity%></td>
-            <td><%=product.size%></td>
-            <td>Rs. <%=product.totalPrice%></td>
-            <td style="text-align: center">
-              <%=order.couponAdded ? 'Added' : '-'%>
-            </td>
-            <td><%=order.orderedDate.toDateString()%></td>
-            <td>
-              <div class="address-name"><%=order.address.name%></div>
-              <div class="address-address"><%=order.address.address%></div>
-              <div class="address-district"><%=order.address.district%></div>
-            </td>
-            <td><%=order.paymentMethod%></td>
-          </tr>
-          <%}%> <%})%> <%})%> <%}else{%>
-          <tr>
-            <td colspan="9" style="text-align: center">
-              No Order Found in this time period
-            </td>
-          </tr>
-          <%}%>
-        </table>
+
+        <div class="table">
+          <table class="ordered-section" style="width: 100%">
+            <tr>
+              <th>Sl:no</th>
+              <th>Buyer</th>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Size</th>
+              <th>Price</th>
+              <th>Coupon</th>
+              <th>Order Date</th>
+              <th>Address</th>
+              <th>Payment Method</th>
+            </tr>
+            <%if(orders.length > 0){%> <%let number = 0%>
+            <%orders.forEach(function(order){%>
+            <%order.orderedProducts.forEach(function(product){%>
+            <%if(product.orderStatus != "cancelled"){%> <%number += 1%>
+            <tr>
+              <td style="text-align: center"><%=number%></td>
+              <td><%=order.username%></td>
+              <td>
+                <%=product.productID.brand%> <%=product.productID.productType%>
+              </td>
+              <td style="text-align: center"><%=product.quantity%></td>
+              <td><%=product.size%></td>
+              <td>
+                Rs. <%=product.couponAdded && order.orderedProducts.length === 1
+                ? order.orderTotal : product.totalPrice %>
+              </td>
+              <td style="text-align: center">
+                <%=order.couponAdded ? 'Added' : '-'%>
+              </td>
+              <td><%=order.orderedDate.toDateString()%></td>
+              <td>
+                <div class="address-name"><%=order.address.name%></div>
+                <div class="address-address"><%=order.address.address%></div>
+                <div class="address-district"><%=order.address.district%></div>
+              </td>
+              <td><%=order.paymentMethod%></td>
+            </tr>
+            <%}%> <%})%> <%})%> <%}else{%>
+            <tr>
+              <td colspan="9" style="text-align: center">
+                No Order Found in this time period
+              </td>
+            </tr>
+            <%}%>
+          </table>
+        </div>
       </div>
     </div>
     <script>

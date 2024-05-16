@@ -27,6 +27,10 @@ const orderSchema = new mongoose.Schema({
             type:Number,
             default:0
         },
+        couponAdded:{
+            type:Boolean,
+            default:false
+        },
         orderStatus: {
             type: String,
         },

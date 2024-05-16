@@ -86,6 +86,7 @@
                 <th style="width:1%; text-align:center;">size</th>
                 <th style="width:1%;">QTY</th>
                 <th style="width:6%">price</th>
+                <th style="width:6%">Coupon</th>
                 <th style="width:20%">address</th>
                 <th style="width:8%">order status</th>
               </tr>
@@ -108,6 +109,7 @@
                       </td>
                       <td style="text-align:center;"><%=orderedProduct.quantity%></td>
                       <td>Rs. <%=orderedProduct.totalPrice%></td>
+                      <td style="text-align: center;": center;"><%=orderedProduct.couponAdded ? 'Added' : '-'%></td>
                       <td>
                         <div class="addName"><%=order.address.name%></div>
                         <div class="address"><%=order.address.address%></div>
@@ -115,19 +117,22 @@
                         <div class="phone"><%=order.address.phone%></div>
                       </td>
                       <td>
-                        <div class="status"><%=orderedProduct.orderStatus%></div>
+                        <div class="admin-order-status-section">
+                          <div class="order-status"><%=orderedProduct.orderStatus%></div>
+                          <%const risk = orderedProduct.couponAdded && order.orderedProducts.length > 1 ? true : false%>
+                          <form action="/admin/orderStatus" method="post"  onsubmit="submitStatus(event,'<%=order._id%>','<%=orderedProduct._id%>','<%=risk%>')" data-orderid = "<%=order._id%>">
+                            <select name="status" id="<%=order._id%>" class="status" >
+                              <option value="on progress">on progress</option>
+                              <option value="shipped">shipped</option>
+                              <option value="delivered">delivered</option>
+                              <option value="cancelled">cancelled</option>
+                              <option value="returned">returned</option>
+                              <option value="pending">pending</option>
+                            </select>
+                            <input type="submit">
+                          </form>
+                        </div>
                         
-                        <form action="/admin/orderStatus/<%=order._id%>/<%=orderedProduct._id%>" method="post">
-                          <select name="status" id="<%=order._id%>" class="status" >
-                            <option value="on progress">on progress</option>
-                            <option value="shipped">shipped</option>
-                            <option value="delivered">delivered</option>
-                            <option value="cancelled">cancelled</option>
-                            <option value="returned">returned</option>
-                            <option value="pending">pending</option>
-                          </select>
-                          <input type="submit">
-                        </form>
                       </td>
                     </tr>
                   <%})%>                
@@ -137,19 +142,22 @@
           </div>
           
         </div>
-        
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
           // set default select on options
           document.addEventListener('DOMContentLoaded',function(){
             const selectElem = document.querySelectorAll('.status');
-            selectElem.forEach(function(select){
+            selectElem.forEach( function(select){
               const selectID = select.id;
               const selectedValue = localStorage.getItem(selectID);
 
-              select.addEventListener('change',function(event){
+              select.addEventListener('change',async function(event){
                 const selectedValue = event.target.value;
                 localStorage.setItem(selectID,selectedValue);
               })
+              
+
               if(selectedValue){
                 const options = select.querySelectorAll('option');
                 options.forEach(function(option){
@@ -160,7 +168,54 @@
               }
             })
           })
+
+          // form submission
+          async function submitStatus(event,orderID,productDocID,risk){
+              event.preventDefault();
+              const selectValue = event.target.querySelector('select').value;
+              if(risk && selectValue === 'cancelled'){
+                const result = await confirmCancel();
+                if(result.isConfirmed){
+                  cancelAllProducts(event,productDocID,orderID,selectValue)
+                }
+              }
+              else{
+                
+              }
+          }
+
+          async function confirmCancel(){
+            const result = await Swal.fire({
+            title: 'Are you sure about cancelling this product?',
+            text: 'The cancelling of the selected product will result in the cancellation of all other products ordered along with this product, as they all were bought using a coupon.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
+            })   
+            return result; 
+          }
           
+          async function cancelAllProducts(event,productDocID,orderID,status){
+            try{
+              const resposne = await fetch(`/admin/changeOrderStatus?cancellAll=true`,{
+                method:'POST',
+                headers:{
+                  'Content-Type':'application/json'
+                },
+                body:JSON.stringify({orderID,productDocID,status})
+              })
+              if(resposne.ok){
+                const data = await resposne.json();
+                const forms = document.querySelectorAll(`[data-orderid='${data.orderID}']`);
+                console.log(forms);
+                
+              }
+            }
+            catch(error){
+              console.log("error, ",error);
+            }
+          }
 
           
         </script>

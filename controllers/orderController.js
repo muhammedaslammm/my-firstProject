@@ -12,8 +12,8 @@ const generateOrderID = require('./../operations/generateOrderID');
 exports.placeOrder = async function(req,res){
     try{
         const {address,cartID,payment,orderTotal,usedCouponID} = req.body;        
-        console.log(payment);
         const userID = req.session.userID;
+        const user = await User.findById(userID);
         let carts = [];
         if(typeof cartID != 'string'){
             const promise = cartID.map(async function(id){
@@ -37,16 +37,14 @@ exports.placeOrder = async function(req,res){
             });
             carts.push(cart);
         }
-        const user = await User.findById(req.session.userID);
-             
-        const orderedProducts = [];
+        
+        // setting the orderedProducts array in the order doc
         const date = new Date();
         const newDate = date.setDate(date.getDate() + 3)
         const deliveryDate = new Date(newDate)
+        const orderedProducts = [];
         carts.forEach(function(cart){
             const moasOrderID = generateOrderID()
-
-            // adding total price
             let totalPrice = 0;
             if(cart.productID.productOffer){
                 totalPrice += cart.productID.productOffer.sellingPrice * cart.quantity;
@@ -65,19 +63,14 @@ exports.placeOrder = async function(req,res){
                 moasOrderID,               
                 quantity:cart.quantity,
                 size:cart.size, 
+                totalPrice,
                 orderStatus:"on progress",
                 offer,              
                 deliveryDate,
             }
-
-            // setting the product price with respect to the usage of coupons.
-            if(carts.length === 1){
-                productDetails.totalPrice = orderTotal;
-            }
-            else{
-                productDetails.totalPrice = totalPrice;
-            }
-            
+            if(usedCouponID){
+                productDetails.couponAdded = true;
+            }  
             orderedProducts.push(productDetails);
         })
 
@@ -100,7 +93,6 @@ exports.placeOrder = async function(req,res){
             username:user.username,
             orderedProducts,
             orderedDate:new Date(),
-            orderStatus:"on progress",
             address,
             orderTotal,
             paymentMethod:payment
@@ -148,25 +140,10 @@ exports.orderResponsePage = async function(req,res){
     try{
         const userID = req.session.userID
         const orderID = req.query.order_id;
-        const order = await Order.findOne({_id:orderID}).populate('orderedProducts.productID');
-        const products = order.orderedProducts;
-        const address = await Address.findById(order.address); 
-        if(!order.orderStatus){
-            const onProgress = order.orderedProducts.every(function(order){
-                return order.orderStatus === 'on progress'
-            })
-            if(onProgress){    
-                await Order.updateOne({_id:orderID},{$set:{orderStatus:"on progress"}});                       
-                res.render("orderResponsePage",{products,address,userID,order})
-            }
-            else{
-                console.log("order status not all in 'on progress'");
-            }
-        }
-        else if(order.orderStatus === "on progress"){          
-            res.render("orderResponsePage",{products,address,userID,order})
-        } 
-                
+        const order = await Order.findOne({_id:orderID})
+            .populate('orderedProducts.productID')
+            .populate("address");
+        res.render("orderResponsePage",{userID,order})       
     }
     catch(error){
         console.log("error in order response page",error);
@@ -194,15 +171,12 @@ exports.viewOrderedProduct = async function(req,res){
     const {orderID,productDocID} = req.params
     const userID = req.session.userID
     try{
-        const order = await Order.findById(orderID).populate('orderedProducts.productID')
+        const order = await Order.findById(orderID).populate('orderedProducts.productID').populate("address")
         const product = order.orderedProducts.find(function(product){
             return product._id.toString() === productDocID;
-        })
-        
-        
-        const address = await Address.findById(order.address);
+        })        
         const statuses = ["on progress","shipped","pending"]
-        res.render("orderedProduct",{address,product,order,statuses,userID});
+        res.render("orderedProduct",{product,order,statuses,userID});
     }
     catch(error){
         console.log(error,"error when viewing ordered product");

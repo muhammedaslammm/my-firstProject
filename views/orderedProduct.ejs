@@ -140,9 +140,24 @@
         font-size: 15px;
         color: rgb(75, 75, 75);
       }
+
+      /* price section */
       .price {
+        display: flex;
+        align-items: center;
+        justify-content: start;
         margin-top: 10px;
+      }
+      .coupon-price {
         font-weight: 500;
+        font-size: 17px;
+      }
+      .actual-price {
+        font-size: 15px;
+        color: rgb(132, 131, 131);
+        text-decoration: line-through;
+        text-decoration-color: rgb(166, 41, 41);
+        margin-left: 20px;
       }
       .product-stat {
         width: 30%;
@@ -168,11 +183,11 @@
       <div class="box-top">
         <div class="address-box">
           <div class="address-head">Delivery Address</div>
-          <div class="name"><%=address.name%></div>
-          <div class="address"><%=address.address%></div>
-          <div class="district"><%=address.district%> - district</div>
+          <div class="name"><%=order.address.name%></div>
+          <div class="address"><%=order.address.address%></div>
+          <div class="district"><%=order.address.district%> - district</div>
           <div class="phone-head">Phone:</div>
-          <div class="phone-number"><%=address.phone%></div>
+          <div class="phone-number"><%=order.address.phone%></div>
         </div>
         <div class="reward-box">
           <div class="rewardbox-head">Your Reward</div>
@@ -233,7 +248,15 @@
             <div class="color">color: <%=product.productID.color%></div>
             <div class="size">size: <%=product.size%></div>
             <div class="quantity">quantity: <%=product.quantity%></div>
-            <div class="price">Rs. <%=product.totalPrice%></div>
+            <div class="price">
+              <div class="coupon-price">
+                Rs. <%=product.couponAdded && order.orderedProducts.length === 1
+                ? order.orderTotal : product.totalPrice%>
+              </div>
+              <%if(product.couponAdded && order.orderedProducts.length === 1){%>
+              <div class="actual-price">Rs. <%=product.totalPrice%></div>
+              <%}%>
+            </div>
           </div>
         </div>
         <div class="product-stat">

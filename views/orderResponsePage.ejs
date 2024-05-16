@@ -91,7 +91,7 @@
       .product-box {
         border: 1px solid rgb(207, 207, 207);
         background-color: white;
-        padding: 20px;
+        padding: 20px 20px 30px;
         width: 49%;
         display: flex;
         margin-top: 20px;
@@ -124,13 +124,25 @@
       .quantity {
         color: rgb(86, 86, 86);
       }
+      .actual-price {
+        margin-top: 8px;
+        font-size: 16px;
+        color: rgb(86, 86, 86);
+      }
+      .actual-price span {
+        font-weight: 500;
+      }
 
       /* product card price section */
 
-      .price-head {
+      .product-box .right-section {
+        display: flex;
+        flex-direction: column;
+      }
+      .offer-amount-head {
         font-weight: 500;
       }
-      .price-amount {
+      .offer-amount {
         font-size: 21px;
         font-weight: 500;
       }
@@ -159,20 +171,20 @@
       <!-- address box -->
       <div class="address-box">
         <div class="address-head">Delivery Address</div>
-        <div class="address-name"><%=address.name%></div>
-        <div class="address-house"><%=address.address%></div>
+        <div class="address-name"><%=order.address.name%></div>
+        <div class="address-house"><%=order.address.address%></div>
         <div class="address-district">
-          <%=address.district%> district - <%=address.pincode%>,
-          <%=address.state%>
+          <%=order.address.district%> district - <%=order.address.pincode%>,
+          <%=order.address.state%>
         </div>
         <div class="phone">
           <div class="phone-head">Phone Number</div>
-          <div class="number"><%=address.phone%></div>
+          <div class="number"><%=order.address.phone%></div>
         </div>
       </div>
 
       <!-- product box -->
-      <%products.forEach(function(product){%>
+      <%order.orderedProducts.forEach(function(product){%>
       <div class="product-box">
         <div class="left-section">
           <div class="image">
@@ -186,13 +198,24 @@
             </div>
             <div class="color">color: <%=product.productID.color%></div>
             <div class="quantity">quantity: <%=product.quantity%></div>
+            <%if(product.couponAdded && order.orderedProducts.length === 1){%>
+            <div class="actual-price">
+              actual Price : <span>Rs. <%=product.totalPrice%></span>
+            </div>
+            <%}%>
           </div>
         </div>
 
         <div class="right-section">
-          <div class="price">
-            <div class="price-head">Total</div>
-            <div class="price-amount">Rs. <%=product.totalPrice%></div>
+          <div class="offer-price-section">
+            <div class="offer-amount-head">
+              <%= product.couponAdded && order.orderedProducts.length === 1 ?
+              'Offer Amount' : 'Total' %>
+            </div>
+            <div class="offer-amount">
+              Rs. <%= product.couponAdded && order.orderedProducts.length === 1
+              ? order.orderTotal : product.totalPrice %>
+            </div>
           </div>
         </div>
       </div>

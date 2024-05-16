@@ -138,11 +138,19 @@
         font-weight: 500;
         font-size: 18px;
       }
-      .product-left-multi .date {
-        font-size: 14px;
+      .product-card .payment-method {
+        font-size: 13px;
+        color: rgb(125, 125, 125);
+        margin-top: 9px;
+      }
+      .product-card .payment-method span {
+        color: rgb(125, 125, 125);
+        font-weight: 500;
+      }
+      .product-left-multi .date,
+      .product-card .product-details .date {
+        font-size: 13px;
         color: rgb(127, 127, 127);
-        margin-top: 8px;
-        font-style: italic;
       }
 
       .product-right-multi {
@@ -185,6 +193,7 @@
       /* details */
       .product-details {
         line-height: 20px;
+        margin-left: 8px;
       }
       .brand {
         font-weight: 500;
@@ -269,11 +278,16 @@
               Multiple products Placed For
               <span class="discount-price">Rs. <%=order.orderTotal%></span>
             </div>
+            <div class="payment-method">
+              Payment method : <span><%=order.paymentMethod%></span>
+            </div>
             <div class="date"><%=order.orderedDate.toDateString()%></div>
           </div>
           <div class="product-right-multi">
             <div class="status-section">
-              <%if(order.couponAdded && order.orderStatus === 'on progress'){%>
+              <% const multiple = order.orderedProducts.every(function(product){
+              return product.orderStatus === "on progress" }) %>
+              <%if(order.couponAdded && multiple ){%>
               <button onclick="cancelOrder('<%=order._id%>','')">
                 cancel order
               </button>
@@ -340,12 +354,12 @@
             <div class="product-right">
               <!-- on progress -->
               <%if(product.orderStatus === 'on progress'){%>
-              <div class="date-note" style="color: rgb(12, 108, 12)">
+              <div class="date-note" style="color: rgb(184, 166, 34)">
                 Delivery Expected on
               </div>
               <div
                 class="date"
-                style="color: rgb(12, 108, 12); font-weight: 500"
+                style="color: rgb(184, 166, 34); font-weight: 500"
               >
                 <%=product.deliveryDate.toDateString()%>
               </div>
@@ -360,6 +374,18 @@
                 style="color: rgb(159, 20, 20); font-weight: 500"
               >
                 <%=product.cancelledDate.toDateString()%>
+              </div>
+
+              <!-- delivered -->
+              <%}else if(product.orderStatus === "delivered"){%>
+              <div class="date-note" style="color: rgb(39, 93, 39)">
+                Order Delivered on
+              </div>
+              <div
+                class="date"
+                style="color: rgb(39, 93, 39); font-weight: 500"
+              >
+                <%=product.deliveredDate.toDateString()%>
               </div>
               <%}%>
             </div>
@@ -387,6 +413,10 @@
                 <%=product.color%> Men's <%=product.productType%>
               </div>
               <div class="color">Color: <%=product.color%></div>
+              <div class="payment-method">
+                Payment method : <span><%=order.paymentMethod%></span>
+              </div>
+              <div class="date"><%=order.orderedDate.toDateString()%></div>
             </div>
           </div>
           <div class="product-middle">
@@ -397,7 +427,9 @@
               </div>
             </div>
             <div class="price">
-              Rs. <%=order.orderedProducts[0].totalPrice%>
+              Rs. <%=order.orderedProducts[0].couponAdded &&
+              order.orderedProducts.length === 1 ? order.orderTotal :
+              order.orderedProducts[0].totalPrice%>
             </div>
           </div>
           <div class="product-right">
@@ -405,10 +437,13 @@
 
             <!-- on progress -->
             <%if(productOrder.orderStatus === 'on progress'){%>
-            <div class="date-note" style="color: rgb(12, 108, 12)">
+            <div class="date-note" style="color: rgb(184, 166, 34)">
               Delivery Expected on
             </div>
-            <div class="date" style="color: rgb(12, 108, 12); font-weight: 500">
+            <div
+              class="date"
+              style="color: rgb(184, 166, 34); font-weight: 500"
+            >
               <%=productOrder.deliveryDate.toDateString()%>
             </div>
 
@@ -419,6 +454,15 @@
             </div>
             <div class="date" style="color: rgb(159, 20, 20); font-weight: 500">
               <%=productOrder.cancelledDate.toDateString()%>
+            </div>
+
+            <!-- delivered -->
+            <%}else if(productOrder.orderStatus === 'delivered'){%>
+            <div class="date-note" style="color: rgb(39, 93, 39)">
+              Order Delivered on
+            </div>
+            <div class="date" style="color: rgb(39, 93, 39); font-weight: 500">
+              <%=productOrder.deliveredDate.toDateString()%>
             </div>
             <%}%>
           </div>

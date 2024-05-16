@@ -525,12 +525,11 @@ exports.deleteProductOffer = async function(req,res){
     }
 }
 
-
 // admin order page
 exports.orderPage = async function(req,res){
     try{
         const userID = req.session.userID;           
-        const orders = await Order.find().populate('orderedProducts.productID').populate('address')
+        const orders = await Order.find().populate('orderedProducts.productID').populate('address').sort({orderedDate:-1})
         res.render("adminOrderPage",{orders});
     }
     catch(error){
@@ -540,40 +539,59 @@ exports.orderPage = async function(req,res){
 
 
 // handle order status
-exports.orderStatus = async function(req,res){
+exports.changeOrderStatus = async function(req,res){
     try{
         const userID = req.session.userID
-        const {orderID,productID} = req.params;
+        const {orderID,productDocID} = req.body;
+        const cancelAll = req.query.cancellAll;
         const status = req.body.status ;     
-        await Order.updateOne({_id:orderID,'orderedProducts.productID':productID},{$set:{'orderedProducts.$.orderStatus':status}})
         
-        if(status === 'delivered'){           
+        if(status === 'delivered'){ 
+                      
             await Order.updateOne(
-                {_id:orderID,'orderedProducts._id':productID},
+                {_id:orderID,'orderedProducts._id':productDocID},
                 {$set:{
                     'orderedProducts.$.deliveredDate':new Date(),
                     'orderedProducts.$.cancelledDate':null,
                     'orderedProducts.$.deliveryDate':null,
                     'orderedProducts.$.orderStatus':'delivered'
-                }
-                });            
+                }}
+            );  
         }
         else if(status === 'cancelled'){
-            await Order.updateOne(
-                {_id:orderID,'orderedProducts._id':productID},
-                {$set:{
-                    'orderedProducts.$.cancelledDate':new Date(),
-                    'orderedProducts.$.deliveredDate':null,
-                    'orderedProducts.$.deliveryDate':null,
-                    'orderedProducts.$.orderStatus':'cancelled'
-                }})
+            if(cancelAll){
+                await Order.updateOne(
+                    {_id:orderID,'orderedProducts.orderStatus':'on progress'},
+                    {$set:{
+                        'orderedProducts.$[product].orderStatus':'cancelled',
+                        'orderedProducts.$[product].deliveryDate':null,
+                        'orderedProducts.$[product].deliveredDate':null,
+                        'orderedProducts.$[product].cancelledDate':new Date()
+                    }},
+                    {
+                        arrayFilters:[{'product.orderStatus':'on progress'}]
+                    }
+                )
+                res.status(200).json({success:"success",orderID})
+            }
+            else{
+                await Order.updateOne(
+                    {_id:orderID,'orderedProducts._id':productDocID},
+                    {$set:{
+                        'orderedProducts.$.cancelledDate':new Date(),
+                        'orderedProducts.$.deliveredDate':null,
+                        'orderedProducts.$.deliveryDate':null,
+                        'orderedProducts.$.orderStatus':'cancelled'
+                    }
+                })
+            }            
         }
         else if(status === 'on progress'){
             const date = new Date();
             const newDate = date.setDate(date.getDate() + 3)
             const deliveryDate = new Date(newDate)
             await Order.updateOne(
-                {_id:orderID,'orderedProducts._id':productID},
+                {_id:orderID,'orderedProducts._id':productDocID},
                 {$set:{
                     'orderedProducts.$.deliveryDate':deliveryDate,
                     'orderedProducts.$.cancelledDate':null,
@@ -581,13 +599,12 @@ exports.orderStatus = async function(req,res){
                     'orderedProducts.$.orderStatus':'on progress'
                 }})
         }
-        console.log("product status updated");
-        res.redirect("/admin/orders")
+        
 
     }
     catch(error){
         console.log(error,"error when changing status");
-        res.redirect("/admin/orders")
+        res.json(500).json({error:"error"})
     }
 }
 
@@ -895,7 +912,7 @@ exports.salesReportPage = async function(req,res){
         }
 
         // caclulating total products and sales amount 
-        const orders = await Order.find({...filter,orderStatus:{$ne:"cancelled"}})
+        const orders = await Order.find({...filter})
             .populate("orderedProducts.productID")
             .populate("address")
             .sort({orderedDate:-1})
@@ -907,20 +924,30 @@ exports.salesReportPage = async function(req,res){
         let userID = "";
         
         orders.forEach(function(order){            
-            if(order.orderStatus != "cancelled"){
-                // calculating total order and total users                
-                totalOrders += 1; 
-                if(order.userID.toString() !== userID.toString()){
-                    totalUsers += 1;
-                    userID = order.userID;
-                }
-                
-                order.orderedProducts.forEach(function(product){
-                    if(product.orderStatus != 'cancelled'){
-                        totalSalesAmount += product.totalPrice
-                        totalProducts += 1;
-                    }
+            if(order){
+                // calculating total order and total users     
+                const cancelled = order.orderedProducts.every(function(product){
+                    return product.orderStatus === 'cancelled';
                 })
+                if(!cancelled){
+                    totalOrders += 1;
+                    if(order.userID.toString() !== userID.toString()){
+                        totalUsers += 1;
+                        userID = order.userID;
+                    }                    
+                    order.orderedProducts.forEach(function(product){
+                        if(product.orderStatus != 'cancelled'){
+                            if(product.couponAdded && order.orderedProducts.length === 1){
+                                totalSalesAmount += order.orderTotal;
+                                totalProducts += 1
+                            }
+                            else{
+                                totalSalesAmount += product.totalPrice
+                                totalProducts += 1;
+                            }                            
+                        }
+                    })
+                }   
             }            
         })
         res.render("salesReport",{
@@ -950,7 +977,9 @@ exports.downloadExcel = async function(req,res){
         orders.forEach(function(order){            
             order.orderedProducts.forEach(function(product){
                 sn += 1;
-                const address = `${order.address.name} ${order.address.address} ${order.address.district}`;
+                const price = product.couponAdded && order.orderedProducts.length === 1 ? 
+                              order.orderTotal : product.totalPrice
+                const address = `${order.address.name}, ${order.address.address} ${order.address.district}`;
                 const couponData = order.couponAdded ? 'Added' : '-';
                 worksheet.addRow([
                     sn,
@@ -958,7 +987,7 @@ exports.downloadExcel = async function(req,res){
                     `${product.productID.brand} ${product.productID.color} ${product.productID.productType}`,
                     product.quantity,
                     product.size,
-                    product.totalPrice,
+                    price,
                     couponData,
                     order.orderedDate,
                     address,
@@ -1001,12 +1030,14 @@ exports.downloadPdf = async function(req,res){
         orders.forEach(function(order){
             order.orderedProducts.forEach(function(product){                
                 itemno += 1;
+                const price = product.couponAdded && order.orderedProducts.length === 1 ?
+                              order.orderTotal : product.totalPrice
                 const couponData = order.couponAdded ? 'Added' : '-'
                 const date = new Date(order.orderedDate);
                 pdfdoc.text(`${itemno}`,x,y);
                 pdfdoc.text(`Purchased Product : ${product.productID.brand} ${product.productID.color} ${product.productID.productType}`,x,y+25)
                 pdfdoc.text(`Purchased Date : ${date.toDateString()}`,x,y+45);
-                pdfdoc.text(`Purchase Total : ${product.totalPrice}`,x,y+65)
+                pdfdoc.text(`Purchase Total : ${price}`,x,y+65)
                 pdfdoc.text(`Purchased Quantity : ${product.quantity}`,x,y+85)
                 pdfdoc.text(`Product Size : ${product.size}`,x,y+105);
                 pdfdoc.text(`Coupon Added: ${couponData}`,x,y+125)
