@@ -65,7 +65,7 @@
         justify-content: space-between;
         background-color: white;
         padding:8px;
-        border: 1px solid rgb(125, 125, 125);
+        border: 1px solid rgb(195, 194, 194);
         border-radius: 3px;
         margin-bottom: 8px;
       }
@@ -78,6 +78,21 @@
       .wallet-row .amount{
         font-size: 17px;
         font-weight: 500;
+      }
+
+
+      /* credit and debit amount */
+      .debited{
+        color: rgb(195, 58, 58);
+      }
+      .credited{
+        color: green;
+      }
+      .amount-debited{
+        color:rgb(195, 58, 58);
+      }
+      .amount-credited{
+        color: green;
       }
 
       /* empty wallet */
@@ -114,8 +129,9 @@
               <%userWallet.creditedDetail.forEach(function(item){%>
                 <div class="wallet-row">
                   <%const date = item.date.toDateString()%>
-                  <div class="history"><span><%=item.source%></span> amount on <span><%=date%></span> </div>
-                  <div class="amount">Rs. <%=item.amount%></div>
+                  <div class="history"><span class="<%=item.transactionType === 'credited' ? 'credited' : 'debited' %>"><%=item.source%></span> on 
+                    <span class="<%=item.transactionType === 'credited' ? 'credited' : 'debited' %>"><%=date%></span> </div>
+                  <div class="amount <%=item.transactionType === 'credited' ? 'amount-credited' : 'amount-debited' %>">Rs. <%=item.amount%></div>
                 </div>
               <%})%>
             <%})%>

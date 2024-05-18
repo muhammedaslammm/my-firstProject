@@ -197,8 +197,7 @@
           <div class="orderID"><%=product.moasOrderID%></div>
         </div>
         <div class="more-box">
-          <%if(statuses.includes(product.orderStatus) && order.couponAdded ===
-          true && order.orderedProducts.length === 1 ){%>
+          <%if(statuses.includes(product.orderStatus)){%>
           <button
             type="submit"
             id="cancel"

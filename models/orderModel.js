@@ -64,12 +64,23 @@ const orderSchema = new mongoose.Schema({
     orderTotal:{
         type:Number
     },
-    paymentMethod: {
-        type: String
+    productTotal:{
+        type:Number
     },
+    couponOffer:{
+        type:Number,
+        default:0
+    },    
     couponAdded:{
         type:Boolean,
         default:false
+    },
+    usedCouponID:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'UsedCoupon'
+    },
+    paymentMethod: {
+        type: String
     }
 })
 

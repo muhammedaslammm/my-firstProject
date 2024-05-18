@@ -6,6 +6,7 @@ const Address = require("./../models/addressModel");
 const Wallet = require("./../models/walletModel")
 const {ObjectId} = require("mongodb");
 const generateOrderID = require('./../operations/generateOrderID');
+const UsedCoupon = require("./../models/usedCouponModel");
 
 
 // placing order 'cash on delivery'
@@ -43,14 +44,17 @@ exports.placeOrder = async function(req,res){
         const newDate = date.setDate(date.getDate() + 3)
         const deliveryDate = new Date(newDate)
         const orderedProducts = [];
+        let productTotal = 0
         carts.forEach(function(cart){
             const moasOrderID = generateOrderID()
             let totalPrice = 0;
             if(cart.productID.productOffer){
                 totalPrice += cart.productID.productOffer.sellingPrice * cart.quantity;
+                productTotal += totalPrice;
             }
             else{
-                totalPrice += cart.productID.sellingPrice * cart.quantity
+                totalPrice += cart.productID.sellingPrice * cart.quantity;
+                productTotal += totalPrice;
             }
 
             // adding offer value
@@ -95,10 +99,14 @@ exports.placeOrder = async function(req,res){
             orderedDate:new Date(),
             address,
             orderTotal,
+            productTotal,
             paymentMethod:payment
         })
         if(usedCouponID){
-            order.couponAdded = true
+            const coupon = await UsedCoupon.findById(usedCouponID).populate('couponID');
+            order.couponAdded = true;
+            order.couponOffer = coupon.couponID.offerAmount;
+            order.usedCouponID = usedCouponID
         }
         await order.save(); 
         console.log(order);
@@ -175,7 +183,7 @@ exports.viewOrderedProduct = async function(req,res){
         const product = order.orderedProducts.find(function(product){
             return product._id.toString() === productDocID;
         })        
-        const statuses = ["on progress","shipped","pending"]
+        const statuses = ["on progress","pending"]
         res.render("orderedProduct",{product,order,statuses,userID});
     }
     catch(error){
@@ -191,45 +199,31 @@ exports.cancelOrder = async function(req,res){
         const cancelledDate = Date.now();  
         const userID = req.session.userID;        
 
+        const updateStatus = await Order.updateOne(
+            {_id:orderID,'orderedProducts._id':docID},
+            {$set:{
+                'orderedProducts.$.orderStatus':'cancelled',
+                'orderedProducts.$.cancelledDate':cancelledDate,
+                'orderedProducts.$.deliveryDate':null,                
+            }}            
+        )            
+
+        // collecting cancelled product amount for adding in the wallet
         let amount = 0;
-        const order = await Order.findById(orderID);
+        const order = await Order.findById(orderID).populate('usedCouponID');
+        console.log(order);
+        const cancelledProduct = order.orderedProducts.find(function(product){
+            return product._id == docID
+        });
+
         if(order.couponAdded){
-            await Order.updateOne(
-                {_id:orderID,'orderedProducts.orderStatus':'on progress'},
-                {$set:{
-                    'orderedProducts.$[products].orderStatus':'cancelled',
-                    'orderedProducts.$[products].cancelledDate':cancelledDate,
-                    'orderedProducts.$[products].deliveryDate':null,
-                    orderStatus:'cancelled',
-                    cancelledDate
-                }},
-                {arrayFilters:[{'products.orderStatus':'on progress'}]}
-            )
-            amount = order.orderTotal;
+            const discountPrice = (cancelledProduct.totalPrice / order.productTotal) * order.usedCouponID.deductedAmount;
+            amount += cancelledProduct.totalPrice - discountPrice;
         }
         else{
-            const updateStatus = await Order.updateOne(
-                {_id:orderID,'orderedProducts._id':docID},
-                {$set:{
-                    'orderedProducts.$.orderStatus':'cancelled',
-                    'orderedProducts.$.cancelledDate':cancelledDate,
-                    'orderedProducts.$.deliveryDate':null,                
-                }}            
-            ) 
-            const updatedOrder = await Order.findOne({_id:orderID});
-            const isCancelled = updatedOrder.orderedProducts.every(function(product){
-                return product.orderStatus === "cancelled"
-            })
-            if(isCancelled){
-                await Order.findByIdAndUpdate(orderID,{orderStatus:"cancelled"})
-            }
-
-            const cancelledProduct = order.orderedProducts.find(function(product){
-                return product._id == docID
-            })
-            amount = cancelledProduct.totalPrice
-        }
-        
+            amount = cancelledProduct.totalPrice;
+        }   
+        console.log("amount : ",amount);
         const wallet = await Wallet.findOne({userID:req.session.userID})
         console.log(wallet);
         if(wallet){ //this means, the wallet is already added

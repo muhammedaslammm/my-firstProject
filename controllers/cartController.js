@@ -293,7 +293,7 @@ exports.addCoupon2Product = async function(req,res){
             else{                
                 const deducted = Math.round(totalAmount * (coupon.offerAmount/100));
                 const newAmount = Math.round(totalAmount - deducted)
-                const deductedAmount = -deducted
+                const deductedAmount = deducted
                 
                 const usedCoupon = await UsedCoupon.create({
                     userID:req.session.userID,

@@ -4,7 +4,8 @@ const usedCouponSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId
     },
     couponID:{
-        type:mongoose.Schema.Types.ObjectId
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Coupon'
     },
     purchaseTotal:{
         type:Number

@@ -284,28 +284,6 @@
             <div class="date"><%=order.orderedDate.toDateString()%></div>
           </div>
           <div class="product-right-multi">
-            <div class="status-section">
-              <% const multiple = order.orderedProducts.every(function(product){
-              return product.orderStatus === "on progress" }) %>
-              <%if(order.couponAdded && multiple ){%>
-              <button onclick="cancelOrder('<%=order._id%>','')">
-                cancel order
-              </button>
-              <%}else if(order.couponAdded && order.orderStatus ===
-              'cancelled'){%>
-              <div class="cancelled-head">
-                <div class="cancel-note" style="color: rgb(159, 20, 20)">
-                  Order Cancelled on
-                </div>
-                <div
-                  class="cancelled-date"
-                  style="color: rgb(159, 20, 20); font-weight: 500"
-                >
-                  <%=order.cancelledDate.toDateString()%>
-                </div>
-              </div>
-              <%}%>
-            </div>
             <div class="button">
               <button
                 id="view-more-button"
@@ -499,42 +477,6 @@
       // view product
       function viewOrder(orderID, productDocID) {
         window.location.href = `/view/${orderID}/${productDocID}`;
-      }
-
-      // cancel order
-      async function cancelOrder(orderID, docID) {
-        const result = await cancelAlert();
-        if (result.value) {
-          cancelTheOrder(orderID, docID);
-        }
-      }
-      async function cancelAlert() {
-        const result = await Swal.fire({
-          title: "Are you sure?",
-          text: "You are about to cancel this order!",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Remove",
-          cancelButtonText: "Cancel",
-        });
-        return result;
-      }
-
-      async function cancelTheOrder(orderID, docID) {
-        try {
-          const response = await fetch("/cancel-order", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ orderID, docID }),
-          });
-          if (response.ok) {
-            window.location.reload();
-          }
-        } catch (error) {
-          console.log("error", error);
-        }
       }
     </script>
   </body>
