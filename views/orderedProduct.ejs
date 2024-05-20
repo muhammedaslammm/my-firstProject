@@ -15,6 +15,10 @@
     />
 
     <link rel="stylesheet" href="/styles/nav.css" />
+    <script
+      src="https://kit.fontawesome.com/f620fbbfb3.js"
+      crossorigin="anonymous"
+    ></script>
     <title>Document</title>
     <style>
       body {
@@ -34,6 +38,9 @@
         font-size: 15px;
         color: rgb(178, 178, 178);
         margin-right: 10px;
+      }
+      #topLink:hover {
+        color: rgb(137, 48, 137);
       }
 
       /* top section */
@@ -101,6 +108,9 @@
       }
 
       .more-box #cancel:hover {
+        cursor: pointer;
+      }
+      .more-box #return-product:hover {
         cursor: pointer;
       }
 
@@ -216,8 +226,8 @@
           </div>
 
           <%}else if(product.orderStatus === "delivered"){%>
-          <form action="/return/<%=order._id%>" method="post">
-            <button type="submit">return product</button>
+          <form action="/return/<%=order._id%>/<%=product._id%>" method="get">
+            <button type="submit" id="return-product">Return Product</button>
           </form>
           <%}else if(statuses.includes(product.orderStatus) && order.couponAdded
           != true){%>
@@ -228,6 +238,48 @@
           >
             cancel your order
           </button>
+          <%}else if(product.orderStatus === 'requested'){%>
+          <div
+            class="request-note"
+            style="color: rgb(190, 146, 34); font-weight: 500"
+          >
+            Product requested for return
+          </div>
+          <%}else if(product.orderStatus === 'request accepted'){%>
+          <div
+            class="request-accepted"
+            style="color: rgb(49, 172, 49); font-weight: 500"
+          >
+            <i
+              class="fa-regular fa-circle-check"
+              style="
+                color: rgb(55, 164, 55);
+                font-size: 26px;
+                margin-right: 6px;
+              "
+            ></i
+            >Product return approved
+          </div>
+          <%}else if(product.orderStatus === 'request rejected'){%>
+          <div
+            class="request-rejected"
+            style="color: rgb(135, 38, 38); font-weight: 500"
+          >
+            Product return rejected
+          </div>
+          <%}else if(product.orderStatus === 'returned'){%>
+          <div class="returned">
+            <div class="returned" style="color: rgb(138, 52, 21)">
+              Product Returned on
+            </div>
+            <div
+              class="returned-date"
+              style="color: rgb(138, 52, 21); font-weight: 500"
+            >
+              <%=product.returnedDate.toDateString()%>
+            </div>
+          </div>
+
           <%}%>
         </div>
       </div>
@@ -269,16 +321,16 @@
             Order <%=product.orderStatus%>
           </div>
           <div class="note">The item you ordered is on progress</div>
-          <%}else if(product.orderStatus === "shipped"){%>
-          <div class="product-status" style="color: rgb(29, 138, 7)">
-            Order <%=product.orderStatus%>
-          </div>
-          <div class="note">The item you ordered is shipped</div>
           <%}else if(product.orderStatus === "delivered"){%>
           <div class="product-status" style="color: rgb(29, 138, 7)">
             Order <%=product.orderStatus%>
           </div>
           <div class="note">The item you ordered is delivered</div>
+          <%}else if(product.orderStatus === "returned"){%>
+          <div class="product-status" style="color: rgb(138, 52, 21)">
+            Order <%=product.orderStatus%>
+          </div>
+          <div class="note">The item you ordered is returned</div>
           <%}%>
         </div>
       </div>

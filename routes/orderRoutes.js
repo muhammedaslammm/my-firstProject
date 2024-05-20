@@ -29,6 +29,8 @@ router.get('/order-response-page',authentication,orderController.orderResponsePa
 router.get("/order-page",authentication,orderController.orderPage);
 router.get("/view/:orderID/:productDocID",authentication,orderController.viewOrderedProduct)
 router.post("/cancel-order",authentication,orderController.cancelOrder);
+router.get('/return/:orderID/:docID',authentication,orderController.getOrderReturnPage);
+router.post('/return/:orderID/:docID',authentication,orderController.submitOrderReturn);
 
 
 

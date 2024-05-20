@@ -300,6 +300,48 @@
       .buy-buttons a:hover {
         text-decoration: none;
       }
+
+      /* review section */
+      .review-section {
+        display: flex;
+        width: 94%;
+        margin: 0 auto;
+        margin-top: 10px;
+        box-shadow: 0px 0px 9px rgb(207, 207, 207);
+        background-color: white;
+        padding: 30px;
+      }
+      .write-review {
+        width: 30%;
+        border: 1px solid rgb(198, 198, 198);
+        border-radius: 4px;
+        padding: 15px 25px 30px;
+      }
+      .box-head {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 13px;
+      }
+      .review-input {
+        border: none;
+        border-bottom: 1px solid rgb(187, 187, 187);
+        border-radius: 4px;
+        outline: none;
+        padding: 5px;
+        width: 80%;
+        margin-right: 10px;
+      }
+      #review-submit-button {
+        font-family: "poppins", sans-serif;
+        border: none;
+        background-color: rgb(177, 117, 56);
+        color: white;
+        font-weight: 500;
+        padding: 3px 6px;
+      }
+      #review-submit-button:hover {
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -482,6 +524,16 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+    <div class="review-section">
+      <div class="write-review">
+        <div class="box-head">Write Your Review Here</div>
+        <input type="text" class="review-input" />
+        <input type="submit" id="review-submit-button" />
+      </div>
+      <div class="all-reviews">
+        <div class="reviews-head">All Reviews</div>
       </div>
     </div>
 

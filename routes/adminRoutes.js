@@ -55,6 +55,7 @@ router.post("/editBanner/:id",validation,upload2.single("image"),adminController
 // admin order handling
 router.get("/orders",validation,adminController.orderPage)
 router.post("/changeOrderStatus",validation,adminController.changeOrderStatus);
+router.post('/handleUserRequest',validation,adminController.handleUserRequest)
 
 // referral reward
 router.get("/referralManagement",validation,adminController.referralReward)

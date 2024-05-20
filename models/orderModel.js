@@ -34,6 +34,15 @@ const orderSchema = new mongoose.Schema({
         orderStatus: {
             type: String,
         },
+        returnReason:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'ReturnReason',
+            default:null
+        },
+        returnedDate:{
+            type:Date,
+            default:null
+        },
         cancelledDate: {
             type: Date,
             default: null
@@ -50,9 +59,6 @@ const orderSchema = new mongoose.Schema({
     }],
     orderedDate: {
         type: Date
-    },
-    orderStatus:{
-        type:String,
     },
     cancelledDate:{
         type:Date

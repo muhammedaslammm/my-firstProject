@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+
+    <link rel="stylesheet" href="/styles/nav.css" />
+    <title>return page</title>
+    <style>
+      body {
+        font-family: "poppins", sans-serif;
+        padding-bottom: 100px;
+        background-color: rgb(248, 248, 248);
+      }
+      .container {
+        width: 40%;
+        margin: 80px auto;
+      }
+      .navigate {
+        margin-top: 10px;
+        margin-bottom: 8px;
+      }
+      #topLink {
+        font-size: 15px;
+        color: rgb(178, 178, 178);
+        margin-right: 10px;
+      }
+      #topLink:hover {
+        color: rgb(137, 48, 137);
+      }
+
+      /* reason box */
+      .reason-box {
+        border: 1px solid rgb(187, 187, 187);
+        background-color: white;
+        padding: 20px;
+        border-radius: 4px;
+      }
+      .reason-box .head {
+        font-size: 19px;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .reason-box form select {
+        width: 35%;
+        outline: none;
+        padding: 3px;
+        margin-bottom: 8px;
+      }
+      #submit-button {
+        font-family: "poppins", sans-serif;
+        background-color: rgb(66, 126, 187);
+        color: white;
+        padding: 2px 10px;
+        border: none;
+      }
+      #submit-button:hover {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- headers -->
+    <%-include("./partials/navbar.ejs")%>
+    <!-- -- -->
+    <div class="container">
+      <div class="navigate">
+        <a href="/view/<%=orderID%>/<%=docID%>" id="topLink"
+          >>back to ordered product page</a
+        >
+      </div>
+      <div class="reason-box">
+        <div class="head">
+          Select from the reasons below for the product return
+        </div>
+        <form action="/return/<%=orderID%>/<%=docID%>" method="post">
+          <select name="reason" id="reason">
+            <%reasons.forEach(function(reason){%>
+            <option value="<%=reason%>"><%=reason%></option>
+            <%})%>
+          </select>
+          <input type="submit" value="Submit Reason" id="submit-button" />
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

@@ -365,6 +365,36 @@
               >
                 <%=product.deliveredDate.toDateString()%>
               </div>
+
+              <!-- requesting for the product return -->
+              <%}else if(product.orderStatus === 'requested'){%>
+              <div
+                class="request-note"
+                style="color: rgb(154, 27, 27); font-weight: 500"
+              >
+                Requested for return
+              </div>
+
+              <!-- request accepted by the admin -->
+              <%}else if(product.orderStatus === 'request accepted'){%>
+              <div
+                class="request-accepted"
+                style="color: rgb(202, 145, 41); font-weight: 500"
+              >
+                Returning Product
+              </div>
+
+              <!-- product returned -->
+              <%}else if(product.orderStatus === 'returned'){%>
+              <div class="returned" style="color: rgb(138, 52, 21)">
+                Product Returned on
+              </div>
+              <div
+                class="returned-date"
+                style="color: rgb(138, 52, 21); font-weight: 500"
+              >
+                <%=product.returnedDate.toDateString()%>
+              </div>
               <%}%>
             </div>
           </div>
@@ -441,6 +471,36 @@
             </div>
             <div class="date" style="color: rgb(39, 93, 39); font-weight: 500">
               <%=productOrder.deliveredDate.toDateString()%>
+            </div>
+
+            <!-- requested for return -->
+            <%}else if(productOrder.orderStatus === 'requested'){%>
+            <div
+              class="request-note"
+              style="color: rgb(154, 27, 27); font-weight: 500"
+            >
+              Requested for return
+            </div>
+
+            <!-- request accepted -->
+            <%}else if(productOrder.orderStatus === 'request accepted'){%>
+            <div
+              class="request-accepted"
+              style="color: rgb(202, 145, 41); font-weight: 500"
+            >
+              Returning Product
+            </div>
+
+            <!-- returned -->
+            <%}else if(productOrder.orderStatus === 'returned'){%>
+            <div class="returned" style="color: rgb(138, 52, 21)">
+              Product Returned on
+            </div>
+            <div
+              class="returned-date"
+              style="color: rgb(138, 52, 21); font-weight: 500"
+            >
+              <%=productOrder.returnedDate.toDateString()%>
             </div>
             <%}%>
           </div>

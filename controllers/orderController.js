@@ -7,6 +7,7 @@ const Wallet = require("./../models/walletModel")
 const {ObjectId} = require("mongodb");
 const generateOrderID = require('./../operations/generateOrderID');
 const UsedCoupon = require("./../models/usedCouponModel");
+const Return = require("./../models/returnReasonModel");
 
 
 // placing order 'cash on delivery'
@@ -218,7 +219,7 @@ exports.cancelOrder = async function(req,res){
 
         if(order.couponAdded){
             const discountPrice = (cancelledProduct.totalPrice / order.productTotal) * order.usedCouponID.deductedAmount;
-            amount += cancelledProduct.totalPrice - discountPrice;
+            amount += Math.round(cancelledProduct.totalPrice - discountPrice);
         }
         else{
             amount = cancelledProduct.totalPrice;
@@ -263,5 +264,47 @@ exports.cancelOrder = async function(req,res){
     catch(error){
         console.log(error,"error when cancelling order from user side");
         res.status(500).json({error:'cancellation failed'})
+    }
+}
+
+// get order return page
+exports.getOrderReturnPage = function(req,res){
+    const {orderID,docID} = req.params;
+    const reasons = [
+        'Wrong Item Shipped',
+        'Item Damaged During Shipping',
+        'Defective Item',
+        'Item Not as Described',
+        'Ordered by Mistake',
+        'Fit/Size Issue',
+        'Missing Parts or Accessories',
+        'Changed Mind',
+        'Others'
+    ]
+    res.render('returnOrder',{userID:req.session.userID,orderID,docID,reasons})
+
+}
+
+// submiting for the product returning
+exports.submitOrderReturn = async function(req,res){
+    const reason = req.body.reason;
+    const {orderID,docID} = req.params;
+    try{
+        const addReason = await Return.create({
+            userID:req.session.userID,
+            reason
+        });
+        await Order.updateOne(
+            {_id:orderID,'orderedProducts._id':docID},
+            {$set:{
+                'orderedProducts.$.orderStatus':'requested',
+                'orderedProducts.$.returnReason': addReason._id
+            }}
+        )
+        console.log('request sended for product return.');
+        res.redirect(`/view/${orderID}/${docID}`)
+    }
+    catch(error){
+        console.log("error",error);
     }
 }

@@ -18,6 +18,7 @@ const usedCouponModel = require("./../models/usedCouponModel");
 const referralReward = require("./../models/referralRewardModel");
 const Excel = require("exceljs");
 const PDF = require('pdfkit')
+const Notification = require('./../models/notification');
 
 
 
@@ -537,67 +538,116 @@ exports.orderPage = async function(req,res){
     }
 }
 
+// handle user request
+exports.handleUserRequest = async function(req,res){
+    try{
+        const {orderID,docID,response} = req.body;
+        const adminResponse = response === 'request rejected' ? 'delivered' : response
+        await Order.updateOne(
+            {_id:orderID,'orderedProducts._id':docID},
+            {$set:{'orderedProducts.$.orderStatus':adminResponse}}
+        )
+        const notifications = await Notification.findOne({userID:req.session.userID});
+        if(notifications){
+            let message = [];
+            let count = notifications.count + 1;
+            const text = response === 
+            'request rejected' ? 
+            'Your request for the product return is rejected by MOASWeb. Better try next time.' :
+            'Your request for the product return is approved by the MOASWeb. The product will soon collected by our team from you.';
+            const obj = {
+                text,                
+            }
+            message.push(obj);
+            await Notification.updateOne({userID:req.session.userID},
+                {$push:{message}},
+                {$set:count}
+            )            
+        }
+        else{
+            const text = response === 
+            'request rejected' ?
+            'Your request for the product return is rejected by MOASWeb. Better try next time.' :
+            'Your request for the product return is approved by the MOASWeb. The product will soon collected by our team from you.';
+            let message = []
+            const obj = {
+                text
+            }
+            message.push(obj)
+            const newNotification = await Notification.create({
+                userID:req.session.userID,
+                count:0,
+                message
+            })
+        }
+        res.status(200).json({response});
+    }
+    catch(error){
+        console.log("error",error);
+        res.status(500).json({error:'error'});
+    }
+}
 
 // handle order status
 exports.changeOrderStatus = async function(req,res){
     try{
         const userID = req.session.userID
-        const {orderID,productDocID} = req.body;
-        const cancelAll = req.query.cancellAll;
-        const status = req.body.status ;     
+        const {orderID,productDocID,status} = req.body;
         
-        if(status === 'delivered'){ 
-                      
+        if(status === 'delivered'){                       
             await Order.updateOne(
                 {_id:orderID,'orderedProducts._id':productDocID},
                 {$set:{
                     'orderedProducts.$.deliveredDate':new Date(),
                     'orderedProducts.$.cancelledDate':null,
                     'orderedProducts.$.deliveryDate':null,
+                    'orderedProducts.$.returnedDate':null,
                     'orderedProducts.$.orderStatus':'delivered'
                 }}
             );  
+            res.status(200).json({success:'success',status});
         }
         else if(status === 'cancelled'){
-            if(cancelAll){
-                await Order.updateOne(
-                    {_id:orderID,'orderedProducts.orderStatus':'on progress'},
-                    {$set:{
-                        'orderedProducts.$[product].orderStatus':'cancelled',
-                        'orderedProducts.$[product].deliveryDate':null,
-                        'orderedProducts.$[product].deliveredDate':null,
-                        'orderedProducts.$[product].cancelledDate':new Date()
-                    }},
-                    {
-                        arrayFilters:[{'product.orderStatus':'on progress'}]
-                    }
-                )
-                res.status(200).json({success:"success",orderID})
-            }
-            else{
-                await Order.updateOne(
-                    {_id:orderID,'orderedProducts._id':productDocID},
-                    {$set:{
-                        'orderedProducts.$.cancelledDate':new Date(),
-                        'orderedProducts.$.deliveredDate':null,
-                        'orderedProducts.$.deliveryDate':null,
-                        'orderedProducts.$.orderStatus':'cancelled'
-                    }
-                })
-            }            
+            await Order.updateOne(
+                {_id:orderID,'orderedProducts._id':productDocID},
+                {$set:{
+                    'orderedProducts.$.cancelledDate':new Date(),
+                    'orderedProducts.$.deliveredDate':null,
+                    'orderedProducts.$.deliveryDate':null,
+                    'orderedProducts.$.returnedDate':null,
+                    'orderedProducts.$.orderStatus':'cancelled'
+                }
+            });
+            res.status(200).json({success:'success',status})
+
         }
         else if(status === 'on progress'){
             const date = new Date();
-            const newDate = date.setDate(date.getDate() + 3)
-            const deliveryDate = new Date(newDate)
+            const deliveryDate = date.setDate(date.getDate() + 3);
             await Order.updateOne(
                 {_id:orderID,'orderedProducts._id':productDocID},
                 {$set:{
                     'orderedProducts.$.deliveryDate':deliveryDate,
                     'orderedProducts.$.cancelledDate':null,
                     'orderedProducts.$.deliveredDate':null,
+                    'orderedProducts.$.returnedDate':null,
                     'orderedProducts.$.orderStatus':'on progress'
-                }})
+                }}
+            )
+            res.status(200).json({success:'success',status});
+        }
+        else if(status === 'returned'){
+            await Order.updateOne(
+                {_id:orderID,'orderedProducts._id':productDocID},
+                {$set:{
+                    'orderedProducts.$.orderStatus':'returned',
+                    'orderedProducts.$.deliveredDate':null,
+                    'orderedProducts.$.cancelledDate':null,
+                    'orderedProducts.$.deliveryDate':null,
+                    'orderedProducts.$.returnedDate':new Date()
+                }}
+            )
+            res.status(200).json({success:'success',status})
         }
         
 

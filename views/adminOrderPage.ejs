@@ -64,6 +64,41 @@
         width:100%
       }
 
+      /* status buttons */
+      #request-note{
+        font-size: 15px;
+        font-style: italic;
+      }
+      .buttons{
+        display: flex;
+        justify-content: space-between;
+        width:90%;
+        margin-top: 10px;
+        margin-left: 5px;
+      }
+      #accept{
+        font-family: 'poppins',sans-serif;
+        background-color: rgb(31, 99, 31);
+        color: white;
+        font-weight: 500;
+        border:none;
+        padding: 3px 7px;
+      }
+      #accept:hover{
+        cursor: pointer;
+      }
+      #decline{
+        font-family: 'poppins',sans-serif;
+        background-color: rgb(136, 34, 34);
+        color: white;
+        font-weight: 500;
+        border:none;
+        padding: 3px 7px;
+      }
+      #decline:hover{
+        cursor: pointer;
+      }
+
     </style>
   </head>
   <body>
@@ -88,7 +123,7 @@
                 <th style="width:6%">price</th>
                 <th style="width:6%">Coupon</th>
                 <th style="width:20%">address</th>
-                <th style="width:8%">order status</th>
+                <th style="width:10%">order status</th>
               </tr>
               <%if(orders.length > 0){%>
                 <%orders.forEach(function(order){%>
@@ -118,19 +153,29 @@
                       </td>
                       <td>
                         <div class="admin-order-status-section">
-                          <div class="order-status"><%=orderedProduct.orderStatus%></div>
-                          <%const risk = orderedProduct.couponAdded && order.orderedProducts.length > 1 ? true : false%>
-                          <form action="/admin/orderStatus" method="post"  onsubmit="submitStatus(event,'<%=order._id%>','<%=orderedProduct._id%>','<%=risk%>')" data-orderid = "<%=order._id%>">
-                            <select name="status" id="<%=order._id%>" class="status" >
-                              <option value="on progress">on progress</option>
-                              <option value="shipped">shipped</option>
-                              <option value="delivered">delivered</option>
-                              <option value="cancelled">cancelled</option>
-                              <option value="returned">returned</option>
-                              <option value="pending">pending</option>
-                            </select>
-                            <input type="submit">
-                          </form>
+                          <%if(orderedProduct.orderStatus === 'requested'){%>
+                            <div id="request-note">*User request for product return</div>
+                            <div class="buttons">
+                              <button id="accept" onclick="requestResponse('<%=order._id%>','<%=orderedProduct._id%>', 'request accepted',event)">Accept</button>
+                              <button id="decline" onclick="requestResponse('<%=order._id%>','<%=orderedProduct._id%>', 'request rejected',event)">Decline</button>
+                            </div>
+                          <%}else{%>
+                            <div class="order-status"><%=orderedProduct.orderStatus%></div>
+                            <form action="/admin/orderStatus" method="post"  onsubmit="submitStatus(event,'<%=order._id%>','<%=orderedProduct._id%>')" data-orderid = "<%=order._id%>">
+                              <select name="status" id="<%=order._id%>" class="status" >
+                                <option value="on progress">on progress</option>
+                                <option value="delivered">delivered</option>
+                                <option value="cancelled">cancelled</option>                                                               
+                                <%if(orderedProduct.orderStatus === 'request accepted'){%>
+                                  <option value="returned">returned</option>
+                                <%}%>
+                                
+                                <option value="pending">pending</option>
+                              </select>
+                              <input type="submit">
+                            </form>
+                          <%}%>
+                          
                         </div>
                         
                       </td>
@@ -169,36 +214,77 @@
             })
           })
 
+          // accept decline requests
+          async function requestResponse(orderID,docID,response,event){
+            event.preventDefault()
+            try{
+              const serverResponse = await fetch('/admin/handleUserRequest',{
+                method:'POST',
+                headers:{
+                  'Content-Type':'application/json',
+                },
+                body:JSON.stringify({orderID,docID,response})
+              })
+              if(serverResponse.ok){
+                const data = await serverResponse.json();
+                window.location.reload();
+              }
+              else{
+                console.log('error');
+              }
+            }
+            catch(error){
+              console.log("error",error);
+            }
+          }
+
           // form submission
-          async function submitStatus(event,orderID,productDocID,risk){
+          async function submitStatus(event,orderID,productDocID){
               event.preventDefault();
               const selectValue = event.target.querySelector('select').value;
-              if(risk && selectValue === 'cancelled'){
+              if(selectValue === 'cancelled'){
                 const result = await confirmCancel();
                 if(result.isConfirmed){
-                  cancelAllProducts(event,productDocID,orderID,selectValue)
+                  cancelOrder(event,productDocID,orderID,selectValue)
                 }
               }
               else{
-                
+                try{
+                  const response = await fetch('/admin/changeOrderStatus',{
+                    method:'POST',
+                    headers:{
+                      'Content-Type':'application/json'
+                    },
+                    body:JSON.stringify({orderID,productDocID,status:selectValue})
+                  })
+                  if(response.ok){
+                    const data = await response.json();
+                    const orderStatus = event.target.parentNode.querySelector('.order-status').innerText = data.status;
+                    const selectID = event.target.querySelector('select').id;
+                    localStorage.setItem(selectID,selectValue);
+                  }
+                }
+                catch(error){
+                  console.log("error",error);
+                }
               }
           }
 
           async function confirmCancel(){
             const result = await Swal.fire({
-            title: 'Are you sure about cancelling this product?',
-            text: 'The cancelling of the selected product will result in the cancellation of all other products ordered along with this product, as they all were bought using a coupon.',
+            title: 'You are about to cancel this order!',
+            text: '',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Confirm',
+            confirmButtonText: 'Continue',
             cancelButtonText: 'Cancel',
             })   
             return result; 
           }
           
-          async function cancelAllProducts(event,productDocID,orderID,status){
+          async function cancelOrder(event,productDocID,orderID,status){
             try{
-              const resposne = await fetch(`/admin/changeOrderStatus?cancellAll=true`,{
+              const resposne = await fetch(`/admin/changeOrderStatus`,{
                 method:'POST',
                 headers:{
                   'Content-Type':'application/json'
@@ -207,8 +293,9 @@
               })
               if(resposne.ok){
                 const data = await resposne.json();
-                const forms = document.querySelectorAll(`[data-orderid='${data.orderID}']`);
-                console.log(forms);
+                const orderstatus = event.target.parentNode.querySelector('.order-status').innerText = 'cancelled';
+                const selectID = event.target.querySelector('select').id;
+                localStorage.setItem(selectID,'cancelled')
                 
               }
             }
