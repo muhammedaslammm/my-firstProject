@@ -174,21 +174,20 @@
                       <%=error.city%>
                     <%}%>
                   </p>
-  
-                  
-                  <label for="">State</label>                
-                  <input type="text" name="state" value="<%=typeof data != 'undefined' ? data.state : ''%>"><br>
-                  <p class="error">
-                    <%if(typeof error != 'undefined'){%>
-                      <%=error.state%>
-                    <%}%>
-                  </p>
 
                   <label for="">District</label>                
                   <input type="text" name="district" value="<%=typeof data != 'undefined' ? data.district : ''%>"><br>
                   <p class="error">
                     <%if(typeof error != 'undefined'){%>
                       <%=error.district%>
+                    <%}%>
+                  </p>
+
+                  <label for="">State</label>                
+                  <input type="text" name="state" value="<%=typeof data != 'undefined' ? data.state : ''%>"><br>
+                  <p class="error">
+                    <%if(typeof error != 'undefined'){%>
+                      <%=error.state%>
                     <%}%>
                   </p>
 

@@ -51,4 +51,7 @@ router.post("/addToWishlist",authentication,productsController.addToWishlist);
 router.get("/wishlist",authentication,productsController.wishlistPage);
 router.post("/removeFrom-wishlist",authentication,productsController.removeFromWishlist)
 
+// add review
+router.post('/addProductReview',authentication,productsController.addProductReview)
+
 module.exports = router

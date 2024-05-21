@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <script
+      src="https://kit.fontawesome.com/f620fbbfb3.js"
+      crossorigin="anonymous"
+    ></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -16,6 +20,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
     <link rel="stylesheet" href="/styles/nav.css" />
+
     <title>product</title>
     <style>
       body {
@@ -70,9 +75,18 @@
         font-weight: 500;
         margin: 0;
       }
-      .details-head .rating {
-        color: grey;
-        font-size: 14px;
+      .details-head .ratings {
+        margin-top: 5px;
+        display: flex;
+        font-size: 14px;        
+      }
+      .ratings .avgRating{
+        color: rgb(23, 124, 23);
+        margin-right: 3px;
+        font-weight: 500;
+      }
+      .ratings .ratings-count{
+        color: rgb(80, 80, 80);
       }
 
       /* details below the head */
@@ -306,30 +320,56 @@
         display: flex;
         width: 94%;
         margin: 0 auto;
-        margin-top: 10px;
-        box-shadow: 0px 0px 9px rgb(207, 207, 207);
-        background-color: white;
+        box-shadow: 0px 10px 9px rgb(207, 207, 207);
+        background-color: white;        
         padding: 30px;
       }
-      .write-review {
-        width: 30%;
+      .write-review{
+        width: 35%;
+      }
+      .user-review-option-section-head{
+        margin-left: 2%;
+        font-size: 17px;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .write-review .review-box{
         border: 1px solid rgb(198, 198, 198);
         border-radius: 4px;
-        padding: 15px 25px 30px;
+        padding: 15px;
       }
-      .box-head {
-        font-size: 18px;
-        font-weight: 500;
-        margin-bottom: 13px;
+      .rating {
+        margin-bottom: 18px;
+      }
+      .rating-head {
+        font-size: 16px;
+        color: rgb(49, 48, 48);
+        margin: 0px 4px 4px;
+      }
+      .star {
+        margin-right: 5px;
+        font-size: 17px;
+        color: rgb(74, 74, 74);
+      }
+      .star:hover {
+        cursor: pointer;
+      }
+      #review-input-label{
+        font-size: 16px;
+        color: rgb(49, 48, 48);
+        margin: 0px 4px 4px;
       }
       .review-input {
-        border: none;
-        border-bottom: 1px solid rgb(187, 187, 187);
+        border: 1px solid rgb(187, 187, 187);
         border-radius: 4px;
         outline: none;
-        padding: 5px;
+        padding: 3px;
         width: 80%;
         margin-right: 10px;
+        font-family: "poppins", sans-serif;
+        font-size: 15px;
+        display: block;
+        margin-bottom: 10px;
       }
       #review-submit-button {
         font-family: "poppins", sans-serif;
@@ -341,6 +381,99 @@
       }
       #review-submit-button:hover {
         cursor: pointer;
+      }
+
+      /* user review */
+      .written-review-box{
+        width:35%;        
+      }
+      .personal-review-head{
+        font-size: 17px;
+        font-weight: 500;
+      }
+      .user-review{     
+        margin-top: 10px;   
+        display: flex;
+        border:1px solid rgb(202, 202, 202);
+        padding:18px;
+        border-radius: 4px;
+      }
+      .user-review .user-photo{
+        margin-right: 2.3%;
+      }
+      .user-review .photo{
+        background-color: grey;
+        padding:5px 10px;
+        border-radius: 20px;
+        color:white
+      }
+
+      .user-name{
+        font-size: 16.5px;
+        font-weight: 500;
+      }
+      .user-name span{
+        font-size: 15px;
+        font-weight: normal;
+        color: rgb(103, 102, 102);
+      }
+      .reviewed-date{
+        font-size: 14px;
+        color:rgb(83, 83, 83);
+        margin-bottom: 2px;
+      }
+      .user-rating{
+        margin-bottom: 13px;
+      }
+      .reviewed-star{
+        margin-right: 2px;
+        font-size: 13px;
+      }
+      .user-review-note{
+        font-style: italic;
+      }
+      
+      /* all reviews  */
+      .all-reviews{
+        width:45%;
+        margin: 0px 5%;       
+      }
+      .reviews-head{
+        font-size: 17px;
+        font-weight: 500;
+      }
+      .users-review-box{
+        margin-top: 10px;
+        border:1px solid rgb(202, 202, 202);
+        padding:18px;
+        border-radius: 4px;
+      }
+      .users-review-box {
+        display: flex;
+      }
+      .users-review-box .user-photo{
+        margin-right: 2.3%;
+      }
+      .users-review-box .photo{
+        background-color: grey;
+        padding:5px 10px;
+        border-radius: 20px;
+        color:white
+      }
+      .one-div{
+        margin: 0px 15% 0px 40%;
+      }
+
+      /* no review */
+      .no-review-section{
+        display: flex;
+        justify-content: center;
+        margin-top: 10%;
+      }
+      .no-review{
+        font-size: 17px;
+        color: rgb(98, 97, 97);
+        font-weight: 500;
       }
     </style>
   </head>
@@ -370,7 +503,10 @@
             <%=product.color%> <%=product.pattern%> <%=product.fit%> Men's
             <%=product.productType%>
           </div>
-          <div class="rating">rating comes here</div>
+          <div class="ratings">
+            <div class="avgRating"> Ratings <%=averageRatings%></div>
+            <div class="ratings-count">(<%=totalRatings%>)</div>
+          </div>
         </div>
         <!-- below head -->
         <form
@@ -526,20 +662,150 @@
         </form>
       </div>
     </div>
-    <div class="review-section">
-      <div class="write-review">
-        <div class="box-head">Write Your Review Here</div>
-        <input type="text" class="review-input" />
-        <input type="submit" id="review-submit-button" />
-      </div>
-      <div class="all-reviews">
+    <div class="review-section">      
+        <%if(userPurchased && !userReviewed){%>          
+          <div class="write-review">
+            <div class="user-review-option-section-head">User Ratings & review</div>
+            <div class="review-box">
+              <label for="review-input" id="review-input-label">Product review</label>
+              <input
+                type="text"
+                id="review-input"
+                class="review-input"
+                
+              />
+              <div class="rating">
+                <span class="rating-head">Product rating : </span>
+                <span class="star" id="1" onclick="rateTheProduct(event)"
+                  ><i class="fa-regular fa-star"></i
+                ></span>
+                <span class="star" id="2" onclick="rateTheProduct(event)"
+                  ><i class="fa-regular fa-star"></i
+                ></span>
+                <span class="star" id="3" onclick="rateTheProduct(event)"
+                  ><i class="fa-regular fa-star"></i
+                ></span>
+                <span class="star" id="4" onclick="rateTheProduct(event)"
+                  ><i class="fa-regular fa-star"></i
+                ></span>
+                <span class="star" id="5" onclick="rateTheProduct(event)"
+                  ><i class="fa-regular fa-star"></i
+                ></span>
+              </div>
+              
+              <input type="hidden" name="rating" id="product-rating" />
+              <input
+                type="submit"
+                id="review-submit-button"
+                onclick="submitReview(event,'<%=product._id%>')"
+              />
+            </div>            
+          </div>
+        <%}else if(userReviewed){%>
+        <%userReviewed.userReviews.forEach(function(review){%>
+        <%if(JSON.stringify(review.userID._id) == JSON.stringify(userID)){%>
+          <div class="written-review-box">
+            <div class="personal-review-head">Your Review</div>
+            <div class="user-review">
+              <div class="user-photo">
+                <div class="photo"><%=review.userID.username.slice(0,1)%></div>
+              </div>
+              <div class="review-details-section">
+                <div class="user-name"><%=review.userID.username%> <span>(You)</span></div>
+                <div class="reviewed-date"><%=review.date.toDateString()%></div>
+                <div class="user-rating">
+                  <%for(let i=0; i<review.productRating; i++){%>
+                    <span class="reviewed-star"><i class="fa-solid fa-star" style="color: rgb(184, 150, 50);"></i></span>
+                  <%}%>
+                </div>
+                <div class="user-review-note">"<%=review.productReview%>"</div>
+    
+              </div>
+            </div>
+          </div>
+        
+        <%}%> <%})%> <%}%>
+      
+
+      <div class="all-reviews <%=userPurchased ? 'two-div' : 'one-div'%>">
         <div class="reviews-head">All Reviews</div>
+        <%if(reviews.length > 0){%>
+          <%reviews.forEach(function(productReview){%>
+            <%productReview.userReviews.forEach(function(review){%>
+              <div class="users-review-box">
+                <div class="user-photo">
+                  <div class="photo"><%=review.userID.username.slice(0,1)%></div>
+                </div>
+                <div class="review-details-section">
+                  <div class="user-name"><%=review.userID.username%></div>
+                  <div class="reviewed-date"><%=review.date.toDateString()%></div>
+                  <div class="user-rating">
+                    <%for(let i=0; i<review.productRating; i++){%>
+                      <span class="reviewed-star"><i class="fa-solid fa-star" style="color: rgb(184, 150, 50);"></i></span>
+                    <%}%>
+                  </div>
+                  <div class="user-review-note">"<%=review.productReview%>"</div>
+      
+                </div>
+              </div>
+            <%})%>
+          <%})%>
+        <%}else{%>
+          <div class="no-review-section">
+            <div class="no-review">No reviews found for this product <i class="fa-solid fa-ban" style="color: rgb(98, 97, 97); font-size: 20px; margin-left: 4px;"></i> </div>
+          </div>
+        <%}%>
       </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script>
 
     <script>
+      // rate the product
+      function rateTheProduct(event) {
+        const selectedStar = event.target;
+        const selectedStarID = Number(selectedStar.parentNode.id);
+        document.getElementById("product-rating").value = selectedStarID;
+        const stars = document.querySelectorAll(".star");
+        stars.forEach(function (star) {
+          if (Number(star.id) <= selectedStarID) {
+            const starlink = star.querySelector("i");
+            starlink.classList = "fa-solid fa-star";
+            starlink.style.color = "rgb(184, 150, 50)";
+          }
+          if (Number(star.id) > selectedStarID) {
+            const starlink = star.querySelector("i");
+            starlink.classList = "fa-regular fa-star";
+            starlink.style.color = "rgb(74, 74, 74)";
+          }
+        });
+      }
+
+      // submit review
+      async function submitReview(event, productID) {
+        try {
+          event.preventDefault();
+          const productReview = document.querySelector(".review-input").value;
+          console.log(productReview);
+          const productRating = Number(
+            document.getElementById("product-rating").value
+          );
+          const serverResponse = await fetch("/addProductReview", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ productID, productRating, productReview }),
+          });
+          if (serverResponse.ok) {
+            const data = await serverResponse.json();
+            window.location.reload();
+          }
+        } catch (error) {
+          console.log("error", error);
+        }
+      }
+
       // zoom image;
       document.addEventListener("DOMContentLoaded", function () {
         const images = document.querySelectorAll(".zoom");

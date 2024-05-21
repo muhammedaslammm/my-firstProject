@@ -4,6 +4,9 @@ const nocache = require("nocache");
 const Product = require("./../models/productModel");
 const Category = require("./../models/categoryModel");
 const Address = require("./../models/addressModel");
+const Order = require('./../models/orderModel');
+const Review = require("./../models/productReviewModel");
+const User = require('../models/userModel');
 
 
 exports.landingPage = function(req,res){
@@ -192,11 +195,43 @@ exports.products = async function(req,res){
 // product page
 exports.selectedProduct = async function(req,res){
     try{
-        const productID = req.params.id;
-        const category = req.params.category;
         const userID = req.session.userID;
+        const productID = req.params.id;      
         const product = await Product.findById(productID).populate('productOffer');
-        res.render("selectedProduct",{product,userID});
+        const reviews = await Review.find({productID}).sort({'userReviews.date':-1}).populate('userReviews.userID');
+        let totalRatings = 0;
+        let averageRatings = '0.0';
+        if(reviews.length > 0){
+            totalRatings = reviews[0].totalRatings;
+            averageRatings = reviews[0].averageRating;
+        }
+        const userReviewed = await Review.findOne({
+            productID,
+            userReviews:{$elemMatch:{userID}}
+        }).populate('userReviews.userID');
+        
+        const purchased = await Order.findOne({
+            userID,
+            $and:[
+                {orderedProducts:{$elemMatch:{productID}}},
+                {orderedProducts:{$elemMatch:{$or:[
+                    {orderStatus:'delivered'},
+                    {orderStatus:'returned'},
+                    {orderStatus:'requested'},
+                    {orderStatus:'request accepted'}
+                ]}}}
+            ]            
+        })
+        
+        res.render("selectedProduct",{
+            product,
+            userID,
+            userPurchased:purchased,
+            userReviewed,
+            reviews,
+            totalRatings,
+            averageRatings
+        });
 
     }catch(error){
         console.log("server error",error);
@@ -204,6 +239,7 @@ exports.selectedProduct = async function(req,res){
     }
 }
 
+// get quantity
 exports.getQuantity = async function(req,res){
     try{
         const size = req.query.size
@@ -218,6 +254,76 @@ exports.getQuantity = async function(req,res){
     }
 }
 
+// add product review
+exports.addProductReview = async function(req,res){
+    try{
+        const {productID,productRating,productReview} = req.body;
+        const userID = req.session.userID;
+        const productReviews = await Review.findOne({productID});
+        if(productReviews){
+            let userReviews = []
+            let totalRatings = productReviews.totalRatings;
+            let averageRating;
+            const detailObj = {
+                userID,
+                productReview,
+                productRating:Number(productRating),
+                date:new Date()
+            }
+            userReviews.push(detailObj)      
+            let ratingSum = productReviews.userReviews.reduce(function(count,review){
+                if(review.productRating){
+                    return count += review.productRating;
+                }
+                else{
+                    return count
+                }
+            },0)
+            if(productRating){
+                totalRatings += 1;
+                ratingSum += productRating;
+                averageRating = ratingSum/totalRatings;
+            }
+            await Review.updateOne({productID},{
+                $push:{userReviews},
+                $set:{totalRatings,averageRating}
+            })
+            console.log("Review Added");
+            const userData = await User.findById(userID);
+            res.status(200).json({success:'success'});        
+        }
+        else{
+            let userReviews = []
+            let totalRatings = 0
+            let averageRating = 0;
+            const detailObjcet = {
+                userID,
+                productReview,
+                productRating:Number(productRating),
+                date:new Date()
+            }
+            if(productRating){
+                averageRating = productRating/1;
+                totalRatings += 1
+            }
+            userReviews.push(detailObjcet);
+            const newReview = await Review.create({
+                productID,
+                totalRatings,
+                averageRating,
+                userReviews
+            })
+            console.log("Review Added");
+            const userData = await User.findById(userID);
+            res.status(200).json({success:'success',username:userData.username});
+        }
+    }
+    catch(error){
+        console.log(error,'error');
+        res.status(500).json({error:'error'});
+    }
+    
+}
 
 
 

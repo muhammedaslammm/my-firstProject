@@ -21,13 +21,7 @@ const productSchema = new mongoose.Schema({
         ref:'ProductOffer',
         default:null
     },
-    rating:{
-        type:Number
-    },
-    numberOfRating:{
-        type:Number
-    },
-    
+       
     // ------------
     category:{
         type:String
