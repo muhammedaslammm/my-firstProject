@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -30,11 +31,81 @@
       .sidebar-left a:hover {
         font-weight: 500;
       }
-      .content-body h3 {
-        margin: 0;
-      }
       .content-body {
-        margin-left: 10px;
+        margin-left: 15px;
+        width: 100%;
+        margin-top: 10px;
+      }
+      .body-head {
+        font-size: 17px;
+        font-weight: 500;
+        margin-bottom: 20px;
+      }
+      .filter-section label {
+        font-size: 17px;
+      }
+      .filter-section select {
+        border: 1px solid rgb(184, 184, 184);
+        border-radius: 3px;
+        width: 14%;
+        padding: 4px;
+        outline: none;
+      }
+
+      /* graph section */
+      .graph-section {
+        width: 95%;
+        display: flex;
+        justify-content: space-between;
+        height: 60%;
+        margin-top: 20px;
+      }
+      /*  */
+      .graph-div {
+        border: 1px solid rgb(192, 192, 192);
+        width: 40%;
+        height: 100%;
+        padding: 10px;
+        border-radius: 4px;
+      }
+      canvas {
+        width: 100%;
+      }
+      /*  */
+      .count-div {
+        display: flex;
+        justify-content: space-between;
+        width: 50%;
+        /* margin-left: 10px; */
+      }
+      .count-left {
+        width: 45%;
+      }
+      .box {
+        border: 1px solid rgb(195, 195, 195);
+        border-radius: 4px;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+      .box .head {
+        font-size: 18px;
+        color: rgb(75, 75, 75);
+      }
+      .box .value {
+        font-size: 33px;
+        font-weight: 500;
+      }
+
+      /* count-right */
+      .count-right {
+        width: 48%;
+      }
+      .best-data {
+        display: flex;
+        align-items: center;
+      }
+      .count-right .value {
+        font-size: 30px;
       }
     </style>
   </head>
@@ -46,8 +117,151 @@
         <%-include('./partials/adminSidebar.ejs')%>
       </div>
       <div class="content-body">
-        <h3>dashboard</h3>
+        <div class="body-head">Dashboard</div>
+        <div class="filter-section">
+          <label for="filter">Filter based on </label>
+          <select name="filter" id="filter" onchange="sendQuery(event)">
+            <option value="week">Week</option>
+            <option value="month">Month</option>
+            <option value="year">Year</option>
+          </select>
+        </div>
+        <div class="graph-section">
+          <div class="graph-div">
+            <canvas id="graph"></canvas>
+          </div>
+          <div class="count-div">
+            <div class="count-left">
+              <div class="box">
+                <div class="head">Total Users</div>
+                <div class="value" id="user-total">0</div>
+              </div>
+              <div class="box">
+                <div class="head">Total Orders</div>
+                <div class="value" id="total-orders">0</div>
+              </div>
+              <div class="box">
+                <div class="head">Total Ordered Products</div>
+                <div class="value" id="total-products">0</div>
+              </div>
+            </div>
+            <div class="count-right">
+              <div class="box">
+                <div class="head">Best Selling Brand</div>
+                <div class="best-data">
+                  <div class="value" id="bsb">-</div>
+                </div>
+              </div>
+              <div class="box">
+                <div class="head">Best Selling Category</div>
+                <div class="best-data">
+                  <div class="value" id="bsc">-</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+    <script>
+      let chartInUse = "";
+      document.addEventListener("DOMContentLoaded", async function () {
+        try {
+          const response = await fetch("/admin/getSalesData?filter=week", {
+            method: "GET",
+          });
+          if (response.ok) {
+            const data = await response.json();
+            const canvas = document.getElementById("graph");
+            const graphData = {
+              labels: data.labels,
+              datasets: [
+                {
+                  label: "order status",
+                  data: data.graphData,
+                  backgroundColor: "rgb(214, 79, 79)",
+                },
+              ],
+            };
+            chartInUse = new Chart(canvas, {
+              type: "bar",
+              data: graphData,
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                  },
+                },
+              },
+            });
+
+            document.getElementById("user-total").innerText = data.totalUsers;
+            document.getElementById("total-orders").innerText =
+              data.totalOrders;
+            document.getElementById("total-products").innerText =
+              data.totalOrderedProducts;
+            document.getElementById("bsb").innerText = data.bestSellingBrand;
+            document.getElementById("bsc").innerText = data.bestSellingCategory;
+          }
+        } catch (error) {
+          console.log(error, "error");
+        }
+      });
+
+      // send query
+      async function sendQuery(event) {
+        try {
+          const filterValue = event.target.value;
+          const response = await fetch(
+            `/admin/getSalesData?filter=${filterValue}`,
+            {
+              method: "GET",
+            }
+          );
+          if (response.ok) {
+            const data = await response.json();
+            const canvas = document.getElementById("graph");
+            const graphData = {
+              labels: data.labels,
+              datasets: [
+                {
+                  label: "order status",
+                  data: data.graphData,
+                  backgroundColor: "rgb(207, 93, 93)",
+                },
+              ],
+            };
+
+            if (chartInUse) {
+              chartInUse.destroy();
+            }
+            chartInUse = new Chart(canvas, {
+              type: "bar",
+              data: graphData,
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                  },
+                },
+              },
+            });
+            document.getElementById("user-total").innerText = data.totalUsers;
+            document.getElementById("total-orders").innerText =
+              data.totalOrders;
+            document.getElementById("total-products").innerText =
+              data.totalOrderedProducts;
+            document.getElementById("bsb").innerText = data.bestSellingBrand;
+            document.getElementById("bsc").innerText = data.bestSellingCategory;
+          }
+        } catch (error) {
+          console.log(error, "error");
+        }
+      }
+    </script>
   </body>
 </html>

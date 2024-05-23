@@ -66,6 +66,157 @@ exports.adminHomepage= function(req,res){
     res.render("adminDashboard");
 }
 
+// get sales data for graph in dashboard
+exports.getSalesData = async function(req,res){    
+    try{
+        const filter = req.query.filter;
+        let query = {}        
+        if(filter === 'week'){
+            let currentDate = new Date();
+            let currentDay = currentDate.getDay();
+            const daysToMonday = currentDay === 0 ? 6 : currentDay - 1;
+
+            const currentWeekStartDate = new Date(currentDate);
+            currentWeekStartDate.setDate(currentDate.getDate() - daysToMonday);
+
+            const currentWeekEndDate = new Date(currentWeekStartDate);
+            currentWeekEndDate.setDate(currentWeekStartDate.getDate() + 6)
+            
+            query.orderedDate = {$gte:currentWeekStartDate,$lte:currentWeekEndDate}
+        }
+        else if(filter === 'month'){
+            const monthStart = new Date();
+            monthStart.setDate(1);
+            monthStart.setHours(0,0,0,0);
+
+            const monthEnd = new Date();
+            monthEnd.setMonth(monthStart.getMonth() + 1);
+            monthEnd.setDate(1);
+            monthEnd.setHours(0,0,0,0);
+
+            query.orderedDate = {$gte:monthStart, $lte:monthEnd}
+        }
+        else if(filter === 'year'){
+            const yearStart = new Date();
+            yearStart.setDate(1);
+            yearStart.setMonth(1);
+            yearStart.setHours(0,0,0,0);
+
+            const yearEnd = new Date(yearStart);
+            yearEnd.setDate(31);
+            yearEnd.setMonth(11);
+            yearEnd.setHours(23,59,59,999);
+
+            query.orderedDate = {$gte:yearStart,$lte:yearEnd}
+        }
+        const orders = await Order.find(query).populate('orderedProducts.productID');
+        let labels = ['on progress','delivered','returned','cencelled','pendings'];
+        let totalOrders = 0,
+            totalOrderedProducts = 0,
+            totalUsers = 0,
+            onProgressItems = 0,
+            deliveredItems = 0,
+            cancelledItems = 0,
+            returnedItems = 0,
+            pendingItems = 0;
+
+        let userID = ''
+        let brands = {};
+        let categories = {}
+        orders.forEach(function(order){
+            totalOrders += 1;
+            if(JSON.stringify(order.userID) != JSON.stringify(userID)){
+                totalUsers += 1;
+                userID = order.userID;
+            }
+            order.orderedProducts.forEach(function(product){
+                totalOrderedProducts += 1;
+
+                switch(product.orderStatus){
+                    case 'on progress':
+                        onProgressItems += 1;
+                        break;
+                    case 'delivered':
+                        deliveredItems += 1;
+                        break;
+                    case 'cancelled':
+                        cancelledItems += 1;
+                        break;
+                    case 'returned':
+                        returnedItems += 1;
+                        break;
+                    case 'pending':
+                        pendingItems += 1;
+                        break;
+                    default:
+                        break;
+                }
+
+                // best selling brand
+                if(product.orderStatus != 'cancelled' && product.orderStatus != 'returned'){
+                    if(brands[product.productID.brand]){
+                        brands[product.productID.brand] = brands[product.productID.brand] + 1;
+                    }
+                    else{
+                        brands[product.productID.brand] = 1;
+                    }
+                }
+                
+                // best selling category
+                if(product.orderStatus != 'cancelled' && product.orderStatus != 'returned'){
+                    if(categories[product.productID.category]){
+                        categories[product.productID.category] = categories[product.productID.category] + 1;
+                    }
+                    else{
+                        categories[product.productID.category] = 1;
+                    }
+                }
+            }); 
+        })
+
+        // finding best selling brand
+        let bestSellingBrand = null;
+        let brandCount = -Infinity;
+        for(let key in brands){
+            if(brands[key] > brandCount){
+                bestSellingBrand = key;
+                brandCount = brands[key];
+            }
+        }
+
+        // finding the best selling category
+        let bestSellingCategory = null;
+        let categoryCount = 0;
+        for(let category in categories){
+            if(categories[category] > categoryCount){
+                categoryCount = categories[category];
+                bestSellingCategory = category;
+            }
+        }
+        
+        let graphData = []
+        graphData.push(onProgressItems,deliveredItems,returnedItems,cancelledItems,pendingItems);
+        res.status(200).json({
+            labels,
+            graphData,
+            totalOrders,
+            totalOrderedProducts,
+            totalUsers,
+            bestSellingBrand,
+            brandCount,
+            bestSellingCategory,
+            categoryCount
+        })
+
+
+    }
+    catch(error){
+        console.log("error",error);
+        res.status(500).json({error:'error'});
+    }
+    
+}
+
 
 // admin user management page
 exports.userManagement = async function(req,res){
