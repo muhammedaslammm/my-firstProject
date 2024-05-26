@@ -784,6 +784,8 @@
                 data.newAmount;
               document.querySelector("#orderTotal").value = data.newAmount;
               
+              console.log('coupon amount: ',couponAmount);
+              
 
               // setting deducted amount
               document.querySelector(
@@ -893,6 +895,7 @@
               const data = await response.json();
               document.querySelector(".total-amount .Amount").innerText =
                 data.newAmount;
+              console.log('coupon amount page reload: ',couponAmount);
               document.querySelector("#orderTotal").value =
                 localStorage.getItem("orderTotal");
 
@@ -961,17 +964,17 @@
       
       
       // razor pay logic
-      let price = document.getElementById('price') 
-      const orderTotalWithoutCopuon = document.getElementById("orderTotal").value;
-      const orderTotalWithCoupon = localStorage.getItem("orderTotal");      
-      let orderprice = orderTotalWithCoupon ? orderTotalWithCoupon : orderTotalWithoutCopuon;
       
       document.getElementById('rzp-button1').onclick = function (e) {
-
+        let price = document.getElementById('price');
+        const orderTotalWithoutCopuon = Number(document.getElementById("orderTotal").value);
+        const orderTotalWithCoupon = Number(localStorage.getItem("orderTotal"));      
+        let orderprice = orderTotalWithCoupon ? orderTotalWithCoupon : orderTotalWithoutCopuon;
+        
+        console.log('order total without coupon: ',orderTotalWithoutCopuon);
+        console.log('order total with coupon: ',orderTotalWithCoupon);
+        console.log('order price in razorpay: ',orderprice);
         $(document).ready(function () {
-          console.log("raw amount",orderTotalWithoutCopuon);
-          console.log("coupon amount",orderTotalWithCoupon);
-          console.log("order price in razorpay: ",orderprice);
           let settings = {
             url: "/create/orderId",
             method: "POST",
