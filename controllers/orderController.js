@@ -13,7 +13,7 @@ const Return = require("./../models/returnReasonModel");
 // placing order 'cash on delivery'
 exports.placeOrder = async function(req,res){
     try{
-        const {address,cartID,payment,orderTotal,usedCouponID} = req.body;        
+        const {address,cartID,payment,orderTotal,usedCouponID,failure} = req.body;        
         const userID = req.session.userID;
         const user = await User.findById(userID);
         let carts = [];
@@ -63,7 +63,7 @@ exports.placeOrder = async function(req,res){
             if(cart.productID.productOffer){
                 offer = cart.productID.productOffer.offer
             }
-            const productDetails = {
+            let productDetails = {
                 productID:cart.productID._id,
                 moasOrderID,               
                 quantity:cart.quantity,
@@ -73,9 +73,14 @@ exports.placeOrder = async function(req,res){
                 offer,              
                 deliveryDate,
             }
+            if(failure){
+                productDetails.orderStatus = 'pending';
+                productDetails.deliveryDate = null;            
+            }
             if(usedCouponID){
                 productDetails.couponAdded = true;
             }  
+            
             orderedProducts.push(productDetails);
         })
 
@@ -144,6 +149,40 @@ exports.placeOrder = async function(req,res){
     }
 }
 
+// continue payment
+exports.continuePayment = async function(req,res){
+    const {orderID,status} = req.body;
+    try{
+        if(status === 'success'){
+            const deliveryDate = new Date();
+            deliveryDate.setDate(deliveryDate.getDate() + 3)
+            await Order.updateOne(
+                {_id:orderID,'orderedProducts.orderStatus':'pending'},
+                {$set:{
+                    'orderedProducts.$[product].orderStatus':'on progress',
+                    'orderedProducts.$[product].deliveryDate':deliveryDate
+                }},
+                {arrayFilters:[{'product.orderStatus':'pending'}]}
+            )
+            console.log("alhamdulillah, order placed");            
+        }
+        else if(status === 'failed'){
+            await Order.updateOne(
+                {_id:orderID,'orderedProducts.orderStatus':'pending'},
+                {$set:{
+                    'orderedProducts.$[product].orderStatus':'pending',
+                    'orderedProducts.$[product].deliveryDate':null
+                }},
+                {arrayFilters:[{'product.orderStatus':'pending'}]}
+            )
+        }
+        res.redirect(`/order-response-page?order_id=${orderID}`);
+    }
+    catch(error){
+        console.log('error',error);
+    }
+}
+
 // order response page
 exports.orderResponsePage = async function(req,res){
     try{
@@ -184,7 +223,7 @@ exports.viewOrderedProduct = async function(req,res){
         const product = order.orderedProducts.find(function(product){
             return product._id.toString() === productDocID;
         })        
-        const statuses = ["on progress","pending"]
+        const statuses = ["on progress"]
         res.render("orderedProduct",{product,order,statuses,userID});
     }
     catch(error){

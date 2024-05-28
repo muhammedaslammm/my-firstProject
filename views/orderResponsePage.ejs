@@ -35,10 +35,15 @@
         padding: 20px;
       }
 
-      .response-message .message-head {
+      .response-message .success {
         font-size: 23px;
         font-weight: 500;
         color: rgb(0, 138, 37);
+      }
+      .response-message .failure {
+        font-size: 23px;
+        font-weight: 500;
+        color: rgb(170, 31, 31);
       }
       .message-head span {
         font-size: 25px;
@@ -50,11 +55,19 @@
         font-size: 14px;
         margin-bottom: 6px;
       }
-      .view-order a {
+      .success a {
         padding: 3px 15px;
         color: white;
         font-weight: 500;
         background-color: rgb(20, 144, 53);
+        border-radius: 3px;
+        text-decoration: none;
+      }
+      .failure a {
+        padding: 3px 15px;
+        color: white;
+        font-weight: 500;
+        background-color: rgb(170, 31, 31);
         border-radius: 3px;
         text-decoration: none;
       }
@@ -157,14 +170,24 @@
       <!-- order response box -->
       <div class="order-response-box">
         <div class="response-message">
-          <div class="message-head">
+          <%let success = order.orderedProducts.every(function(product){%>
+          <%return product.orderStatus === 'on progress' %> <%})%>
+          <%if(success){%>
+          <div class="message-head success">
             Your Order is Successfully Placed
             <span>Rs. <%=order.orderTotal%>/-</span>
           </div>
+          <%}else{%>
+          <div class="message-head failure">
+            Failed to place the order for
+            <span>Rs. <%=order.orderTotal%>/-</span>
+          </div>
+          <%}%>
+
           <div class="message-sub"></div>
         </div>
-        <div class="view-order">
-          <a href="/order-page">Go to My Orders</a>
+        <div class="view-order <%=success ? 'success' : 'failure'%>">
+          <a href="/order-page">>Go to My Orders</a>
         </div>
       </div>
 

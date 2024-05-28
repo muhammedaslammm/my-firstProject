@@ -740,10 +740,6 @@
           } 
       }
       
-          
-      
-
-      
       // add coupon to product
       const submit = document.querySelector("#couponSubmit");
       submit.addEventListener("click", async function () {
@@ -996,93 +992,137 @@
           });
         });
         let options = {
-                    "key": "rzp_test_3y4jRsuaFdH2Kn",
-                    "amount": orderprice * 100,
-                    "currency": "INR",
-                    "name": "moasweb",
-                    "description": "Online Payment",
-                    "image": "",
-                    "order_id": orderId,
-                    "handler": function (response) {
-                      console.log(response);
-                        // Create a form dynamically
-                        let form = document.createElement("form");
-                        form.method = "POST",
-                        form.action = "/place-order";
+          "key": "rzp_test_3y4jRsuaFdH2Kn",
+          "amount": orderprice * 100,
+          "currency": "INR",
+          "name": "moasweb",
+          "description": "Online Payment",
+          "image": "",
+          "order_id": orderId,
+          "handler": function (response) {
+            // Create a form dynamically
+            let form = document.createElement("form");
+            form.method = "POST",
+            form.action = "/place-order";
 
-                        // Create an input element to hold the payment ID
-                        var paymentIdInput = document.createElement('input');
-                        paymentIdInput.type = 'hidden';
-                        paymentIdInput.name = 'razorpay_payment_id';
-                        paymentIdInput.value = response.razorpay_payment_id;
+            // Create an input element to hold the payment ID
+            var paymentIdInput = document.createElement('input');
+            paymentIdInput.type = 'hidden';
+            paymentIdInput.name = 'razorpay_payment_id';
+            paymentIdInput.value = response.razorpay_payment_id;
                         
 
-                        // input element for adding cart ids
-                        const cartIDs = Array.from(document.querySelectorAll(".cartIDs"))
-                        cartIDs.forEach(function(cart){
-                          const cartIdInput = document.createElement("input");
-                          cartIdInput.type = "hidden";
-                          cartIdInput.name = "cartID";
-                          cartIdInput.value = cart.value;
+            // input element for adding cart ids
+            const cartIDs = Array.from(document.querySelectorAll(".cartIDs"))
+            cartIDs.forEach(function(cart){
+            const cartIdInput = document.createElement("input");
+            cartIdInput.type = "hidden";
+            cartIdInput.name = "cartID";
+            cartIdInput.value = cart.value;
 
-                          form.appendChild(cartIdInput)
-                        })
+              form.appendChild(cartIdInput)
+            })
 
-                        // input element for adding address
-                        const addressInput = document.createElement("input");
-                        addressInput.type = 'hidden';
-                        addressInput.name = "address";
-                        addressInput.value = document.getElementById("order-default-address").value;
-                        form.appendChild(addressInput);
+            // input element for adding address
+            const addressInput = document.createElement("input");
+            addressInput.type = 'hidden';
+            addressInput.name = "address";
+            addressInput.value = document.getElementById("order-default-address").value;
+            form.appendChild(addressInput);
 
-                        // input element for adding payment
-                        const paymentInput = document.createElement("input");
-                        paymentInput.type = "hidden";
-                        paymentInput.name = "payment";
-                        paymentInput.value = "razorpay";
-                        form.appendChild(paymentInput);
+            // input element for adding payment
+            const paymentInput = document.createElement("input");
+            paymentInput.type = "hidden";
+            paymentInput.name = "payment";
+            paymentInput.value = "razorpay";
+            form.appendChild(paymentInput);
 
-                        // input element for adding order total
-                        const orderTotalInput = document.createElement("input");
-                        orderTotalInput.type = "hidden";
-                        orderTotalInput.name = "orderTotal";
-                        orderTotalInput.value = document.getElementById("orderTotal").value;
-                        form.appendChild(orderTotalInput);
+            // input element for adding order total
+            const orderTotalInput = document.createElement("input");
+            orderTotalInput.type = "hidden";
+            orderTotalInput.name = "orderTotal";
+            orderTotalInput.value = document.getElementById("orderTotal").value;
+            form.appendChild(orderTotalInput);
 
-                        // input element for adding couponID
-                        const usedCouponIDInput = document.createElement("input");
-                        usedCouponIDInput.type = "hidden";
-                        usedCouponIDInput.name = "usedCouponID";
-                        usedCouponIDInput.value = document.getElementById("usedCouponID").value;
-                        form.appendChild(usedCouponIDInput);
+            // input element for adding couponID
+            const usedCouponIDInput = document.createElement("input");
+            usedCouponIDInput.type = "hidden";
+            usedCouponIDInput.name = "usedCouponID";
+            usedCouponIDInput.value = document.getElementById("usedCouponID").value;
+            form.appendChild(usedCouponIDInput);
 
-                        // add the hidden form to the document body
-                        document.body.appendChild(form);
+            // add the hidden form to the document body
+            document.body.appendChild(form);
 
-                        // clearing local storage values
-                        localStorage.removeItem("couponCode");
-                        localStorage.removeItem("usedCoupon");
-                        localStorage.removeItem("orderTotal");
-                        localStorage.removeItem("couponID");
-                        console.log("checkout completed");
+            // clearing local storage values
+            localStorage.removeItem("couponCode");
+            localStorage.removeItem("usedCoupon");
+            localStorage.removeItem("orderTotal");
+            localStorage.removeItem("couponID");
+            console.log("checkout completed");
 
-                        // submit hidden form
-                        form.submit();
-                    }
-                };
-                var rzp1 = new Razorpay(options);
-                rzp1.on('payment.failed', function (response) {
-                    alert(response.error.code);
-                    alert(response.error.description);
-                    alert(response.error.source);
-                    alert(response.error.step);
-                    alert(response.error.reason);
-                    alert(response.error.metadata.order_id);
-                    alert(response.error.metadata.payment_id);
-                });
-                rzp1.open();
-                e.preventDefault();
-                
+            // submit hidden form
+            form.submit();                        
+          }             
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.on('payment.failed', function (response) {
+          let form = document.createElement('form');
+          form.method = 'POST'
+          form.action = '/place-order';
+
+          // adding cartIDs;
+          const cartIDs = Array.from(document.querySelectorAll('.cartIDs'));
+          cartIDs.forEach(function(element){
+            const cartInput = document.createElement('input');
+            cartInput.type = 'hidden';
+            cartInput.name = 'cartID';
+            cartInput.value = element.value
+            form.appendChild(cartInput)
+          })
+
+          // adding address
+          const addressInput = document.createElement('input');
+          addressInput.type = 'hidden';
+          addressInput.name = 'address';
+          addressInput.value = document.getElementById('order-default-address').value;
+          form.appendChild(addressInput);
+
+          // payment field
+          const paymentField = document.createElement('input');
+          paymentField.type = 'hidden';
+          paymentField.name = 'payment';
+          paymentField.value = 'razorpay';
+          form.appendChild(paymentField)
+
+          // used coupon id
+          const couponInput = document.createElement('input');
+          couponInput.name = 'usedCouponID';
+          couponInput.type = 'hidden';
+          couponInput.value = document.getElementById('usedCouponID').value;
+          form.appendChild(couponInput)
+
+          // order total
+          const totalInput = document.createElement('input');
+          totalInput.name = 'orderTotal';
+          totalInput.type = 'hidden';
+          totalInput.value = document.getElementById('orderTotal').value;
+          form.appendChild(totalInput)
+
+          // failure message
+          const failureField = document.createElement('input');
+          failureField.type = 'hidden';
+          failureField.name = 'failure'
+          failureField.value = 'failure';
+          form.appendChild(failureField);
+
+          // submit the form
+          document.body.appendChild(form);
+          form.submit();
+        });
+
+        rzp1.open();
+        e.preventDefault();                
       }
         </script>
 

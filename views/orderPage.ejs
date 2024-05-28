@@ -165,6 +165,22 @@
         border: 1px solid rgb(216, 25, 25);
         color: rgb(216, 25, 25);
       }
+      .payment-section .note {
+        font-size: 15px;
+        font-weight: 500;
+        color: rgb(183, 75, 75);
+      }
+      .payment-button {
+        margin-top: 5px;
+        font-size: 14px;
+        border: 1px solid rgb(50, 145, 50);
+        color: rgb(50, 145, 50);
+        border-radius: 3px;
+        padding: 1px 5px;
+      }
+      .payment-button:hover {
+        cursor: pointer;
+      }
       .status-section button:hover {
         cursor: pointer;
       }
@@ -283,6 +299,20 @@
             </div>
             <div class="date"><%=order.orderedDate.toDateString()%></div>
           </div>
+          <div class="order-middle-multi">
+            <%const paymentFailed = order.orderedProducts.every((product) =>
+            product.orderStatus === 'pending')%> <%if(paymentFailed){%>
+            <div class="payment-section">
+              <div class="note">Your Payment is Pending</div>
+              <div
+                class="payment-button"
+                onclick="continuePayment('<%=order.orderTotal%>','<%=order._id%>')"
+              >
+                Click here to continue payment
+              </div>
+            </div>
+            <%}%>
+          </div>
           <div class="product-right-multi">
             <div class="button">
               <button
@@ -395,6 +425,10 @@
               >
                 <%=product.returnedDate.toDateString()%>
               </div>
+              <%}else if(product.orderStatus === 'pending'){%>
+              <div class="pendings" style="color: orangered">
+                Payment Pending
+              </div>
               <%}%>
             </div>
           </div>
@@ -502,6 +536,10 @@
             >
               <%=productOrder.returnedDate.toDateString()%>
             </div>
+            <%}else if(productOrder.orderStatus === 'pending'){%>
+            <div class="pendings" style="color: orangered; font-weight: 500">
+              Payment Pending
+            </div>
             <%}%>
           </div>
         </div>
@@ -538,6 +576,80 @@
       function viewOrder(orderID, productDocID) {
         window.location.href = `/view/${orderID}/${productDocID}`;
       }
+
+      // razorpay
+      async function continuePayment(orderTotal, orderID) {
+        try {
+          const response = await fetch("/create/orderId", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ amount: orderTotal * 100 }),
+          });
+          if (response.ok) {
+            const data = await response.json();
+            const { orderId, orderprice, signature } = data;
+            const options = {
+              key: "rzp_test_3y4jRsuaFdH2Kn",
+              amount: orderprice,
+              currency: "INR",
+              name: "moasWeb",
+              description: "Online Payment",
+              order_id: orderId,
+              handler: function (response) {
+                let form = document.createElement("form");
+                form.method = "POST";
+                form.action = "/continue-payment";
+
+                // hidden input for passing orderID
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "orderID";
+                input.value = orderID;
+                form.appendChild(input);
+
+                // payment status
+                const statusInput = document.createElement("input");
+                statusInput.type = "hidden";
+                statusInput.name = "status";
+                statusInput.value = "success";
+                form.appendChild(statusInput);
+
+                document.body.appendChild(form);
+                form.submit();
+              },
+            };
+            const razorpay = new Razorpay(options);
+            razorpay.on("payment.failed", function (response) {
+              let form = document.createElement("form");
+              form.method = "POST";
+              form.action = "/continue-payment";
+
+              // hidden input for passing orderID
+              const input = document.createElement("input");
+              input.type = "hidden";
+              input.name = "orderID";
+              input.value = orderID;
+              form.appendChild(input);
+
+              // payment status
+              const statusInput = document.createElement("input");
+              statusInput.type = "hidden";
+              statusInput.name = "status";
+              statusInput.value = "failed";
+              form.appendChild(statusInput);
+
+              document.body.appendChild(form);
+              form.submit();
+            });
+            razorpay.open();
+          }
+        } catch (error) {
+          console.log("error", error);
+        }
+      }
     </script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   </body>
 </html>

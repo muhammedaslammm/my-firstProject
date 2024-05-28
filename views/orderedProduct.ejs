@@ -113,6 +113,19 @@
       .more-box #return-product:hover {
         cursor: pointer;
       }
+      #payment-button {
+        color: green;
+        background-color: white;
+        border: 1px solid green;
+        padding: 2px 7px;
+        font-size: 15px;
+        font-weight: 500;
+        border-radius: 3px;
+        height: 28px;
+      }
+      #payment-button:hover {
+        cursor: pointer;
+      }
 
       /* product details */
       .product-box {
@@ -279,6 +292,14 @@
               <%=product.returnedDate.toDateString()%>
             </div>
           </div>
+          <%}else if(order.orderedProducts.length === 1 && product.orderStatus
+          === 'pending'){%>
+          <button
+            id="payment-button"
+            onclick="continuePayment('<%=order._id%>','<%=order.orderTotal%>')"
+          >
+            Continue Payment
+          </button>
 
           <%}%>
         </div>
@@ -331,6 +352,13 @@
             Order <%=product.orderStatus%>
           </div>
           <div class="note">The item you ordered is returned</div>
+          <%}else if(product.orderStatus === 'pending'){%>
+          <div class="product-status" style="color: orangered">
+            Order <%=product.orderStatus%>
+          </div>
+          <div class="note">
+            The product that you ordered is in a pending state
+          </div>
           <%}%>
         </div>
       </div>
@@ -389,6 +417,80 @@
           console.log(error);
         }
       }
+
+      // razor pay
+      async function continuePayment(orderID, orderTotal) {
+        try {
+          const response = await fetch("/create/orderId", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ amount: orderTotal * 100 }),
+          });
+          if (response.ok) {
+            const data = await response.json();
+            const { orderprice, orderId, signature } = data;
+            const options = {
+              key: "rzp_test_3y4jRsuaFdH2Kn",
+              amount: orderprice,
+              currency: "INR",
+              name: "moasWeb",
+              description: "Online Payment",
+              order_id: orderId,
+              handler: function (response) {
+                let form = document.createElement("form");
+                form.method = "POST";
+                form.action = "/continue-payment";
+
+                // hidden input for passing orderID
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "orderID";
+                input.value = orderID;
+                form.appendChild(input);
+
+                // payment status
+                const statusInput = document.createElement("input");
+                statusInput.type = "hidden";
+                statusInput.name = "status";
+                statusInput.value = "success";
+                form.appendChild(statusInput);
+
+                document.body.appendChild(form);
+                form.submit();
+              },
+            };
+            const razorpay = new Razorpay(options);
+            razorpay.on("payment.failed", function (response) {
+              let form = document.createElement("form");
+              form.method = "POST";
+              form.action = "/continue-payment";
+
+              // hidden input for passing orderID
+              const input = document.createElement("input");
+              input.type = "hidden";
+              input.name = "orderID";
+              input.value = orderID;
+              form.appendChild(input);
+
+              // payment status
+              const statusInput = document.createElement("input");
+              statusInput.type = "hidden";
+              statusInput.name = "status";
+              statusInput.value = "failed";
+              form.appendChild(statusInput);
+
+              document.body.appendChild(form);
+              form.submit();
+            });
+            razorpay.open();
+          }
+        } catch (error) {
+          console.log("error", error);
+        }
+      }
     </script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   </body>
 </html>
