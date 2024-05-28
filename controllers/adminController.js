@@ -371,8 +371,9 @@ exports.adminProductPage = async function(req,res){
     const productPerPage = 5;
     const page = parseInt(req.query.page) || 1
     try{
-        const products = await Product.find({deletedAt:null}) 
-        .skip((page-1)*productPerPage)
+        const products = await Product.find({deletedAt:null})  
+        .sort({date:-1})       
+        .skip((page-1)*productPerPage)        
         .limit(productPerPage)
         .populate('productOffer')
 

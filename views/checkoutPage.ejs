@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="/styles/nav.css" />
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <title>checkout page</title>
-    
 
     <style>
       body {
@@ -219,26 +218,24 @@
       label + input[type="radio"] {
         display: none;
       }
-      /* COD place order button */
+      /* razorpay  */
+      .internetBanking-payment-dropdown .content,
       .COD-payment-dropdown .content {
         display: flex;
         justify-content: end;
       }
-      .COD-payment-dropdown .content button {
-        color: white;
-        font-weight: 500;
-        background-color: rgb(199, 166, 45);
-        font-size: 15px;
-        padding: 2px 8px;
-        border-radius: 3px;
-        border: none;
-        margin-top: 15px;
-        transition: background-color 0.5s;
+      .internetBanking-payment-dropdown .content button,
+      .COD-payment-dropdown .content button,
+      .wallet-payment-dropdown .content .order-button {
+        background-color: white;
+        color: green;
+        border: 1px solid green;
+        padding: 3px;
       }
+      .internetBanking-payment-dropdown .content button:hover,
       .COD-payment-dropdown .content button:hover {
-        /* background-color: rgb(154, 132, 51); */
-        text-decoration: none;
         cursor: pointer;
+        text-decoration: none;
       }
 
       /* wallet */
@@ -251,17 +248,6 @@
       .wallet-payment-dropdown .content .payment-success {
         font-weight: 500;
       }
-      .wallet-payment-dropdown .content .order-button {
-        color: white;
-        font-weight: 500;
-        background-color: rgb(199, 166, 45);
-        font-size: 15px;
-        padding: 2px 8px;
-        border-radius: 3px;
-        border: none;
-        margin-top: 15px;
-        transition: background-color 0.5s;
-      }
       .wallet-payment-dropdown .content .payment-error {
         color: rgb(189, 26, 26);
         font-size: 15px;
@@ -269,6 +255,12 @@
 
       .wallet-payment-dropdown .content .order-button:hover {
         cursor: pointer;
+      }
+
+      /* cod error */
+      .cod-error {
+        font-size: 15px;
+        color: rgb(196, 57, 57);
       }
 
       /* hide content */
@@ -453,7 +445,13 @@
                   </div>
                 </div>
                 <!-- cart id -->
-                <input type="hidden" name="cartID" value="<%=cart._id%>" id="cartIDs" class="cartIDs"/>
+                <input
+                  type="hidden"
+                  name="cartID"
+                  value="<%=cart._id%>"
+                  id="cartIDs"
+                  class="cartIDs"
+                />
               </div>
               <%})%>
             </div>
@@ -546,19 +544,24 @@
               <div class="debitcard-payment-dropdown">
                 <label for="debitcard">Debit Card <span>&#x3e;</span></label>
                 <input type="radio" name="payment" id="debitcard" />
-                <div class="content">
-                  <a href="">lorem7</a>
-                </div>
+                <div class="content"></div>
               </div>
 
               <!-- internet banking -->
               <div class="internetBanking-payment-dropdown">
                 <label for="internetBanking"
-                  >Internet Banking <span>&#x3e;</span></label
+                  >Razor Pay <span>&#x3e;</span></label
                 >
-                <input type="radio" name="payment" id="internetBanking" value="razorpay"/>
+                <input
+                  type="radio"
+                  name="payment"
+                  id="internetBanking"
+                  value="razorpay"
+                />
                 <div class="content">
-                  <button type="button" id="rzp-button1">Pay Via Razorpay</button>
+                  <button type="button" id="rzp-button1">
+                    Proceed Payment
+                  </button>
                 </div>
               </div>
 
@@ -573,7 +576,13 @@
                     <a href="/wallet">wallet</a> for this purchase!
                   </div>
                   <%}else{%>
-                  <button class="order-button" type="submit" onclick="placeOrder(event)">Place Order</button>
+                  <button
+                    class="order-button"
+                    type="submit"
+                    onclick="placeOrder(event)"
+                  >
+                    Place Order
+                  </button>
                   <%}%>
                 </div>
               </div>
@@ -588,7 +597,20 @@
                   value="cash-on-delivery"
                 />
                 <div class="content">
-                  <button type="submit" id="codButton" onclick="placeOrder(event)">Place Order</button>
+                  <%if(totalAmount > 1000){%>
+                  <button
+                    type="submit"
+                    id="codButton"
+                    onclick="placeOrder(event)"
+                  >
+                    Place Order
+                  </button>
+                  <%}else{%>
+                  <div class="cod-error">
+                    Required minimum of Rs. 1000 purchase for this mode of
+                    payment
+                  </div>
+                  <%}%>
                 </div>
               </div>
             </div>
@@ -709,8 +731,9 @@
             ).innerText = `${response.address.city}, ${response.address.pincode}`;
 
             // number
-            document.querySelector(".default-address-box .address-number").innerText =
-              response.address.phone;
+            document.querySelector(
+              ".default-address-box .address-number"
+            ).innerText = response.address.phone;
 
             // set default address tooo
             document.querySelector(
@@ -718,7 +741,9 @@
             ).value = `${response.address._id}`;
 
             // setting the dataset value for the default address box
-            document.querySelector(".default-address-box").dataset.address = `${response.address._id}`
+            document.querySelector(
+              ".default-address-box"
+            ).dataset.address = `${response.address._id}`;
           }
         } catch (error) {
           console.log(error, "error when setting default address via fetch");
@@ -726,20 +751,22 @@
       }
 
       // submitting to place order
-      function placeOrder(event){
-        console.log("trigerred element",event.target);
+      function placeOrder(event) {
+        console.log("trigerred element", event.target);
         const form = document.getElementById("form");
-        const addressData = document.getElementById("order-default-address").value
-          const addressFunction = Function(
-            `"use strict";return (${addressData})`
-          );
-          const defaultAddress = addressFunction ?? "";
-          if (typeof addressFunction != "function") {
-            window.alert("Select an Address for Payment");
-            event.preventDefault();
-          } 
+        const addressData = document.getElementById(
+          "order-default-address"
+        ).value;
+        const addressFunction = Function(
+          `"use strict";return (${addressData})`
+        );
+        const defaultAddress = addressFunction ?? "";
+        if (typeof addressFunction != "function") {
+          window.alert("Select an Address for Payment");
+          event.preventDefault();
+        }
       }
-      
+
       // add coupon to product
       const submit = document.querySelector("#couponSubmit");
       submit.addEventListener("click", async function () {
@@ -757,7 +784,7 @@
             const totalAmount = document.querySelector(
               ".total-amount .Amount"
             ).innerText;
-            
+
             const response = await fetch("/add-coupon-product", {
               method: "POST",
               headers: {
@@ -769,19 +796,18 @@
             if (response.ok) {
               const data = await response.json();
               const usedCouponID = data.usedCouponDoc;
-              document.querySelector("#usedCouponID").value = usedCouponID;  
-              
+              document.querySelector("#usedCouponID").value = usedCouponID;
+
               // storing new amount in the local storage
               localStorage.setItem("orderTotal", data.newAmount);
-              console.log("stored amount",localStorage.getItem("orderTotal"))        
+              console.log("stored amount", localStorage.getItem("orderTotal"));
 
               // setting new amount
               document.querySelector(".total-amount .Amount").innerText =
                 data.newAmount;
               document.querySelector("#orderTotal").value = data.newAmount;
-              
-              console.log('coupon amount: ',couponAmount);
-              
+
+              console.log("coupon amount: ", couponAmount);
 
               // setting deducted amount
               document.querySelector(
@@ -876,12 +902,12 @@
             console.log("error in client side js", error);
           }
         }
-      }); 
+      });
 
       document.addEventListener("DOMContentLoaded", async function () {
         const coupon = localStorage.getItem("usedCoupon");
         const couponCode = localStorage.getItem("couponCode");
-        
+
         if (coupon) {
           try {
             const response = await fetch(`/get-coupon?couponID=${coupon}`, {
@@ -891,15 +917,18 @@
               const data = await response.json();
               document.querySelector(".total-amount .Amount").innerText =
                 data.newAmount;
-              console.log('coupon amount page reload: ',couponAmount);
+              console.log("coupon amount page reload: ", couponAmount);
               document.querySelector("#orderTotal").value =
                 localStorage.getItem("orderTotal");
 
-              console.log("order total after coupon applied: ",document.querySelector("#orderTotal").value);
+              console.log(
+                "order total after coupon applied: ",
+                document.querySelector("#orderTotal").value
+              );
               document.querySelector(
                 ".amount-details .coupon-deducted"
               ).innerText = -data.deductedAmount;
-              
+
               document.getElementById("usedCouponID").value = coupon;
 
               // changing the input field
@@ -950,26 +979,29 @@
 
               // adding id to coupon section (input section)
               const codeDiv = document.querySelector(".coupon-input");
-              codeDiv.id = "changeDisplay";              
+              codeDiv.id = "changeDisplay";
             }
           } catch (error) {
             console.log("error", error);
           }
         }
       });
-      
-      
+
       // razor pay logic
-      
-      document.getElementById('rzp-button1').onclick = function (e) {
-        let price = document.getElementById('price');
-        const orderTotalWithoutCopuon = Number(document.getElementById("orderTotal").value);
-        const orderTotalWithCoupon = Number(localStorage.getItem("orderTotal"));      
-        let orderprice = orderTotalWithCoupon ? orderTotalWithCoupon : orderTotalWithoutCopuon;
-        
-        console.log('order total without coupon: ',orderTotalWithoutCopuon);
-        console.log('order total with coupon: ',orderTotalWithCoupon);
-        console.log('order price in razorpay: ',orderprice);
+
+      document.getElementById("rzp-button1").onclick = function (e) {
+        let price = document.getElementById("price");
+        const orderTotalWithoutCopuon = Number(
+          document.getElementById("orderTotal").value
+        );
+        const orderTotalWithCoupon = Number(localStorage.getItem("orderTotal"));
+        let orderprice = orderTotalWithCoupon
+          ? orderTotalWithCoupon
+          : orderTotalWithoutCopuon;
+
+        console.log("order total without coupon: ", orderTotalWithoutCopuon);
+        console.log("order total with coupon: ", orderTotalWithCoupon);
+        console.log("order price in razorpay: ", orderprice);
         $(document).ready(function () {
           let settings = {
             url: "/create/orderId",
@@ -979,55 +1011,55 @@
               "Content-Type": "application/json",
             },
             data: JSON.stringify({
-              amount: orderprice * 100
+              amount: orderprice * 100,
             }),
           };
 
           //creates new orderId everytime
-          $.ajax(settings).done(function (response) {          
-            console.log('response',response);
+          $.ajax(settings).done(function (response) {
+            console.log("response", response);
             orderId = response.orderId;
             orderprice = response.orderprice;
             ordresignature = response.signature;
           });
         });
         let options = {
-          "key": "rzp_test_3y4jRsuaFdH2Kn",
-          "amount": orderprice * 100,
-          "currency": "INR",
-          "name": "moasweb",
-          "description": "Online Payment",
-          "image": "",
-          "order_id": orderId,
-          "handler": function (response) {
+          key: "rzp_test_3y4jRsuaFdH2Kn",
+          amount: orderprice * 100,
+          currency: "INR",
+          name: "moasweb",
+          description: "Online Payment",
+          image: "",
+          order_id: orderId,
+          handler: function (response) {
             // Create a form dynamically
             let form = document.createElement("form");
-            form.method = "POST",
-            form.action = "/place-order";
+            (form.method = "POST"), (form.action = "/place-order");
 
             // Create an input element to hold the payment ID
-            var paymentIdInput = document.createElement('input');
-            paymentIdInput.type = 'hidden';
-            paymentIdInput.name = 'razorpay_payment_id';
+            var paymentIdInput = document.createElement("input");
+            paymentIdInput.type = "hidden";
+            paymentIdInput.name = "razorpay_payment_id";
             paymentIdInput.value = response.razorpay_payment_id;
-                        
 
             // input element for adding cart ids
-            const cartIDs = Array.from(document.querySelectorAll(".cartIDs"))
-            cartIDs.forEach(function(cart){
-            const cartIdInput = document.createElement("input");
-            cartIdInput.type = "hidden";
-            cartIdInput.name = "cartID";
-            cartIdInput.value = cart.value;
+            const cartIDs = Array.from(document.querySelectorAll(".cartIDs"));
+            cartIDs.forEach(function (cart) {
+              const cartIdInput = document.createElement("input");
+              cartIdInput.type = "hidden";
+              cartIdInput.name = "cartID";
+              cartIdInput.value = cart.value;
 
-              form.appendChild(cartIdInput)
-            })
+              form.appendChild(cartIdInput);
+            });
 
             // input element for adding address
             const addressInput = document.createElement("input");
-            addressInput.type = 'hidden';
+            addressInput.type = "hidden";
             addressInput.name = "address";
-            addressInput.value = document.getElementById("order-default-address").value;
+            addressInput.value = document.getElementById(
+              "order-default-address"
+            ).value;
             form.appendChild(addressInput);
 
             // input element for adding payment
@@ -1048,7 +1080,8 @@
             const usedCouponIDInput = document.createElement("input");
             usedCouponIDInput.type = "hidden";
             usedCouponIDInput.name = "usedCouponID";
-            usedCouponIDInput.value = document.getElementById("usedCouponID").value;
+            usedCouponIDInput.value =
+              document.getElementById("usedCouponID").value;
             form.appendChild(usedCouponIDInput);
 
             // add the hidden form to the document body
@@ -1062,58 +1095,60 @@
             console.log("checkout completed");
 
             // submit hidden form
-            form.submit();                        
-          }             
+            form.submit();
+          },
         };
         var rzp1 = new Razorpay(options);
-        rzp1.on('payment.failed', function (response) {
-          let form = document.createElement('form');
-          form.method = 'POST'
-          form.action = '/place-order';
+        rzp1.on("payment.failed", function (response) {
+          let form = document.createElement("form");
+          form.method = "POST";
+          form.action = "/place-order";
 
           // adding cartIDs;
-          const cartIDs = Array.from(document.querySelectorAll('.cartIDs'));
-          cartIDs.forEach(function(element){
-            const cartInput = document.createElement('input');
-            cartInput.type = 'hidden';
-            cartInput.name = 'cartID';
-            cartInput.value = element.value
-            form.appendChild(cartInput)
-          })
+          const cartIDs = Array.from(document.querySelectorAll(".cartIDs"));
+          cartIDs.forEach(function (element) {
+            const cartInput = document.createElement("input");
+            cartInput.type = "hidden";
+            cartInput.name = "cartID";
+            cartInput.value = element.value;
+            form.appendChild(cartInput);
+          });
 
           // adding address
-          const addressInput = document.createElement('input');
-          addressInput.type = 'hidden';
-          addressInput.name = 'address';
-          addressInput.value = document.getElementById('order-default-address').value;
+          const addressInput = document.createElement("input");
+          addressInput.type = "hidden";
+          addressInput.name = "address";
+          addressInput.value = document.getElementById(
+            "order-default-address"
+          ).value;
           form.appendChild(addressInput);
 
           // payment field
-          const paymentField = document.createElement('input');
-          paymentField.type = 'hidden';
-          paymentField.name = 'payment';
-          paymentField.value = 'razorpay';
-          form.appendChild(paymentField)
+          const paymentField = document.createElement("input");
+          paymentField.type = "hidden";
+          paymentField.name = "payment";
+          paymentField.value = "razorpay";
+          form.appendChild(paymentField);
 
           // used coupon id
-          const couponInput = document.createElement('input');
-          couponInput.name = 'usedCouponID';
-          couponInput.type = 'hidden';
-          couponInput.value = document.getElementById('usedCouponID').value;
-          form.appendChild(couponInput)
+          const couponInput = document.createElement("input");
+          couponInput.name = "usedCouponID";
+          couponInput.type = "hidden";
+          couponInput.value = document.getElementById("usedCouponID").value;
+          form.appendChild(couponInput);
 
           // order total
-          const totalInput = document.createElement('input');
-          totalInput.name = 'orderTotal';
-          totalInput.type = 'hidden';
-          totalInput.value = document.getElementById('orderTotal').value;
-          form.appendChild(totalInput)
+          const totalInput = document.createElement("input");
+          totalInput.name = "orderTotal";
+          totalInput.type = "hidden";
+          totalInput.value = document.getElementById("orderTotal").value;
+          form.appendChild(totalInput);
 
           // failure message
-          const failureField = document.createElement('input');
-          failureField.type = 'hidden';
-          failureField.name = 'failure'
-          failureField.value = 'failure';
+          const failureField = document.createElement("input");
+          failureField.type = "hidden";
+          failureField.name = "failure";
+          failureField.value = "failure";
           form.appendChild(failureField);
 
           // submit the form
@@ -1122,11 +1157,9 @@
         });
 
         rzp1.open();
-        e.preventDefault();                
-      }
-        </script>
-
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        e.preventDefault();
+      };
     </script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   </body>
 </html>
