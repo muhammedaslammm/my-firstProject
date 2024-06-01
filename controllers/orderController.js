@@ -189,9 +189,19 @@ exports.orderResponsePage = async function(req,res){
         const userID = req.session.userID
         const orderID = req.query.order_id;
         const order = await Order.findOne({_id:orderID})
-            .populate('orderedProducts.productID')
-            .populate("address");
-        res.render("orderResponsePage",{userID,order})       
+            .populate({
+                path:'orderedProducts.productID',
+                populate:{
+                    path:'productOffer'
+                }
+            })
+            .populate("address")
+        console.log(order);
+        // finding similar products
+        const productType = order.orderedProducts[0].productID.productType;
+        const similarProducts = await Product.find({productType}).limit(6);
+        console.log("similar products: ",similarProducts.length);
+        res.render("orderResponsePage",{userID,order,similarProducts})       
     }
     catch(error){
         console.log("error in order response page",error);
@@ -249,54 +259,57 @@ exports.cancelOrder = async function(req,res){
         )            
 
         // collecting cancelled product amount for adding in the wallet
-        let amount = 0;
+        
+        
         const order = await Order.findById(orderID).populate('usedCouponID');
-        console.log(order);
-        const cancelledProduct = order.orderedProducts.find(function(product){
-            return product._id == docID
-        });
-
-        if(order.couponAdded){
-            const discountPrice = (cancelledProduct.totalPrice / order.productTotal) * order.usedCouponID.deductedAmount;
-            amount += Math.round(cancelledProduct.totalPrice - discountPrice);
-        }
-        else{
-            amount = cancelledProduct.totalPrice;
-        }   
-        console.log("amount : ",amount);
-        const wallet = await Wallet.findOne({userID:req.session.userID})
-        console.log(wallet);
-        if(wallet){ //this means, the wallet is already added
-            const obj = {
-                amount,
-                date:new Date,
-                source:"Refunded",
-                transactionType:"credited"
-            }
-            const walletAmount = wallet.walletAmount + amount
-            await Wallet.updateOne({_id:wallet._id},{
-                $push:{creditedDetail:obj},
-                $set:{walletAmount:walletAmount}
-            })
-            console.log("product cancelled and amount added to wallet");
-        }
-        else{
-            let creditedDetail = [];
-            const details = {
-                amount,
-                date:new Date,
-                source:"Refunded",
-                transactionType:"credited"
-            }
-            creditedDetail.push(details);
-            const newWallet = await Wallet.create({
-                userID,
-                creditedDetail
+        if(order.paymentMethod != 'cash-on-delivery'){
+            let amount = 0;
+            const cancelledProduct = order.orderedProducts.find(function(product){
+                return product._id == docID
             });
-
-            const walletAmount = newWallet.walletAmount + amount
-            await Wallet.updateOne({_id:newWallet._id},{$set:{walletAmount}})
-            console.log("product cancelled and amount added to wallet");
+    
+            if(order.couponAdded){
+                const discountPrice = (cancelledProduct.totalPrice / order.productTotal) * order.usedCouponID.deductedAmount;
+                amount += Math.round(cancelledProduct.totalPrice - discountPrice);
+            }
+            else{
+                amount = cancelledProduct.totalPrice;
+            }   
+            console.log("amount : ",amount);
+            const wallet = await Wallet.findOne({userID:req.session.userID})
+            console.log(wallet);
+            if(wallet){ //this means, the wallet is already added
+                const obj = {
+                    amount,
+                    date:new Date,
+                    source:"Refunded",
+                    transactionType:"credited"
+                }
+                const walletAmount = wallet.walletAmount + amount
+                await Wallet.updateOne({_id:wallet._id},{
+                    $push:{creditedDetail:obj},
+                    $set:{walletAmount:walletAmount}
+                })
+                console.log("product cancelled and amount added to wallet");
+            }
+            else{
+                let creditedDetail = [];
+                const details = {
+                    amount,
+                    date:new Date,
+                    source:"Refunded",
+                    transactionType:"credited"
+                }
+                creditedDetail.push(details);
+                const newWallet = await Wallet.create({
+                    userID,
+                    creditedDetail
+                });
+    
+                const walletAmount = newWallet.walletAmount + amount
+                await Wallet.updateOne({_id:newWallet._id},{$set:{walletAmount}})
+                console.log("product cancelled and amount added to wallet");
+            }
         }
         res.status(200).json({sucess:"order cancelled"});
     }

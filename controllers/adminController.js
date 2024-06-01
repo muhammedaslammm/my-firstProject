@@ -19,6 +19,7 @@ const referralReward = require("./../models/referralRewardModel");
 const Excel = require("exceljs");
 const PDF = require('pdfkit')
 const Notification = require('./../models/notification');
+const Wallet = require("./../models/walletModel");
 
 
 
@@ -799,6 +800,52 @@ exports.changeOrderStatus = async function(req,res){
                     'orderedProducts.$.returnedDate':new Date()
                 }}
             )
+            let amount = 0;
+            const order = await Order.findById(orderID).populate('usedCouponID');
+            const returnedProduct = order.orderedProducts.find(function(product){
+                return JSON.stringify(product._id) === JSON.stringify(productDocID);
+            })
+            console.log('returned product',returnedProduct);
+            if(order.couponAdded){
+                const discountPrice = (returnedProduct.totalPrice / order.productTotal) * order.usedCouponID.deductedAmount;
+                amount = Math.round(returnedProduct.totalPrice - discountPrice);
+            }
+            else{
+                amount = returnedProduct.totalPrice;
+                console.log('returned product amount: ',amount);
+            }
+            const wallet = await Wallet.findOne({userID:req.session.userID});
+            if(wallet){
+                const object = {
+                    amount,
+                    transactionType:'credited',
+                    source:'Product Returned',
+                    date:new Date()
+                }
+                const walletAmount = wallet.walletAmount + amount;
+                await Wallet.updateOne({userID:req.session.userID},{
+                    $push:{creditedDetail:object},
+                    $set:{walletAmount}
+                })
+                console.log('product returned and amount added to wallet.');
+            }
+            else{
+                const walletAmount = amount;
+                let creditedDetail = [];
+                const object = {
+                  amount,
+                  transactionType:'credited',
+                  source:'Product Returned',
+                  date:new Date()
+                }
+                creditedDetail.push(object);
+                const newWallet = await Wallet.create({
+                    userID:req.session.userID,
+                    walletAmount,
+                    creditedDetail
+                })
+                console.log('product returned and amount added to the wallet');
+            }
             res.status(200).json({success:'success',status})
         }
         
