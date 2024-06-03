@@ -130,6 +130,7 @@
       /* product details */
       .product-box {
         display: flex;
+        justify-content: space-between;
         box-shadow: 0px 0px 5px rgb(206, 206, 206);
         background-color: white;
         padding: 20px;
@@ -139,6 +140,9 @@
       .product-details {
         display: flex;
         width: 40%;
+      }
+      .productDetails-and-stat {
+        display: flex;
       }
 
       .image {
@@ -192,6 +196,25 @@
       .product-stat .note {
         font-size: 13px;
         color: rgb(86, 86, 86);
+      }
+
+      /* invoice */
+      .download-invoice-button {
+        border: 1px solid rgb(73, 115, 205);
+        color: rgb(73, 115, 205);
+        font-size: 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 500;
+        height: 25px;
+        padding: 0px 6px;
+      }
+      .download-invoice-button i {
+        margin-left: 4px;
+      }
+      .download-invoice-button:hover {
+        cursor: pointer;
       }
     </style>
   </head>
@@ -307,60 +330,72 @@
 
       <!-- product box -->
       <div class="product-box">
-        <div class="product-details">
-          <div class="image">
-            <img src="<%=product.productID.images[0]%>" alt="product image" />
-          </div>
-          <div class="detail-summary">
-            <div class="brand"><%=product.productID.brand%></div>
-            <div class="summary">
-              <%=product.productID.color%> Men's
-              <%=product.productID.productType%>
+        <div class="productDetails-and-stat">
+          <div class="product-details">
+            <div class="image">
+              <img src="<%=product.productID.images[0]%>" alt="product image" />
             </div>
-            <div class="color">color: <%=product.productID.color%></div>
-            <div class="size">size: <%=product.size%></div>
-            <div class="quantity">quantity: <%=product.quantity%></div>
-            <div class="price">
-              <div class="coupon-price">
-                Rs. <%=product.couponAdded && order.orderedProducts.length === 1
-                ? order.orderTotal : product.totalPrice%>
+            <div class="detail-summary">
+              <div class="brand"><%=product.productID.brand%></div>
+              <div class="summary">
+                <%=product.productID.color%> Men's
+                <%=product.productID.productType%>
               </div>
-              <%if(product.couponAdded && order.orderedProducts.length === 1){%>
-              <div class="actual-price">Rs. <%=product.totalPrice%></div>
-              <%}%>
+              <div class="color">color: <%=product.productID.color%></div>
+              <div class="size">size: <%=product.size%></div>
+              <div class="quantity">quantity: <%=product.quantity%></div>
+              <div class="price">
+                <div class="coupon-price">
+                  Rs. <%=product.couponAdded && order.orderedProducts.length ===
+                  1 ? order.orderTotal : product.totalPrice%>
+                </div>
+                <%if(product.couponAdded && order.orderedProducts.length ===
+                1){%>
+                <div class="actual-price">Rs. <%=product.totalPrice%></div>
+                <%}%>
+              </div>
             </div>
           </div>
+          <div class="product-stat">
+            <%if(product.orderStatus === "cancelled"){%>
+            <div class="product-status" style="color: rgb(183, 24, 24)">
+              Order <%=product.orderStatus%>
+            </div>
+            <div class="note">The item you ordered is cancelled</div>
+            <%}else if(product.orderStatus === "on progress"){%>
+            <div class="product-status" style="color: rgb(29, 138, 7)">
+              Order <%=product.orderStatus%>
+            </div>
+            <div class="note">The item you ordered is on progress</div>
+            <%}else if(product.orderStatus === "delivered"){%>
+            <div class="product-status" style="color: rgb(29, 138, 7)">
+              Order <%=product.orderStatus%>
+            </div>
+            <div class="note">The item you ordered is delivered</div>
+            <%}else if(product.orderStatus === "returned"){%>
+            <div class="product-status" style="color: rgb(138, 52, 21)">
+              Order <%=product.orderStatus%>
+            </div>
+            <div class="note">The item you ordered is returned</div>
+            <%}else if(product.orderStatus === 'pending'){%>
+            <div class="product-status" style="color: orangered">
+              Order <%=product.orderStatus%>
+            </div>
+            <div class="note">
+              The product that you ordered is in a pending state
+            </div>
+            <%}%>
+          </div>
         </div>
-        <div class="product-stat">
-          <%if(product.orderStatus === "cancelled"){%>
-          <div class="product-status" style="color: rgb(183, 24, 24)">
-            Order <%=product.orderStatus%>
-          </div>
-          <div class="note">The item you ordered is cancelled</div>
-          <%}else if(product.orderStatus === "on progress"){%>
-          <div class="product-status" style="color: rgb(29, 138, 7)">
-            Order <%=product.orderStatus%>
-          </div>
-          <div class="note">The item you ordered is on progress</div>
-          <%}else if(product.orderStatus === "delivered"){%>
-          <div class="product-status" style="color: rgb(29, 138, 7)">
-            Order <%=product.orderStatus%>
-          </div>
-          <div class="note">The item you ordered is delivered</div>
-          <%}else if(product.orderStatus === "returned"){%>
-          <div class="product-status" style="color: rgb(138, 52, 21)">
-            Order <%=product.orderStatus%>
-          </div>
-          <div class="note">The item you ordered is returned</div>
-          <%}else if(product.orderStatus === 'pending'){%>
-          <div class="product-status" style="color: orangered">
-            Order <%=product.orderStatus%>
-          </div>
-          <div class="note">
-            The product that you ordered is in a pending state
-          </div>
-          <%}%>
+        <%if(product.orderStatus === 'delivered'){%>
+        <div
+          class="download-invoice-button"
+          onclick="downloadInvoice('<%=JSON.stringify(product)%>','<%=JSON.stringify(order)%>')"
+        >
+          Download Invoice
+          <i class="fa-solid fa-download" style="color: rgb(73, 115, 205)"></i>
         </div>
+        <%}%>
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -376,6 +411,34 @@
       });
 
       // ---------------------------------------------------
+
+      // download invoice
+      async function downloadInvoice(product, order) {
+        try {
+          const response = await fetch("/download-invoice", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ product, order }),
+          });
+          if (response.ok) {
+            const blobData = await response.blob();
+            const url = window.URL.createObjectURL(blobData);
+            const a = document.createElement("a");
+            a.href = url;
+            a.setAttribute("download", "purchase_invoice.pdf");
+            document.body.appendChild(a);
+            a.click();
+
+            // removing link
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+          }
+        } catch (error) {
+          console.log("error", error);
+        }
+      }
 
       // cancelling the order
       async function cancelOrder(event, orderID, docID) {

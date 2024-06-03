@@ -8,6 +8,7 @@ const {ObjectId} = require("mongodb");
 const generateOrderID = require('./../operations/generateOrderID');
 const UsedCoupon = require("./../models/usedCouponModel");
 const Return = require("./../models/returnReasonModel");
+const easyinvoice = require('easyinvoice');
 
 
 // placing order 'cash on delivery'
@@ -229,7 +230,7 @@ exports.viewOrderedProduct = async function(req,res){
     const {orderID,productDocID} = req.params
     const userID = req.session.userID
     try{
-        const order = await Order.findById(orderID).populate('orderedProducts.productID').populate("address")
+        const order = await Order.findById(orderID).populate('orderedProducts.productID').populate("address").populate('userID')
         const product = order.orderedProducts.find(function(product){
             return product._id.toString() === productDocID;
         })        
@@ -240,6 +241,63 @@ exports.viewOrderedProduct = async function(req,res){
         console.log(error,"error when viewing ordered product");
         res.redirect("/order-page")
     }
+}
+
+// download invoice
+exports.downloadInvoice = async function(req,res){
+    const product = JSON.parse(req.body.product);
+    const order = JSON.parse(req.body.order)
+    
+    const tax = product.totalPrice <= 1000 ? 5 : 12
+    const invoiceData = {
+        currency:'INR',
+        taxNotation:'gst',
+        marginTop:25,
+        marginRight:25,
+        marginBottom:25,
+        marginLeft:25,
+        sender:{
+            company:'moasWeb pvt ltd',
+            address:'moasWeb Down Villa 1278 Street, Trivandrum, Kerala',
+            zip:658956,
+            city:'Trivandrum',
+            country:'India',
+            email:'moaswebpvt02@gmail.com',
+            phone:'+91 9569585698'
+        },
+        client:{
+            company:order.username,
+            address:`${order.address.name},${order.address.address} - ${order.address.district}`,
+            zip:order.address.pincode,
+            city:order.address.city,
+            country:order.address.country,
+            email:order.userID.email,
+            phone:`+91 ${order.userID.phone}`
+        },
+        invoiceNumber:product.moasOrderID,
+        invoiceDate:new Date().toDateString(),
+        products:[
+            {
+                quantuty:product.quantity,
+                description:`${product.productID.color} Men's ${product.productID.fit} ${product.productID.productType}`,
+                tax:tax,
+                price:product.totalPrice
+            }
+        ],
+        bottomNotice:'If you have any queries, contact us via moaswebpvt02@gmail.com'
+    }
+
+    try{
+        const invoiceResult = await easyinvoice.createInvoice(invoiceData);
+        res.setHeader('Content-Type','application/pdf');
+        res.setHeader('Content-Disposition','attachment; filename=productInvoice.pdf');
+        res.send(Buffer.from(invoiceResult.pdf,'base64'))
+    }
+    catch(error){
+        console.log('error',error);
+        res.status(500).json({error:'error'});
+    }
+    
 }
 
 // cancel order

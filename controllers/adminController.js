@@ -1187,7 +1187,7 @@ exports.salesReportPage = async function(req,res){
         .limit(contentLimit)
         
         
-        const totalorders = await Order.countDocuments({'orderedProducts.orderStatus':'delivered'});
+        const totalorders = await Order.countDocuments({...filter,'orderedProducts.orderStatus':'delivered'});
         const totalPages = Math.ceil(totalorders / contentLimit);
 
         // calculate amounts

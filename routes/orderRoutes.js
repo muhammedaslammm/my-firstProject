@@ -28,7 +28,8 @@ router.post("/place-order",authentication,orderController.placeOrder);
 router.post('/continue-payment',authentication,orderController.continuePayment)
 router.get('/order-response-page',authentication,orderController.orderResponsePage);
 router.get("/order-page",authentication,orderController.orderPage);
-router.get("/view/:orderID/:productDocID",authentication,orderController.viewOrderedProduct)
+router.get("/view/:orderID/:productDocID",authentication,orderController.viewOrderedProduct);
+router.post('/download-invoice',authentication,orderController.downloadInvoice)
 router.post("/cancel-order",authentication,orderController.cancelOrder);
 router.get('/return/:orderID/:docID',authentication,orderController.getOrderReturnPage);
 router.post('/return/:orderID/:docID',authentication,orderController.submitOrderReturn);
