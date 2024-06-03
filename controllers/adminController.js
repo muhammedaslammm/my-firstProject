@@ -17,10 +17,10 @@ const UsedCoupon = require('./../models/usedCouponModel');
 const usedCouponModel = require("./../models/usedCouponModel");
 const referralReward = require("./../models/referralRewardModel");
 const Excel = require("exceljs");
-const PDF = require('pdfkit')
+const {jsPDF} = require('jspdf');
 const Notification = require('./../models/notification');
 const Wallet = require("./../models/walletModel");
-
+require('jspdf-autotable');
 
 
 // admin login page
@@ -75,7 +75,7 @@ exports.getSalesData = async function(req,res){
         if(filter === 'week'){
             let currentDate = new Date();
             let currentDay = currentDate.getDay();
-            const daysToMonday = currentDay === 0 ? 6 : currentDay - 1;
+            const daysToMonday = currentDay === 0 ? 7 - 1 : currentDay - 1;
 
             const currentWeekStartDate = new Date(currentDate);
             currentWeekStartDate.setDate(currentDate.getDate() - daysToMonday);
@@ -681,10 +681,21 @@ exports.deleteProductOffer = async function(req,res){
 
 // admin order page
 exports.orderPage = async function(req,res){
-    try{
-        const userID = req.session.userID;           
-        const orders = await Order.find().populate('orderedProducts.productID').populate('address').sort({orderedDate:-1})
-        res.render("adminOrderPage",{orders});
+    const userID = req.session.userID; 
+    const currentPage = parseInt(req.query.currentPage) || 1;
+    const pageLimit = 6;
+    const skipContent = (currentPage - 1) * pageLimit;
+    try{         
+        const orders = await Order.find()
+            .populate('orderedProducts.productID')
+            .populate('address')
+            .sort({orderedDate:-1})
+            .skip(skipContent)
+            .limit(pageLimit)
+        
+        const totalOrders = await Order.countDocuments();
+        const totalPages = Math.ceil(totalOrders / pageLimit)
+        res.render("adminOrderPage",{orders,currentPage,totalPages});
     }
     catch(error){
         console.log(error,"error when loading orderpage in admin side");
@@ -1110,17 +1121,21 @@ exports.salesReportPage = async function(req,res){
             endOfDay.setHours(23,59,59,999);
 
             // query for current date
-            filter.orderedDate = {$gte:currentDate,$lte:endOfDay};
+            filter['orderedProducts.deliveredDate'] = {$gte:currentDate,$lte:endOfDay};
         }
         else if(sortValue === "lastWeek"){
-            const startOfCurrentWeek = new Date();
-            startOfCurrentWeek.setDate(startOfCurrentWeek.getDate() - startOfCurrentWeek.getDay());
+            let currentDate = new Date();
+            let currentDay = currentDate.getDay();
+            const daysToMonday = currentDay === 0 ? 7 - 1 : currentDay - 1;
 
-            const endOfCurrentWeek = new Date(startOfCurrentWeek);
-            endOfCurrentWeek.setDate(endOfCurrentWeek.getDate() + 6);
+            const currentWeekStartDate = new Date(currentDate);
+            currentWeekStartDate.setDate(currentDate.getDate() - daysToMonday);
+
+            const currentWeekEndDate = new Date(currentWeekStartDate);
+            currentWeekEndDate.setDate(currentWeekStartDate.getDate() + 6)
 
             // querying for last week
-            filter.orderedDate = {$gte:startOfCurrentWeek,$lte:endOfCurrentWeek}
+            filter['orderedProducts.deliveredDate'] = {$gte:currentWeekStartDate,$lte:currentWeekEndDate}
         }
         else if(sortValue === "lastMonth"){
             const currentMonthStart = new Date();
@@ -1132,7 +1147,7 @@ exports.salesReportPage = async function(req,res){
             currentMonthEnd.setDate(0);
             currentMonthEnd.setHours(23,59,59,999);
 
-            filter.orderedDate = {$gte:currentMonthStart,$lte:currentMonthEnd}
+            filter['orderedProducts.deliveredDate'] = {$gte:currentMonthStart,$lte:currentMonthEnd}
         }
         else if(sortValue === "lastYear"){
             const currentYearStart = new Date();
@@ -1145,7 +1160,7 @@ exports.salesReportPage = async function(req,res){
             currentYearEnd.setMonth(11);
             currentYearEnd.setHours(23,59,59,999);
 
-            filter.orderedDate = {$gte:currentYearStart,$lte:currentYearEnd};
+            filter['orderedProducts.deliveredDate'] = {$gte:currentYearStart,$lte:currentYearEnd};
         }
         else if(sortValue === "all"){
 
@@ -1156,23 +1171,36 @@ exports.salesReportPage = async function(req,res){
             startDate.getHours(0,0,0,0);
             const endDate = new Date(dates[1]);
             endDate.setHours(23,59,59,999)
-
-            filter.orderedDate = {$gte:startDate,$lte:endDate}
+            filter['orderedProducts.deliveredDate'] = {$gte:startDate,$lte:endDate}
         }
 
         // caclulating total products and sales amount 
-        const orders = await Order.find({...filter})
-            .populate("orderedProducts.productID")
-            .populate("address")
-            .sort({orderedDate:-1})
-        console.log(orders);
+        const currentPage = Number(req.query.currentPage) || 1;
+        console.log('current page: ',currentPage);
+        const contentLimit = 4
+        const contentToSkip = (currentPage - 1) * contentLimit;
+        const orders = await Order.find({...filter,'orderedProducts.orderStatus':'delivered'})
+        .populate("orderedProducts.productID")
+        .populate("address")
+        .sort({orderedDate:-1})
+        .skip(contentToSkip)
+        .limit(contentLimit)
+        
+        
+        const totalorders = await Order.countDocuments({'orderedProducts.orderStatus':'delivered'});
+        const totalPages = Math.ceil(totalorders / contentLimit);
+
+        // calculate amounts
         let totalSalesAmount = 0;
         let totalProducts = 0;
         let totalOrders = 0;
         let totalUsers = 0;
         let userID = "";
-        
-        orders.forEach(function(order){            
+        const filteredOrders = await Order.find({...filter,'orderedProducts.orderStatus':'delivered'})
+            .populate('orderedProducts.productID')
+            .populate('address')
+            .sort({orderedDate:-1})
+        filteredOrders.forEach(function(order){            
             if(order){
                 // calculating total order and total users     
                 const cancelled = order.orderedProducts.every(function(product){
@@ -1204,7 +1232,11 @@ exports.salesReportPage = async function(req,res){
             totalProducts,
             totalUsers,
             totalOrders,
-            orders
+            orders,
+            currentPage,
+            totalPages,
+            filteredOrders,
+            contentLimit
         });
     }
     catch(error){
@@ -1263,46 +1295,64 @@ exports.downloadExcel = async function(req,res){
 exports.downloadPdf = async function(req,res){
     try{
         const orders = JSON.parse(req.body.orders);
-        const pdfdoc = new PDF();
-        
-        // setting header and piping the doc
-        res.setHeader('Content-Disposition','attachment; filename="moasweb_salesReport.pdf"');
-        pdfdoc.pipe(res);
+        const pdf = new jsPDF()
 
-        // setting the doc heading
-        pdfdoc.fontSize(17).text('MOASWEB Sales Report',{align:"center"});
-        pdfdoc.fontSize(16);
-
-        let itemno = 0 
-        let x = 50
-        let y = 130
-        orders.forEach(function(order){
-            order.orderedProducts.forEach(function(product){                
-                itemno += 1;
-                const price = product.couponAdded && order.orderedProducts.length === 1 ?
-                              order.orderTotal : product.totalPrice
-                const couponData = order.couponAdded ? 'Added' : '-'
-                const date = new Date(order.orderedDate);
-                pdfdoc.text(`${itemno}`,x,y);
-                pdfdoc.text(`Purchased Product : ${product.productID.brand} ${product.productID.color} ${product.productID.productType}`,x,y+25)
-                pdfdoc.text(`Purchased Date : ${date.toDateString()}`,x,y+45);
-                pdfdoc.text(`Purchase Total : ${price}`,x,y+65)
-                pdfdoc.text(`Purchased Quantity : ${product.quantity}`,x,y+85)
-                pdfdoc.text(`Product Size : ${product.size}`,x,y+105);
-                pdfdoc.text(`Coupon Added: ${couponData}`,x,y+125)
-                pdfdoc.text(`Payment Method : ${order.paymentMethod}`,x,y+145);
-                pdfdoc.text(`Product delivery address : ${order.address.address}, ${order.address.district}`,x,y+165);
-                pdfdoc.text(`Delivery address name : ${order.address.name}`,x,y+205);
-                pdfdoc.text(`Purchase made through the account of ${order.username}`,x,y+225);
-                
-                y += 300
+        // setting columns and rows
+        const columns = [
+            'Sl:no',
+            'Buyer',
+            'Address',
+            'Product',
+            'Quantity',
+            'Size',
+            'Price',
+            'Coupon',
+            'Order Date',
+            'Delivered Date',
+            'Payment Method'
+        ]
+        let index = 0;
+        const rows = orders.map(function(order){            
+            const rowData = order.orderedProducts.map(function(product){
+                const couponData = product.couponAdded ? 'Added' : '-' ;
+                const orderedDate = new Date(order.orderedDate);
+                const deliveredDate = new Date(product.deliveredDate);
+                index += 1;
+                return [
+                    index,
+                    order.username,
+                    `${order.address.name}, ${order.address.address} - ${order.address.district}`,
+                    `${product.productID.color} Men's ${product.productID.fit} ${product.productID.productType}`,
+                    product.quantity,
+                    product.size,
+                    product.totalPrice,
+                    couponData,
+                    orderedDate.toDateString(),
+                    deliveredDate.toDateString(),
+                    order.paymentMethod
+                ] 
             })
-            
+            return rowData
         })
-        console.log("pdf created");
+        let rowStyles = {
+            2:{width:30,align:'center'},
+            3:{width:50,align:'center'},
+            8:{width:30,align:'center'},
+            9:{width:30,align:'center'}
+        }
         
-        // end the pdf doc
-        pdfdoc.end()
+        pdf.autoTable({
+            head:[columns],
+            body:rows.flat(),
+            rowStyles:rowStyles
+        })
+
+        const pdfData = pdf.output('arraybuffer');
+
+        console.log('pdf successfully generated, Alhamdulillah...');
+        res.setHeader('Content-Type','application/pdf');
+        res.setHeader('Content-Disposition','attachment; filename="moas_salesReport.pdf"');
+        res.send(Buffer.from(pdfData))
     }
     catch(error){
         console.log("server error",error);

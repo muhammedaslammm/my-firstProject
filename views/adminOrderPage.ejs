@@ -44,18 +44,22 @@
         box-sizing: border-box;
       }
       .order-head{
-        font-size: 17px;
+        font-size: 18px;
         font-weight: 500;
       }
 
       /* table */
       table{
+        margin-top: 20px;
         border-collapse: collapse;
       }
       th,td{
-        border: 1px solid rgb(114, 113, 113);
+        border: 1px solid rgb(161, 161, 161);
         text-align: left;
         padding:4px 8px;
+      }
+      tr:nth-child(even){
+        background-color: rgb(255, 255, 242);
       }
       tr .image{
         width:4%
@@ -99,6 +103,35 @@
         cursor: pointer;
       }
 
+      /* pagination */
+      .pagination{
+        margin-top: 20px;
+        display: flex;   
+        justify-content: center;
+        align-items: center;     
+      }
+      .left-button, .right-button{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        border: 1px solid rgb(138, 138, 138);
+        width: 35px;
+        height: 35px;
+        box-shadow: 0px 0px 3px rgb(192, 192, 192) inset;
+      }
+      .disable{
+        opacity: 0.7;
+        background-color: rgb(233, 233, 233);
+      }
+      .left-button:hover , .right-button:hover{
+        cursor: pointer;
+      }
+      .current-page{
+        margin:0px 20px;
+        font-size: 17px;
+        font-weight: 500;
+      }
     </style>
   </head>
   <body>
@@ -184,6 +217,24 @@
                 <%})%>
               <%}%>
             </table>
+          </div>
+          <div class="pagination">
+            <div 
+              class="left-button <%=currentPage === 1 ? 'disable' : ''%>" 
+              id="left-button" 
+              data-pageNumber="<%=currentPage%>"
+            >
+              ❮
+            </div>
+            <div class="current-page"><%=currentPage%></div>
+            <div 
+              class="right-button <%=currentPage === totalPages ? 'disable' : ''%>" 
+              id="right-button" 
+              data-pageNumber="<%=currentPage%>"
+              data-totalPages ='<%=totalPages%>'
+            >
+              ❯
+            </div>
           </div>
           
         </div>
@@ -304,6 +355,23 @@
             }
           }
 
+          // pagination
+          const leftButton = document.getElementById('left-button');
+          const rightButton = document.getElementById('right-button');
+          leftButton.addEventListener('click',function(event){
+            const pageNumber = Number(event.target.dataset.pagenumber);   
+            if(pageNumber > 1){
+              window.location.href = `/admin/orders?currentPage=${pageNumber - 1}`
+            }
+          })
+          rightButton.addEventListener('click',function(event){
+
+            const pageNumber = Number(event.target.dataset.pagenumber);
+            const totalPages = Number(event.target.dataset.totalpages);
+            if(pageNumber != totalPages){
+              window.location.href = `/admin/orders?currentPage=${pageNumber + 1}`
+            }
+          })
           
         </script>
   </body>

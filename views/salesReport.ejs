@@ -188,6 +188,36 @@
       tr:nth-child(even) {
         background-color: rgb(240, 240, 240);
       }
+
+      /* pagination */
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 50px;
+      }
+      #left-button,
+      #right-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        text-decoration: none;
+        color: black;
+        border: 1px solid rgb(138, 138, 138);
+        width: 35px;
+        height: 35px;
+        box-shadow: 0px 0px 3px rgb(192, 192, 192) inset;
+      }
+      .disable {
+        opacity: 0.6;
+        background-color: rgb(203, 203, 203);
+      }
+      .current-page {
+        margin: 0px 20px;
+        font-size: 17px;
+        font-weight: 500;
+      }
     </style>
 
     <title>Sales Report</title>
@@ -258,13 +288,13 @@
           </div>
           <div class="download-buttons">
             <button
-              onclick="download('<%=JSON.stringify(orders)%>','excel',event)"
+              onclick="download('<%=JSON.stringify(filteredOrders)%>','excel',event)"
               id="excel-button"
             >
               Download Excel
             </button>
             <button
-              onclick="download('<%=JSON.stringify(orders)%>','pdf',event)"
+              onclick="download('<%=JSON.stringify(filteredOrders)%>','pdf',event)"
               id="pdf-button"
             >
               Download PDF
@@ -286,7 +316,8 @@
               <th>Address</th>
               <th>Payment Method</th>
             </tr>
-            <%if(orders.length > 0){%> <%let number = 0%>
+            <%if(orders.length > 0){%> <%let number = currentPage == 1 ? 0 :
+            (currentPage - 1) * contentLimit%>
             <%orders.forEach(function(order){%>
             <%order.orderedProducts.forEach(function(product){%>
             <%if(product.orderStatus != "cancelled"){%> <%number += 1%>
@@ -322,9 +353,50 @@
             <%}%>
           </table>
         </div>
+        <div class="pagination">
+          <a
+            href="/admin/sales-report%>"
+            id="left-button"
+            data-currentPage="<%=currentPage%>"
+            class="<%=currentPage === 1 ? 'disable' : ''%>"
+            >❮</a
+          >
+          <div class="current-page"><%=currentPage%></div>
+          <a
+            href="/admin/sales-report%>"
+            id="right-button"
+            data-currentPage="<%=currentPage%>"
+            data-totalPages="<%=totalPages%>"
+            class="<%=currentPage === totalPages ? 'disable' : ''%>"
+            >❯</a
+          >
+        </div>
       </div>
     </div>
     <script>
+      // pagination
+      const leftButton = document.getElementById("left-button");
+      const rightButton = document.getElementById("right-button");
+      leftButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        const currentPage = Number(event.target.dataset.currentpage);
+        if (currentPage > 1) {
+          window.location.href = `/admin/sales-report?currentPage=${
+            currentPage - 1
+          }`;
+        }
+      });
+      rightButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        const currentPage = Number(event.target.dataset.currentpage);
+        const totalPages = Number(event.target.dataset.totalpages);
+        if (currentPage < totalPages) {
+          window.location.href = `/admin/sales-report?currentPage=${
+            currentPage + 1
+          }`;
+        }
+      });
+
       // sort page
       function sortPage(event) {
         const sortValue = event.target.value;
