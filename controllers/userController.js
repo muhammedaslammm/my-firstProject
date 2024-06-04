@@ -60,7 +60,7 @@ exports.validateEmail = async function(req,res){
 // signup page submission
 exports.signupPage_post = async function(req,res){    
     req.session.userData = req.body;
-    req.session.otp = generateOtp();        
+    req.session.otp = await generateOtp();        
     console.log(req.session.otp);
     sendMessage(req.session.otp,req.body.email);
     res.redirect("/signup-otp");            
@@ -75,7 +75,10 @@ exports.signupOtpPage = function(req,res){
         })
     }
     else{
-        res.redirect("/signup");
+        const email = req.session.userData.email
+        res.render("otpPage",{
+            email
+        })
     }   
 }
 // resend OTP

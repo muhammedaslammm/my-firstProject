@@ -9,11 +9,11 @@ exports.authentication = async function(req,res,next){
             req.session.destroy(function(error){
                 if(error){
                     console.log("No user found! session failed to destroy");
-                    res.redirect("/login")
+                    // res.redirect("/login")
                 }
                 else{
                     console.log("No user Found! session destroyed");
-                    res.redirect("/login")
+                    // res.redirect("/login")
                 }
                 
             })
@@ -23,21 +23,21 @@ exports.authentication = async function(req,res,next){
             req.session.destroy(function(error){
                 if(error){
                     console.log("failed to destroy the session",error);
-                    res.redirect("/login")
+                    // res.redirect("/login")
                 }
                 else{
                     console.log("session destroyed");
-                    res.redirect("/login")
+                    // res.redirect("/login")
                 }
             })
         }
         else{
-            next();
+            // next();
         }
     }
     else{
         console.log("session expired");
-        res.redirect("/login")
+        // res.redirect("/login")
     }
 }
 
