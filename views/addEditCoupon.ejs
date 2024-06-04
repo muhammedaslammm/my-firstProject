@@ -167,7 +167,7 @@
         const form = document.getElementById('couponForm')
 
         // form submission
-        form.addEventListener('submit',function(event){
+        form.addEventListener('submit',async function(event){
             event.preventDefault()
             const startDate = document.querySelector('#start-date');
             const endDate = document.querySelector('#end-date');
@@ -175,6 +175,8 @@
             const amounts = document.querySelectorAll('.amount input[type="number"]')
             const offerAmount = document.querySelector("#offer-amount")
             let fieldValidated = true
+            
+            
             inputs.forEach(function(input){
                 if(input.value === ''){
                     input.parentNode.querySelector('.error').innerText = '*Field Required';
@@ -196,6 +198,23 @@
               offerAmount.parentNode.querySelector(".error").innerText = '*Offer should not exceed 99%';
               fieldValidated = false
             }
+            try{
+              const couponCode = document.getElementById('code');
+              const response = await fetch(`/admin/check-couponCode?code=${couponCode.value}`,{
+                method:'GET'
+              })
+              if(response.ok){
+                const data = await response.json();
+                if(data.result === 'matching'){
+                  couponCode.parentNode.querySelector('.error').innerText = 'Coupon code already taken';
+                  fieldValidated = false
+                }
+              }
+            }
+            catch(error){
+              console.log('error',error);
+            }
+
             if(fieldValidated){
                 form.submit()
             }

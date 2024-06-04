@@ -807,8 +807,6 @@
                 data.newAmount;
               document.querySelector("#orderTotal").value = data.newAmount;
 
-              console.log("coupon amount: ", couponAmount);
-
               // setting deducted amount
               document.querySelector(
                 ".amount-details .coupon-deducted"
@@ -917,7 +915,7 @@
               const data = await response.json();
               document.querySelector(".total-amount .Amount").innerText =
                 data.newAmount;
-              console.log("coupon amount page reload: ", couponAmount);
+
               document.querySelector("#orderTotal").value =
                 localStorage.getItem("orderTotal");
 

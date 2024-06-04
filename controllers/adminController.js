@@ -820,6 +820,7 @@ exports.changeOrderStatus = async function(req,res){
             if(order.couponAdded){
                 const discountPrice = (returnedProduct.totalPrice / order.productTotal) * order.usedCouponID.deductedAmount;
                 amount = Math.round(returnedProduct.totalPrice - discountPrice);
+                console.log('returned product amount :',amount);
             }
             else{
                 amount = returnedProduct.totalPrice;
@@ -1047,6 +1048,24 @@ exports.editCoupon = async function(req,res){
         console.log("error when editing the offer",error);
         console.log("coupon edit failed");
         res.redirect('/admin/coupon')
+    }
+}
+
+// check coupon
+exports.checkCouponCode = async function(req,res){
+    const couponCode = req.query.code;
+    try{
+        const matchingCoupon = await Coupon.findOne({couponCode});
+        if(matchingCoupon){
+            res.status(200).json({result:'matching'})
+        }
+        else{
+            res.status(200).json({result:'not matching'})
+        }
+    }
+    catch(error){
+        console.log('error',error);
+        res.status(500).json({error:'error'})
     }
 }
 

@@ -54,6 +54,10 @@ exports.placeOrder = async function(req,res){
                 totalPrice += cart.productID.productOffer.sellingPrice * cart.quantity;
                 productTotal += totalPrice;
             }
+            else if(carts.length === 1){
+                totalPrice = orderTotal
+                productTotal += totalPrice;
+            }
             else{
                 totalPrice += cart.productID.sellingPrice * cart.quantity;
                 productTotal += totalPrice;
