@@ -42,19 +42,50 @@ exports.cartPage = async function(req,res){
             }
         })
         const totalCart = carts.length; 
-        
-        const totalAmount = carts.reduce(function(currentTotal,cart){
-            if(cart.productID.productOffer){
-                currentTotal += cart.productID.productOffer.sellingPrice * cart.quantity;                
+        let totalAmount = 0;
+        let bagTotal = 0;
+        let totalGST = 0;
+        carts.forEach(function(item){
+            if(item.productID.productOffer){
+                const sellingPrice = item.productID.productOffer.sellingPrice;
+                bagTotal += sellingPrice;
+                if(sellingPrice > 1000){
+                    const gstAmount = Math.round(sellingPrice * (12/100));
+                    totalGST += gstAmount;
+                    totalAmount += item.quantity * (sellingPrice + gstAmount);
+                }
+                else{
+                    const gstAmount = Math.round(sellingPrice * (5/100));
+                    totalGST += gstAmount;
+                    totalAmount += item.quantity * (sellingPrice + gstAmount);
+                }
             }
             else{
-                currentTotal += cart.productID.sellingPrice * cart.quantity
+                const sellingPrice = item.productID.sellingPrice;
+                bagTotal += sellingPrice;
+                if(sellingPrice > 1000){
+                    const gstAmount = Math.round(sellingPrice * (12/100));
+                    totalGST += gstAmount
+                    totalAmount += item.quantity * (sellingPrice + gstAmount)
+                }
+                else{
+                    const gstAmount = Math.round(sellingPrice * (5/100));
+                    totalGST += gstAmount;
+                    totalAmount += item.quantity * (sellingPrice + gstAmount)
+                }
             }
-            return currentTotal
-            
-        },0)       
+        })
 
-        res.render("cartPage",{carts,totalCart:totalCart,totalAmount,userID});
+             
+
+        res.render("cartPage",{
+            carts,
+            totalCart:totalCart,
+            totalAmount,
+            bagTotal,
+            totalGST,
+            userID
+        });
     }
     catch(error){
         console.log("something went wrong",error);
@@ -82,19 +113,51 @@ exports.increaseQuantity = async function(req,res){
                     path:'productOffer'
                 }
             });
-            const totalAmount = carts.reduce(function(currentAmount,cart){
-                if(cart.productID.productOffer){
-                    currentAmount += cart.productID.productOffer.sellingPrice * cart.quantity
+            let totalAmount = 0;
+            let bagTotal = 0
+            let totalGST = 0;
+            carts.forEach(function(item){
+                if(item.productID.productOffer){
+                    const sellingPrice = item.productID.productOffer.sellingPrice;
+                    bagTotal += sellingPrice * item.quantity
+                    if(sellingPrice > 1000){
+                        const sellingPriceQtyAdded = sellingPrice * item.quantity;
+                        const gstAmount = Math.round(sellingPriceQtyAdded * (12/100));
+                        totalGST += gstAmount;
+                        totalAmount += sellingPriceQtyAdded + gstAmount;
+                    }
+                    else{
+                        const sellingPriceQtyAdded = sellingPrice * item.quantity;
+                        const gstAmount = Math.round(sellingPriceQtyAdded * (5/100));
+                        totalGST += gstAmount;
+                        totalAmount += sellingPriceQtyAdded + gstAmount;
+                    }
                 }
                 else{
-                    currentAmount += cart.productID.sellingPrice * cart.quantity
-                }
-                return currentAmount
-            },0)
-            const currentCart = await Cart.findById(cartID)
-            
+                    const sellingPrice = item.productID.sellingPrice;
+                    bagTotal += sellingPrice * item.quantity
+                    if(sellingPrice > 1000){
+                        const sellingPriceQtyAdded = sellingPrice * item.quantity;
+                        const gstAmount = Math.round(sellingPriceQtyAdded * (12/100));
+                        totalGST += gstAmount;
+                        totalAmount += sellingPriceQtyAdded + gstAmount;
+                    }
+                    else{
+                        const sellingPriceQtyAdded = sellingPrice * item.quantity;
+                        const gstAmount = Math.round(sellingPriceQtyAdded * (5/100));
+                        totalGST += gstAmount;
+                        totalAmount += sellingPriceQtyAdded + gstAmount;
+                    }
 
-            res.status(200).json({totalAmount:totalAmount,quantity:currentCart.quantity});
+                }
+            })
+            const currentCart = await Cart.findById(cartID)
+            res.status(200).json({
+                totalAmount:totalAmount,
+                quantity:currentCart.quantity,
+                bagTotal,
+                totalGST
+            });
         }
         else if(cart.productID[cartSize] <= 6 && parseInt(currentQuantity) < cart.productID[cartSize] ){
             console.log(cart.productID[cartSize]);
@@ -187,15 +250,43 @@ exports.checkoutPage = async function(req,res){
         const totalQuantity = userCart.reduce(function(currentTotal,cart){
             return currentTotal += cart.quantity
         },0)
-        const totalAmount = userCart.reduce(function(currentTotal,cart){
-            if(cart.productID.productOffer){
-                currentTotal += cart.productID.productOffer.sellingPrice * cart.quantity;
+        let gstAmount = 0;
+        let totalAmount = 0;
+        let bagTotal = 0;
+        userCart.forEach(function(item){
+            // product with offer
+            if(item.productID.productOffer){
+                const sellingPrice = item.productID.productOffer.sellingPrice;
+                bagTotal += sellingPrice * item.quantity;
+                if(sellingPrice > 1000){
+                    let gst = Math.round(sellingPrice * (12/100));
+                    gstAmount += gst;
+                    totalAmount += (sellingPrice + gst) * item.quantity;
+                }
+                else{
+                    let gst = Math.round(sellingPrice * (5/100));
+                    gstAmount += gst;
+                    totalAmount += (sellingPrice + gst) * item.quantity;
+                }
             }
-            else{   
-                currentTotal += cart.productID.sellingPrice * cart.quantity
+            // product without offer
+            else{
+                const sellingPrice = item.productID.sellingPrice;
+                bagTotal += sellingPrice * item.quantity;
+                if(sellingPrice > 1000){
+                    let gst = Math.round(sellingPrice * (12/100));
+                    gstAmount += gst;
+                    totalAmount += (sellingPrice + gst) * item.quantity;
+                }
+                else{
+                    let gst = Math.round(sellingPrice * (5/100));
+                    gstAmount += gst;
+                    totalAmount += (sellingPrice + gst) * item.quantity;
+                }
             }
-            return currentTotal
-        },0)
+        })
+
+    
 
         // user address
         const defaultAddress = await Address.findOne({userID,default:true})
@@ -222,7 +313,18 @@ exports.checkoutPage = async function(req,res){
         })    
         console.log("total amount",totalAmount);
         console.log("available coupons: ",productCoupons);       
-        res.render("checkoutPage",{userCart,totalQuantity,totalAmount,addresses,defaultAddress,userID,coupons:productCoupons,walletTotal})
+        res.render("checkoutPage",{
+            userCart,
+            totalQuantity,
+            totalAmount,
+            bagTotal,
+            addresses,
+            defaultAddress,
+            userID,
+            coupons:productCoupons,
+            walletTotal,
+            gstAmount
+        })
     }
     catch(error){
         console.log("error occured when rendering checkout page",error);

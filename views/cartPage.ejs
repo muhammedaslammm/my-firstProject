@@ -94,16 +94,34 @@
         align-items: flex-end;
       }
       .price .selling {
+        font-size: 15px;
+        color: rgb(122, 122, 122);
+        margin-right: 10px;
+      }
+      .selling-price {
         font-size: 19px;
         font-weight: 500;
+        color: black;
       }
+      .gst-amount {
+        margin-right: 5px;
+      }
+      .gst-note {
+        font-style: italic;
+        color: rgb(185, 137, 6);
+      }
+
       .price .actual {
         font-size: 15px;
         color: rgb(118, 117, 117);
         margin-left: 10px;
+        text-decoration: line-through;
+        text-decoration-thickness: 1.1px;
+        text-decoration-color: rgb(149, 19, 19);
       }
       .color {
-        font-size: 15px;
+        font-size: 16px;
+        font-weight: 500;
         color: rgb(118, 117, 117);
         margin-top: 2px;
       }
@@ -227,6 +245,9 @@
         justify-content: space-between;
         font-size: 15px;
       }
+      .gst {
+        color: rgb(13, 92, 13);
+      }
       .amount-details .detail-label {
         color: rgb(90, 90, 90);
       }
@@ -288,9 +309,17 @@
             </div>
             <div class="price">
               <div class="selling">
-                Rs. <%=cart.productID.productOffer ?
+                <%const sellingPrice = cart.productID.productOffer ?
                 cart.productID.productOffer.sellingPrice :
-                cart.productID.sellingPrice%>
+                cart.productID.sellingPrice %>
+                <span class="selling-price">Rs. <%=sellingPrice%></span> +
+                <span class="gst-amount"
+                  >Rs. <%=sellingPrice > 1000 ? Math.round(sellingPrice *
+                  (12/100)) : Math.round(sellingPrice * (5/100))%></span
+                >
+                <span class="gst-note"
+                  >(<%=sellingPrice > 1000 ? `${12}% GST` : `${5}% GST`%>)</span
+                >
               </div>
               <div class="actual">Rs. <%=cart.productID.actualPrice%></div>
             </div>
@@ -368,14 +397,15 @@
           </div>
           <div class="amount-details">
             <div class="bag-label">Bag Total</div>
-            <div class="bag-total"><%=totalAmount%></div>
+            <div class="bag-total">&#8377;<%=bagTotal%></div>
+          </div>
+          <hr />
+          <div class="amount-details">
+            <div class="gst-label">GST</div>
+            <div class="total gst">&#8377;<%=totalGST%></div>
           </div>
           <div class="amount-details">
             <div class="delivery-label">Delivery Charge</div>
-            <div class="total">-</div>
-          </div>
-          <div class="amount-details">
-            <div class="gst-label">GST</div>
             <div class="total">-</div>
           </div>
         </div>
@@ -469,10 +499,15 @@
                 "#cart-quantity"
               ).innerText = cart.quantity);
 
-              document.querySelector(".total-amount .Amount").innerText =
-                cart.totalAmount;
-              document.querySelector(".amount-details .bag-total").innerText =
-                cart.totalAmount;
+              document.querySelector(
+                ".total-amount .Amount"
+              ).innerText = `${cart.totalAmount}`;
+              document.querySelector(
+                ".amount-details .bag-total"
+              ).innerText = `₹${cart.bagTotal}`;
+              document.querySelector(
+                ".amount-details .gst"
+              ).innerText = `₹${cart.totalGST}`;
             }
           }
         } catch (error) {
