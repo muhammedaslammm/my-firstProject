@@ -48,35 +48,37 @@ exports.cartPage = async function(req,res){
         carts.forEach(function(item){
             if(item.productID.productOffer){
                 const sellingPrice = item.productID.productOffer.sellingPrice;
-                bagTotal += sellingPrice;
+                bagTotal += sellingPrice * item.quantity;
                 if(sellingPrice > 1000){
-                    const gstAmount = Math.round(sellingPrice * (12/100));
+                    const itemSellingPrice = sellingPrice * item.quantity
+                    const gstAmount = Math.round(itemSellingPrice * (12/100));
                     totalGST += gstAmount;
-                    totalAmount += item.quantity * (sellingPrice + gstAmount);
+                    totalAmount += itemSellingPrice + gstAmount;
                 }
                 else{
-                    const gstAmount = Math.round(sellingPrice * (5/100));
+                    const itemSellingPrice = sellingPrice * item.quantity
+                    const gstAmount = Math.round(itemSellingPrice * (5/100));
                     totalGST += gstAmount;
-                    totalAmount += item.quantity * (sellingPrice + gstAmount);
+                    totalAmount += itemSellingPrice + gstAmount;
                 }
             }
             else{
                 const sellingPrice = item.productID.sellingPrice;
-                bagTotal += sellingPrice;
+                bagTotal += sellingPrice * item.quantity;;
                 if(sellingPrice > 1000){
-                    const gstAmount = Math.round(sellingPrice * (12/100));
+                    const itemSellingPrice = sellingPrice * item.quantity
+                    const gstAmount = Math.round(itemSellingPrice * (12/100));
                     totalGST += gstAmount
-                    totalAmount += item.quantity * (sellingPrice + gstAmount)
+                    totalAmount += itemSellingPrice + gstAmount
                 }
                 else{
-                    const gstAmount = Math.round(sellingPrice * (5/100));
+                    const itemSellingPrice = sellingPrice * item.quantity
+                    const gstAmount = Math.round(itemSellingPrice * (5/100));
                     totalGST += gstAmount;
-                    totalAmount += item.quantity * (sellingPrice + gstAmount)
+                    totalAmount += itemSellingPrice + gstAmount
                 }
             }
         })
-
-             
 
         res.render("cartPage",{
             carts,
@@ -106,51 +108,8 @@ exports.increaseQuantity = async function(req,res){
         else if(cart.productID[cartSize] > 6 &&  parseInt(currentQuantity) < 6){
             console.log(cart.productID[cartSize]);
             const qtyUpdate = await Cart.updateOne({_id:cartID},{$inc:{quantity:1}})
-            const carts = await Cart.find({userID})
-            .populate({
-                path:'productID',
-                populate:{
-                    path:'productOffer'
-                }
-            });
-            let totalAmount = 0;
-            let bagTotal = 0
-            let totalGST = 0;
-            carts.forEach(function(item){
-                if(item.productID.productOffer){
-                    const sellingPrice = item.productID.productOffer.sellingPrice;
-                    bagTotal += sellingPrice * item.quantity
-                    if(sellingPrice > 1000){
-                        const sellingPriceQtyAdded = sellingPrice * item.quantity;
-                        const gstAmount = Math.round(sellingPriceQtyAdded * (12/100));
-                        totalGST += gstAmount;
-                        totalAmount += sellingPriceQtyAdded + gstAmount;
-                    }
-                    else{
-                        const sellingPriceQtyAdded = sellingPrice * item.quantity;
-                        const gstAmount = Math.round(sellingPriceQtyAdded * (5/100));
-                        totalGST += gstAmount;
-                        totalAmount += sellingPriceQtyAdded + gstAmount;
-                    }
-                }
-                else{
-                    const sellingPrice = item.productID.sellingPrice;
-                    bagTotal += sellingPrice * item.quantity
-                    if(sellingPrice > 1000){
-                        const sellingPriceQtyAdded = sellingPrice * item.quantity;
-                        const gstAmount = Math.round(sellingPriceQtyAdded * (12/100));
-                        totalGST += gstAmount;
-                        totalAmount += sellingPriceQtyAdded + gstAmount;
-                    }
-                    else{
-                        const sellingPriceQtyAdded = sellingPrice * item.quantity;
-                        const gstAmount = Math.round(sellingPriceQtyAdded * (5/100));
-                        totalGST += gstAmount;
-                        totalAmount += sellingPriceQtyAdded + gstAmount;
-                    }
+            const [totalAmount,bagTotal,totalGST] = await addCalculateRate(userID);           
 
-                }
-            })
             const currentCart = await Cart.findById(cartID)
             res.status(200).json({
                 totalAmount:totalAmount,
@@ -162,14 +121,15 @@ exports.increaseQuantity = async function(req,res){
         else if(cart.productID[cartSize] <= 6 && parseInt(currentQuantity) < cart.productID[cartSize] ){
             console.log(cart.productID[cartSize]);
             const qtyUpdate = await Cart.updateOne({_id:cartID},{$inc:{quantity:1}})
-            const carts = await Cart.find({userID}).populate('productID');
-            const totalAmount = carts.reduce(function(currentAmount,cart){
-                return currentAmount+= cart.productID.sellingPrice * cart.quantity
-            },0)
-            const currentCart = await Cart.findById(cartID)
-            
+            const [totalAmount, totalGST, bagTotal] = await addCalculateRate()
+            const currentCart = await Cart.findById(cartID)            
 
-            res.status(200).json({totalAmount:totalAmount,quantity:currentCart.quantity});
+            res.status(200).json({
+                totalAmount:totalAmount,
+                quantity:currentCart.quantity,
+                totalGST,
+                bagTotal
+            });
         }
         else{            
             res.status(200).json({limitError:"quantity count exceeded the limit"})
@@ -181,18 +141,67 @@ exports.increaseQuantity = async function(req,res){
         res.status(500).json({error:'failed to update the quantity'})
     }
 }
+// function to calculate the amount rates
+async function addCalculateRate(userID){
+    const carts = await Cart.find({userID})
+            .populate({
+                path:'productID',
+                populate:{
+                    path:'productOffer'
+                }
+            }); 
+    let totalAmount = 0;
+    let bagTotal = 0
+    let totalGST = 0;
+    carts.forEach(function(item){
+        if(item.productID.productOffer){
+            const sellingPrice = item.productID.productOffer.sellingPrice;
+            bagTotal += sellingPrice * item.quantity
+            if(sellingPrice > 1000){
+                const sellingPriceQtyAdded = sellingPrice * item.quantity;
+                const gstAmount = Math.round(sellingPriceQtyAdded * (12/100));
+                totalGST += gstAmount;
+                totalAmount += sellingPriceQtyAdded + gstAmount;
+            }
+            else{
+                const sellingPriceQtyAdded = sellingPrice * item.quantity;
+                const gstAmount = Math.round(sellingPriceQtyAdded * (5/100));
+                totalGST += gstAmount;
+                totalAmount += sellingPriceQtyAdded + gstAmount;
+            }
+        }
+        else{
+            const sellingPrice = item.productID.sellingPrice;
+            bagTotal += sellingPrice * item.quantity
+            if(sellingPrice > 1000){
+                const sellingPriceQtyAdded = sellingPrice * item.quantity;
+                const gstAmount = Math.round(sellingPriceQtyAdded * (12/100));
+                totalGST += gstAmount;
+                totalAmount += sellingPriceQtyAdded + gstAmount;
+            }
+            else{
+                const sellingPriceQtyAdded = sellingPrice * item.quantity;
+                const gstAmount = Math.round(sellingPriceQtyAdded * (5/100));
+                totalGST += gstAmount;
+                totalAmount += sellingPriceQtyAdded + gstAmount;
+            }
+
+        }
+    }) 
+    return [totalAmount,bagTotal,totalGST];
+}
 
 // decrease quantity
 exports.decreaseQuantity = async function(req,res){
     try{
-        const {cartID,currentQuantity,currentTotalPrice} = req.body;
+        const {cartID,currentQuantity,currentTotalPrice,currentBagTotal} = req.body;
         const userID = req.session.userID
         if(parseInt(currentQuantity) === 1){
             res.status(200).json({limitError:"cant place order with no quantity"})
         }
         else{
-            const updatedCart = await Cart.findByIdAndUpdate(cartID,{$inc:{quantity:-1}}); 
-            const currentCart = await Cart.findById(cartID)            
+            const updatedCart = await Cart.findByIdAndUpdate(cartID,{$inc:{quantity:-1}});
+            const cartItems = await Cart.find({userID})
             .populate({
                 path:'productID',
                 populate:{
@@ -200,13 +209,50 @@ exports.decreaseQuantity = async function(req,res){
                 }
             })
             let totalAmount = 0
-            if(currentCart.productID.productOffer){
-                totalAmount = currentTotalPrice - currentCart.productID.productOffer.sellingPrice;
-            }
-            else{
-                totalAmount = currentTotalPrice - currentCart.productID.sellingPrice;
-            }            
-            res.json({totalAmount,quantity:currentCart.quantity})
+            let bagTotal = 0;
+            let totalGST = 0;
+            cartItems.forEach(function(item){
+                if(item.productID.productOffer){
+                    const sellingPrice = item.productID.productOffer.sellingPrice;
+                    bagTotal += sellingPrice * item.quantity;
+                    if(sellingPrice > 1000){
+                        const itemSellingPrice = sellingPrice * item.quantity;
+                        const gstAmount = Math.round(itemSellingPrice * (12/100));
+                        totalGST += gstAmount;
+                        totalAmount += itemSellingPrice + gstAmount;
+                    }
+                    else{
+                        const itemSellingPrice = sellingPrice * item.quantity;
+                        const gstAmount = Math.round(itemSellingPrice * (5/100));
+                        totalGST += gstAmount;
+                        totalAmount += itemSellingPrice + gstAmount;
+                    }
+                }
+                else{
+                    const sellingPrice = item.productID.sellingPrice;
+                    bagTotal += sellingPrice * item.quantity;
+                    if(sellingPrice > 1000){
+                        const itemSellingPrice = sellingPrice * item.quantity;
+                        const gstAmount = Math.round(itemSellingPrice * (12/100));
+                        totalGST += gstAmount;
+                        totalAmount += itemSellingPrice + gstAmount;
+                    }
+                    else{
+                        const itemSellingPrice = sellingPrice * item.quantity;
+                        const gstAmount = Math.round(itemSellingPrice * (5/100));
+                        totalGST += gstAmount;
+                        totalAmount += itemSellingPrice + gstAmount;
+                    }
+                }
+            })  
+            
+            const currentCart = await Cart.findById(cartID)                        
+            res.json({
+                totalAmount,
+                bagTotal,
+                totalGST,
+                quantity:currentCart.quantity
+            })
         }
     }
     catch(error){

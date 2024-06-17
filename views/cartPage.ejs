@@ -393,11 +393,13 @@
       <div class="cart-rightSection">
         <div class="amount-summary-box">
           <div class="total-amount">
-            Total: <span>Rs.</span> <span class="Amount"><%=totalAmount%></span>
+            Total: <span>₹</span><span class="Amount"><%=totalAmount%></span>
           </div>
           <div class="amount-details">
             <div class="bag-label">Bag Total</div>
-            <div class="bag-total">&#8377;<%=bagTotal%></div>
+            <div class="bag-total">
+              &#8377;<span id="bag-total-amount"><%=bagTotal%></span>
+            </div>
           </div>
           <hr />
           <div class="amount-details">
@@ -464,8 +466,9 @@
             localStorage.removeItem("selectedSize");
             document.querySelector(".total-amount .Amount").innerText =
               data.newCartTotal;
-            document.querySelector(".amount-details .bag-total").innerText =
-              data.newCartTotal;
+            document.querySelector(
+              ".amount-details .bag-total #bag-total-amount"
+            ).innerText = data.newCartTotal;
             console.log("cart removed");
             window.location.reload();
           }
@@ -503,8 +506,8 @@
                 ".total-amount .Amount"
               ).innerText = `${cart.totalAmount}`;
               document.querySelector(
-                ".amount-details .bag-total"
-              ).innerText = `₹${cart.bagTotal}`;
+                ".amount-details .bag-total #bag-total-amount"
+              ).innerText = `${cart.bagTotal}`;
               document.querySelector(
                 ".amount-details .gst"
               ).innerText = `₹${cart.totalGST}`;
@@ -534,6 +537,8 @@
           const currentTotalPrice = parseInt(
             document.querySelector(".total-amount .Amount").innerText
           );
+          const currentBagTotal =
+            document.getElementById("bag-total-amount").innerText;
           const updatedData = await fetch("/decrease-product-quantity", {
             method: "POST",
             headers: {
@@ -543,6 +548,7 @@
               cartID,
               currentQuantity,
               currentTotalPrice,
+              currentBagTotal,
             }),
           });
 
@@ -560,8 +566,12 @@
 
               document.querySelector(".total-amount .Amount").innerText =
                 data.totalAmount;
-              document.querySelector(".amount-details .bag-total").innerText =
-                data.totalAmount;
+              document.querySelector(
+                ".amount-details .bag-total #bag-total-amount"
+              ).innerText = data.bagTotal;
+              document.querySelector(
+                ".amount-details .gst"
+              ).innerText = `₹${data.totalGST}`;
             }
           }
         } catch (error) {
