@@ -12,7 +12,7 @@ const easyinvoice = require('easyinvoice');
 
 
 // placing order 'cash on delivery'
-exports.placeOrder = async function(req,res){
+exports.placeOrder = async function(req,res,next){
     try{
         const {address,cartID,payment,orderTotal,usedCouponID,failure} = req.body;        
         const userID = req.session.userID;
@@ -150,12 +150,12 @@ exports.placeOrder = async function(req,res){
        
     }
     catch(error){
-        console.log("some error occured",error);
+        next(error)
     }
 }
 
 // continue payment
-exports.continuePayment = async function(req,res){
+exports.continuePayment = async function(req,res,next){
     const {orderID,status} = req.body;
     try{
         if(status === 'success'){
@@ -184,12 +184,12 @@ exports.continuePayment = async function(req,res){
         res.redirect(`/order-response-page?order_id=${orderID}`);
     }
     catch(error){
-        console.log('error',error);
+        next(error)
     }
 }
 
 // order response page
-exports.orderResponsePage = async function(req,res){
+exports.orderResponsePage = async function(req,res,next){
     try{
         const userID = req.session.userID
         const orderID = req.query.order_id;
@@ -209,14 +209,12 @@ exports.orderResponsePage = async function(req,res){
         res.render("orderResponsePage",{userID,order,similarProducts})       
     }
     catch(error){
-        console.log("error in order response page",error);
+        next(error)
     }
 }
 
-
-
 // order page
-exports.orderPage = async function(req,res){
+exports.orderPage = async function(req,res,next){
     try{
         const userID = req.session.userID
         const orders = await Order.find({userID}).populate('orderedProducts.productID').sort({orderedDate:-1});
@@ -225,7 +223,7 @@ exports.orderPage = async function(req,res){
         res.render("orderPage",{orders,statuses,userID});        
     }
     catch(error){
-        console.log("somm error in order page",error);
+        next(error)
     }
 }
 
@@ -382,25 +380,30 @@ exports.cancelOrder = async function(req,res){
 }
 
 // get order return page
-exports.getOrderReturnPage = function(req,res){
-    const {orderID,docID} = req.params;
-    const reasons = [
-        'Wrong Item Shipped',
-        'Item Damaged During Shipping',
-        'Defective Item',
-        'Item Not as Described',
-        'Ordered by Mistake',
-        'Fit/Size Issue',
-        'Missing Parts or Accessories',
-        'Changed Mind',
-        'Others'
-    ]
-    res.render('returnOrder',{userID:req.session.userID,orderID,docID,reasons})
-
+exports.getOrderReturnPage = function(req,res,next){
+    try{
+        const {orderID,docID} = req.params;
+        const reasons = [
+            'Wrong Item Shipped',
+            'Item Damaged During Shipping',
+            'Defective Item',
+            'Item Not as Described',
+            'Ordered by Mistake',
+            'Fit/Size Issue',
+            'Missing Parts or Accessories',
+            'Changed Mind',
+            'Others'
+        ]
+        res.render('returnOrder',{userID:req.session.userID,orderID,docID,reasons})
+    }
+    catch(error){
+        next(error)
+    }
+    
 }
 
 // submiting for the product returning
-exports.submitOrderReturn = async function(req,res){
+exports.submitOrderReturn = async function(req,res,next){
     const reason = req.body.reason;
     const {orderID,docID} = req.params;
     try{
@@ -419,6 +422,6 @@ exports.submitOrderReturn = async function(req,res){
         res.redirect(`/view/${orderID}/${docID}`)
     }
     catch(error){
-        console.log("error",error);
+        next(error)
     }
 }

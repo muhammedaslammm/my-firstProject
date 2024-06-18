@@ -35,31 +35,37 @@ exports.adminLoginPage = function(req,res){
 
 
 // admin login submission
-exports.adminLoginPage_post = function(req,res){
-    const {username,password} = req.body;
-    const errors = {}
-    for(let key in req.body){
-        if(validator.isEmpty(req.body[key])){
-            errors[key] = "Field Required"
+exports.adminLoginPage_post = function(req,res,next){
+    try{
+        const {username,password} = req.body;
+        const errors = {}
+        for(let key in req.body){
+            if(validator.isEmpty(req.body[key])){
+                errors[key] = "Field Required"
+            }
         }
-    }
-    if(Object.keys(errors).length > 0){
-        res.render("adminLoginPage",{errors,userData:req.body})
-    }
-    else{
-        const admin = {
-            username:"admin",
-            password:"1234"
-        }
-        if(username === admin.username && password === admin.password){
-            req.session.adminID = "a2d5m8i7n"
-            res.redirect("/admin/adminHome");
+        if(Object.keys(errors).length > 0){
+            res.render("adminLoginPage",{errors,userData:req.body})
         }
         else{
-            errors.login = "invalid username or password"
-            res.render("adminLoginPage",{errors,userData:req.body});
+            const admin = {
+                username:"admin",
+                password:"1234"
+            }
+            if(username === admin.username && password === admin.password){
+                req.session.adminID = "a2d5m8i7n"
+                res.redirect("/admin/adminHome");
+            }
+            else{
+                errors.login = "invalid username or password"
+                res.render("adminLoginPage",{errors,userData:req.body});
+            }
         }
     }
+    catch(error){
+        next(error)
+    }
+    
 }
 
 // admin dahsboard
@@ -220,54 +226,54 @@ exports.getSalesData = async function(req,res){
 
 
 // admin user management page
-exports.userManagement = async function(req,res){
+exports.userManagement = async function(req,res,next){
     try{
         const users = await User.find();
         res.render("adminUser",{users});
     }
     catch(error){
-        console.log("server error");        
+        next(error)        
     }
 }
 
 // blocking and unblocking user
-exports.blockUser = async function(req,res){
+exports.blockUser = async function(req,res,next){
     const userID = req.params.id;
     try{
         const update = await User.updateOne({_id:userID},{$set:{isBlocked:true}});
         res.json({status:"Blocked",button:"Unblock"})
     }
     catch(error){
-        console.log(error,'error when updating user');
+        next(error)
     }
 }
 
-exports.unblockUser = async function(req,res){
+exports.unblockUser = async function(req,res,next){
     try{
         const userID = req.params.id;
         const update = await User.findByIdAndUpdate(userID,{isBlocked:false});
         res.json({status:"Active",button:"Block"})
     }
     catch(error){
-        console.log(error,"error when updating user");
+        next(error)
     }
 }
 
 
 // admin product category page
-exports.adminCategoryPage = async function(req,res){
+exports.adminCategoryPage = async function(req,res,next){
     try{
         const categories = await Category.find({deletedAt:null});
         res.render("adminCategory",{categories});
     }
     catch(error){
-        console.log("server error");
+        next(error)
     }
     
 }
 
 // add new category
-exports.addNewCategory = async function(req,res){
+exports.addNewCategory = async function(req,res,next){
     const categoryData = req.body;
     const errors = {}
 
@@ -304,22 +310,19 @@ exports.addNewCategory = async function(req,res){
         
     }
     catch(error){
-        console.log("server error",error);
+        next(error)
     }
 }
 
-// giving offer to category
-
-
 // edit category page
-exports.editCategory = async function(req,res){
+exports.editCategory = async function(req,res,next){
     const categoryID = req.params.id;
     try{
         const currentCategory = await Category.findById(categoryID);
         res.render("updateCategory",{currentCategory});
     }
     catch(error){
-        console.log("server error");
+        next(error)
     }
 }
 
@@ -354,7 +357,7 @@ exports.updateCategory_post = async function(req,res){
 } 
 
 // delete category
-exports.deleteCategory = async function(req,res){
+exports.deleteCategory = async function(req,res,next){
     const categoryID = req.params.id;
     try{
         await Category.findByIdAndUpdate(categoryID,{deletedAt:new Date});
@@ -362,12 +365,12 @@ exports.deleteCategory = async function(req,res){
         res.redirect("/admin/category");
     }
     catch(error){
-        console.log("server error",error);
+        next(error)
     }
 }
 
 // admin product page
-exports.adminProductPage = async function(req,res){
+exports.adminProductPage = async function(req,res,next){
 
     const productPerPage = 5;
     const page = parseInt(req.query.page) || 1
@@ -385,19 +388,19 @@ exports.adminProductPage = async function(req,res){
         res.render("adminProductPage",{products,currentPage,totalPages})
     }
     catch(error){
-        console.log("server error",error);
+        next(error)
     }
 }
 
 // add new product page
-exports.addNewProduct_page = async function(req,res){
+exports.addNewProduct_page = async function(req,res,next){
     try{
         const categories = await Category.find({deletedAt:null});
         console.log(categories);
         res.render("addNewProduct",{categories})
     }
     catch(error){
-        console.log("server error",error);
+        next(error)
     }
 }
 
@@ -431,7 +434,6 @@ exports.cropImage = async function(req,res){
     catch(error){
         console.log("error when cropping",error);
         res.status(404).send('Error when cropping img')
-
     }
 }
 
@@ -584,14 +586,14 @@ exports.updateProduct = async function(req,res){
 }
 
 // product offer page
-exports.productOfferPage = async function(req,res){
+exports.productOfferPage = async function(req,res,next){
     const productID = req.query.productID;
     try{
         const product = await Product.findById(productID);
         res.render('productOffer',{productID,product})
     }
     catch(error){
-        console.log("error when rendering the product offer page",error);
+        next(error)
     }
     
 }
@@ -680,7 +682,7 @@ exports.deleteProductOffer = async function(req,res){
 }
 
 // admin order page
-exports.orderPage = async function(req,res){
+exports.orderPage = async function(req,res,next){
     const userID = req.session.userID; 
     const currentPage = parseInt(req.query.currentPage) || 1;
     const pageLimit = 6;
@@ -698,7 +700,7 @@ exports.orderPage = async function(req,res){
         res.render("adminOrderPage",{orders,currentPage,totalPages});
     }
     catch(error){
-        console.log(error,"error when loading orderpage in admin side");
+        next(error)
     }
 }
 
@@ -870,13 +872,13 @@ exports.changeOrderStatus = async function(req,res){
 }
 
 // bannerpage
-exports.bannerPage = async function(req,res){
+exports.bannerPage = async function(req,res,next){
     try{
         const banners = await Banner.find({deletedAt:null});
         res.render("adminBanner",{banners})
     }
     catch(error){
-        console.log("error when loading banner page",error);
+        next(error)
     }
 }
 
@@ -886,7 +888,7 @@ exports.uploadBannerPage = function(req,res){
 }
 
 //upload banner
-exports.uploadBanner = async function(req,res){
+exports.uploadBanner = async function(req,res,next){
     try{
         console.log(req.file);
         if(req.file === undefined){
@@ -901,12 +903,12 @@ exports.uploadBanner = async function(req,res){
         res.redirect("/admin/adminBanner")
     }
     catch(error){
-        console.log("error when uploading banner to the db",error);
+        next(error)
     }
 }
 
 // delete banner
-exports.deleteBanner = async function(req,res){
+exports.deleteBanner = async function(req,res,next){
     try{
         const bannerID = req.params.id;
         const softDelete = await Banner.updateOne({_id:bannerID},{$set:{deletedAt:new Date}});
@@ -915,25 +917,25 @@ exports.deleteBanner = async function(req,res){
         res.json({message:"deleted",banners});
     }
     catch(error){
-        console.log(error,"error when deleting banner");
+        next(error)
     }
 }
 
 
 // page to edit banner
-exports.editBannerPage = async function(req,res){
+exports.editBannerPage = async function(req,res,next){
     try{
         const bannerID = req.params.id;
         const banner = await Banner.findById(bannerID)
         res.render("editBanner",{banner})
     }
     catch(error){
-        console.log(error,"error when editing the banner");
+        next(error)
     }
 }
 
 // edit banner post
-exports.editBanner = async function(req,res){
+exports.editBanner = async function(req,res,next){
     try{
         const bannerID = req.params.id;  
         console.log(req.file);      
@@ -959,31 +961,30 @@ exports.editBanner = async function(req,res){
         }        
     }
     catch(error){
-        console.log("error when updating banner",error);
+        next(error)
     }
 }
 
 // admin coupon page
-exports.adminCouponPage = async function(req,res){
+exports.adminCouponPage = async function(req,res,next){
     try{
         const coupons = await Coupon.find();
         res.render("adminCoupon",{coupons})
     }
     catch(error){
-        console.log("error when rendering coupon page");        
+        next(error)       
     }
 }
 
 // admin add coupon page
-exports.addCouponPage = async function(req,res){
+exports.addCouponPage = async function(req,res,next){
     try{
         const coupon = ''
         res.render('addEditCoupon',{coupon})
     }
     catch(error){
-        console.log("error when rendering add coupon page",error);
-    }
-    
+        next(error)
+    }    
 } 
 
 // add the coupon
@@ -1084,19 +1085,18 @@ exports.deleteCoupon = async function(req,res){
 
 
 // referral page
-exports.referralReward = async function(req,res){
+exports.referralReward = async function(req,res,next){
     try{
         const rewards = await referralReward.findOne();
         res.render("adminReward",{rewards});
-
     }
     catch(error){
-        console.log("error",error);
+        next(error)
     }
 }
 
 // add - edit referral reward page
-exports.referralRewardPage = async function(req,res){
+exports.referralRewardPage = async function(req,res,next){
     const action = req.params.action;
     try{
         if(action === "add"){
@@ -1104,7 +1104,7 @@ exports.referralRewardPage = async function(req,res){
             res.render("addEditReferral",{title:'Add',reward});
         }
     }catch(error){
-        console.log("error",error);
+        next(error)
     }
 }
 
@@ -1129,7 +1129,7 @@ exports.addEditReward = async function(req,res){
 }
 
 // admin sales report page
-exports.salesReportPage = async function(req,res){
+exports.salesReportPage = async function(req,res,next){
     try{
         const sortValue = req.query.sort;
         const filter = {};
@@ -1259,7 +1259,7 @@ exports.salesReportPage = async function(req,res){
         });
     }
     catch(error){
-        console.log("failed to log",error);
+        next(error)
     }
 }
 

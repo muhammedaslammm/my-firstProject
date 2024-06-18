@@ -13,7 +13,7 @@ const Wallet = require("./../models/walletModel");
 app.use(nocache())
 
 // adding product to cart
-exports.addtoCart = async function(req,res){
+exports.addtoCart = async function(req,res,next){
     const userID = req.session.userID;
     const {productID,quantity,size} = req.query
     try{
@@ -25,13 +25,13 @@ exports.addtoCart = async function(req,res){
         res.redirect("/cart-page");
     }
     catch(error){
-        console.log("some error occured",error);
+        next(error)
     }
 }
 
 
 // cart page
-exports.cartPage = async function(req,res){
+exports.cartPage = async function(req,res,next){
     const userID = req.session.userID;
     try{
         const carts = await Cart.find({userID})
@@ -90,7 +90,7 @@ exports.cartPage = async function(req,res){
         });
     }
     catch(error){
-        console.log("something went wrong",error);
+        next(error)
     }
 }
 
@@ -276,14 +276,12 @@ exports.removeFromCart = async function(req,res){
     catch(error){
         console.log("error in deleting cart product",error);
         res.status(500).json({error:'failed to remove cart Itme'})
-
-    }
-    
+    }    
 }
 
 
 // checkout- page
-exports.checkoutPage = async function(req,res){
+exports.checkoutPage = async function(req,res,next){
     const userID = req.session.userID
     try{
         const userCart = await Cart.find({userID})
@@ -373,23 +371,23 @@ exports.checkoutPage = async function(req,res){
         })
     }
     catch(error){
-        console.log("error occured when rendering checkout page",error);
+        next(error)
     }
 }
 
 // checkoutpage add address
-exports.checkoutAddressPage = async function(req,res){
+exports.checkoutAddressPage = async function(req,res,next){
     try{
         const userID = req.session.userID;
         res.render("checkoutAddress",{userID})
     }
     catch(error){
-        console.log(error,"error to render address page to add address");
+        next(error)
     }
 }
 
 // checkout address adding to db
-exports.checkoutAddressPost = async function(req,res){
+exports.checkoutAddressPost = async function(req,res,next){
     try{
         const userID = req.session.userID
         const address = req.body;
@@ -399,7 +397,7 @@ exports.checkoutAddressPost = async function(req,res){
         res.redirect("/checkout-page")
     }
     catch(error){
-        console.log(error,"error when adding address to database");
+        next(error)
     }
 }
 
@@ -488,7 +486,7 @@ exports.getCouponDetails = async function(req,res){
 }
 
 // cancel the product coupon
-exports.cancelCoupon = async function(req,res){
+exports.cancelCoupon = async function(req,res,next){
     const usedCouponID = req.body.usedCouponID;
     try{
         await UsedCoupon.findByIdAndDelete(usedCouponID);
@@ -496,6 +494,6 @@ exports.cancelCoupon = async function(req,res){
         res.status(200).json({success:"coupon deleted"})
     }
     catch(error){
-        console.log("error when cancelling coupon",error);
+        next(error)
     }
 }
