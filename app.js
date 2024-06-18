@@ -46,5 +46,11 @@ function pageNotFound(req,res,next){
 }
 app.use(pageNotFound)
 
+// handling controller errors
+app.use(function(error,req,res,next){
+    const userID = req.session ? req.session.userID : null;
+    console.log('some error occured',error);
+    res.status(500).render('errorPage',{userID})
+})
 
 module.exports = app

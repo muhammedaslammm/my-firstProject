@@ -12,13 +12,19 @@ const bcrypt = require("bcrypt");
 const {generateOtp,sendMessage} = require("../operations/otp")
 
 // user signup page
-exports.signupPage = function(req,res){
-    if(req.session.userID){
-        res.redirect("/");
+exports.signupPage = function(req,res,next){
+    try{
+        if(req.session.userID){
+            res.redirect("/");
+        }
+        else{
+            res.render("signupPage")
+        } 
     }
-    else{
-        res.render("signupPage")
-    }    
+    catch(error){
+        next(error)
+    }
+       
 }
 
 // finding matching referral
@@ -58,28 +64,39 @@ exports.validateEmail = async function(req,res){
 } 
 
 // signup page submission
-exports.signupPage_post = async function(req,res){    
-    req.session.userData = req.body;
-    req.session.otp = await generateOtp();        
-    console.log(req.session.otp);
-    sendMessage(req.session.otp,req.body.email);
-    res.redirect("/signup-otp");            
+exports.signupPage_post = async function(req,res,next){   
+    try{
+        req.session.userData = req.body;
+        req.session.otp = await generateOtp();        
+        console.log(req.session.otp);
+        sendMessage(req.session.otp,req.body.email);
+        res.redirect("/signup-otp");
+    }
+    catch(error){
+        next(error)
+    }                 
 }
 
 // OTP page after signup
-exports.signupOtpPage = function(req,res){
-    if(req.session.otp){
-        const email = req.session.userData.email
-        res.render("otpPage",{
-            email
-        })
+exports.signupOtpPage = function(req,res,next){
+    try{
+        if(req.session.otp){
+            const email = req.session.userData.email
+            res.render("otpPage",{
+                email
+            })
+        }
+        else{
+            const email = req.session.userData.email
+            res.render("otpPage",{
+                email
+            })
+        }
     }
-    else{
-        const email = req.session.userData.email
-        res.render("otpPage",{
-            email
-        })
-    }   
+    catch(error){
+        next(error)
+    }
+       
 }
 // resend OTP
 exports.resendOTP = async function(req,res){
@@ -220,18 +237,23 @@ exports.signupOtpSubmission = async function(req,res){
 
 
 // user login page
-exports.loginPage = function(req,res){
-    if(req.session.userID){
-        res.redirect("/home")
+exports.loginPage = function(req,res,next){
+    try{
+        if(req.session.userID){
+            res.redirect("/home")
+        }
+        else{
+            res.render("loginPage")
+        }
     }
-    else{
-        res.render("loginPage")
-    }
+    catch(error){
+        next(error)
+    }    
 }
 
 
 // user login post
-exports.loginPage_post = async function(req,res){
+exports.loginPage_post = async function(req,res,next){
     const errors = {}
     const {email,password} = req.body;
     for(let key in req.body){
@@ -268,12 +290,13 @@ exports.loginPage_post = async function(req,res){
     }
     catch(error){
         console.log("server errors. user logging in failed",error);
+        next(error)
     }
     
 }
 
 // rendering home page
-exports.homepage = async function(req,res){
+exports.homepage = async function(req,res,next){
     try{
         const bannerTitles = ["T_Shirts","Shirts","Oversized","Hoodies","Formal_wear","Formals","Wedding_Wear","Home"];
         const banners = {};
@@ -288,27 +311,32 @@ exports.homepage = async function(req,res){
         })
     }
     catch(error){
-        console.log(error,"error when rendering home page");
+        next(error)
     }
 }
 
 
 // user logging out
-exports.logout = function(req,res){
-    req.session.destroy(function(error){
-        if(error){
-            console.log("session destruction failed");
-            res.redirect("/home")
-        }
-        else{
-            console.log("session destroyed");
-            res.redirect("/")
-        }
-    })
+exports.logout = function(req,res,next){
+    try{
+        req.session.destroy(function(error){
+            if(error){
+                console.log("session destruction failed");
+                res.redirect("/home")
+            }
+            else{
+                console.log("session destroyed");
+                res.redirect("/")
+            }
+        })
+    }
+    catch(error){
+        next(error)
+    }    
 }
 
 // user profile page
-exports.userprofilePage = async function(req,res){
+exports.userprofilePage = async function(req,res,next){
     const userID = req.session.userID;
     try{
         const userData = await User.findById(userID);
@@ -317,15 +345,19 @@ exports.userprofilePage = async function(req,res){
         res.render("userProfile",{user:userData,address:defaultAddress,userID})
 
     }catch(error){
-        console.log("some error occured",error);
+        next(error)
     }    
 }
 
 // edit user page
-exports.edit_user = async function(req,res){
-    const edit = req.query.edit;
-    
-    res.render("edit_user",{edit,userID:req.session.userID});
+exports.edit_user = async function(req,res,next){
+    try{
+        const edit = req.query.edit;    
+        res.render("edit_user",{edit,userID:req.session.userID});
+    }
+    catch(error){
+        next(error)
+    }    
 }
 
 // edit user-name, email and number
@@ -370,11 +402,16 @@ exports.edit_user_post = async function(req,res){
 }
 
 // rest password page
-exports.resetPasswordPage = function(req,res){
-    res.render("resetPassword",{userID:req.session.userID})
+exports.resetPasswordPage = function(req,res,next){
+    try{
+        res.render("resetPassword",{userID:req.session.userID})
+    }
+    catch(error){
+        next(error)
+    }    
 }
 // reset password
-exports.resetPassword = async function(req,res){
+exports.resetPassword = async function(req,res,next){
     const {password,newPassword,re_newPassword} = req.body;
     const userID = req.session.userID;
     const error = {};
@@ -406,7 +443,7 @@ exports.resetPassword = async function(req,res){
                     res.redirect("/user-profile")
                 }
                 catch(error){
-                    console.log("server error",error);
+                    next(error)
                 }
             }
         }
@@ -419,14 +456,14 @@ exports.resetPassword = async function(req,res){
 }
 
 // address page
-exports.addressPage = async function(req,res){
+exports.addressPage = async function(req,res,next){
     const userID = req.session.userID;
     try{
         const addresses = await Address.find({userID});        
         res.render("addressPage",{addresses,userID});
     }
     catch(error){
-        console.log("some error occured",error);
+        next(error)
     }
 }
 // new address form
@@ -516,7 +553,7 @@ exports.editAddressPage = async function(req,res){
     
 }
 // edit address
-exports.editAddress = async function(req,res){
+exports.editAddress = async function(req,res,next){
     try{
         req.body._id = req.params.id;
         const error = {};
@@ -541,7 +578,7 @@ exports.editAddress = async function(req,res){
         }
     }
     catch(error){
-        console.log("error occured",error);
+        next(error)
     }
     
 }
@@ -565,7 +602,7 @@ exports.setDefaultAddress = async function(req,res){
 }
 
 // wallet page
-exports.walletPage = async function(req,res){
+exports.walletPage = async function(req,res,next){
     const userID = req.session.userID;
     try{        
         const wallet  = await Wallet.find({userID});
@@ -573,6 +610,6 @@ exports.walletPage = async function(req,res){
         res.render("wallet",{userID,wallet})
     }
     catch(error){
-        console.log("error when rendering wallet page",error);
+        next(error)
     }
 }

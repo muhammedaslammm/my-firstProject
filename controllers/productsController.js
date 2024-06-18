@@ -14,7 +14,7 @@ exports.landingPage = function(req,res){
 }
 
 // search result
-exports.searchResult = async function(req,res){
+exports.searchResult = async function(req,res,next){
     try{
         const userID = req.session.userID;
         const searchKeyword = req.query.q;
@@ -110,12 +110,12 @@ exports.searchResult = async function(req,res){
         res.render("products",{userID,products,categories,brands,query:req.query,params:req.params,count,totalPages,currentPage})
         
     }catch(error){
-        console.log("error when querying search",error);
+        next(error)
     }
 }
 
 // products list 
-exports.products = async function(req,res){
+exports.products = async function(req,res,next){
     try{
         const userID = req.session.userID;        
         const {brand,size,price,color,rating,discount,sort} = req.query; 
@@ -188,7 +188,7 @@ exports.products = async function(req,res){
     
     }
     catch(error){
-        console.log("server error",error);
+        next(error)
     }
 }
 
@@ -328,7 +328,7 @@ exports.addProductReview = async function(req,res){
 
 
 // add-to-cart or buy now button click
-exports.buttonClick = async function(req,res){
+exports.buttonClick = async function(req,res,next){
     try{
         const userID = req.session.userID;
         const productID = req.params.id;
@@ -355,9 +355,8 @@ exports.buttonClick = async function(req,res){
         
     }
     catch(error){
-        console.log("error occured",error);
-    }
-    
+        next(error)
+    }    
 }
 
 // add product to wishlist
@@ -384,7 +383,7 @@ exports.addToWishlist = async function(req,res){
 }
 
 // view wishlist
-exports.wishlistPage = async function(req,res){
+exports.wishlistPage = async function(req,res,next){
     try{
         const products = await Product.find({addedToWishlist:true});
         const totalProducts = products.length;
@@ -392,7 +391,7 @@ exports.wishlistPage = async function(req,res){
         res.render("wishlist",{products,totalProducts,userID})
     }
     catch(error){
-        console.log("error when rendering wishlist Page",error);
+        next(error)
     }
 }
 
@@ -412,19 +411,19 @@ exports.removeFromWishlist = async function(req,res){
 
 
 // product address page
-exports.product_addAddress = async function(req,res){
+exports.product_addAddress = async function(req,res,next){
     try{
         const {productID,quantity,size} = req.query;
         const userID = req.session.userID;
         res.render("productAddress",{userID,productID,quantity,size})
     }
     catch(error){
-        console.log(error,"error when rendering address page from product");
+        next(error)
     }
 }
 
 // address post
-exports.addProduct_Address = async function(req,res){
+exports.addProduct_Address = async function(req,res,next){
     try{
         const address = req.body;
         address.userID = req.session.userID;
@@ -436,7 +435,7 @@ exports.addProduct_Address = async function(req,res){
 
     }
     catch(error){
-        console.log(error,"error whaen uploading address");
+        next(error)
     }
 }
 
