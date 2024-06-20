@@ -193,7 +193,7 @@ exports.products = async function(req,res,next){
 }
 
 // product page
-exports.selectedProduct = async function(req,res){
+exports.selectedProduct = async function(req,res,next){
     try{
         const userID = req.session.userID;
         const productID = req.params.id;      
@@ -234,8 +234,7 @@ exports.selectedProduct = async function(req,res){
         });
 
     }catch(error){
-        console.log("server error",error);
-        res.redirect("/category/Tops")
+        next(error)
     }
 }
 
@@ -432,7 +431,6 @@ exports.addProduct_Address = async function(req,res,next){
         await Address.updateMany({},{$set:{default:false}});
         await Address.updateOne({_id:addAddress._id},{$set:{default:true}});
         res.redirect(`/product-addToCart?productID=${productID}&quantity=${quantity}&size=${size}`)
-
     }
     catch(error){
         next(error)

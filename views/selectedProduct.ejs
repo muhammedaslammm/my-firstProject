@@ -92,6 +92,7 @@
       /* details below the head */
       .details-and-pin {
         display: flex;
+        justify-content: space-between;
       }
 
       .product-details1 {
@@ -237,7 +238,7 @@
         justify-content: center;
       }
       .pin-box {
-        box-shadow: 0px 0px 5px rgb(169, 166, 166);
+        box-shadow: 0px 0px 5px rgb(212, 212, 212);
         width: 90%;
         padding: 15px 22px;
         border-radius: 5px;
@@ -252,6 +253,7 @@
         font-size: 15px;
         color: rgb(131, 129, 129);
         border: 1px solid rgb(120, 118, 118);
+        border-radius: 3px;
         padding: 5px;
       }
       .change-pin {
@@ -271,7 +273,7 @@
         margin-top: 20px;
       }
       .mini-details {
-        width: 65%;
+        width: 75%;
       }
       .mini-details-head,
       .offer-head {
@@ -294,9 +296,12 @@
         margin-top: 40px;
       }
       .buy-buttons .cart-btn {
+        background-color: white;
         color: black;
+        font-family: 'poppins',sans-serif;
         font-weight: 500;
-        padding: 4px 80px;
+        font-size: 15px;
+        padding: 6px 80px;
         border-radius: 3px;
         border: 1px solid rgb(51, 51, 51);
         cursor: pointer;
@@ -305,6 +310,8 @@
         border: none;
         background-color: rgb(17, 97, 177);
         color: white;
+        font-family: 'poppins',sans-serif;
+        font-size: 15px;
         font-weight: 500;
         padding: 4px 85px;
         margin-left: 10px;
@@ -616,13 +623,13 @@
                 </div>
               </div>
             </div>
-            <div class="pin-section">
+            <!-- <div class="pin-section">
               <div class="pin-box">
                 <div class="pin-box-head">Ship To</div>
                 <div class="pin-code">Kerala,234324</div>
                 <div class="change-pin"><a href="#">Change Pin</a></div>
               </div>
-            </div>
+            </div> -->
           </div>
           <!-- details 3 -->
           <div class="details3">
@@ -634,9 +641,9 @@
                 <p>Wash: <%=product.wash%> Wash</p>
               </div>
             </div>
-            <div class="Offers">
+            <!-- <div class="Offers">
               <div class="offer-head">Today's Offers</div>
-            </div>
+            </div> -->
           </div>
           <input type="hidden" id="selectedSize" name="size" />
           <input type="hidden" id="selectedQuantity" name="quantity" />

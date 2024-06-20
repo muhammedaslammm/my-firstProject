@@ -15,10 +15,30 @@
     />
     <link rel="stylesheet" href="/styles/nav.css" />
     <title>error</title>
+    <style>
+      .container {
+        width: 90%;
+        margin: 80px auto;
+      }
+      h1 {
+        margin: 0;
+        font-weight: 500;
+        color: rgb(190, 24, 24);
+      }
+      p {
+        margin: 0;
+        margin-left: 5px;
+        color: rgb(87, 86, 86);
+      }
+    </style>
   </head>
   <body>
     <!-- headers -->
     <%-include("./partials/navbar.ejs")%>
     <!-- -- -->
+    <div class="container">
+      <h1>Oops, Something went wrong !</h1>
+      <p>It will be better to retry sometimes later...</p>
+    </div>
   </body>
 </html>
