@@ -18,8 +18,6 @@ async function connectToDatabase(connectionString){
 
 connectToDatabase(mongoConnectionString);
 
-
-
 app.listen(5000,function(){
     console.log("server waiting for the request in port 5000");
 })
