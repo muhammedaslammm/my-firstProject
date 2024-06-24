@@ -305,6 +305,7 @@ exports.homepage = async function(req,res,next){
         for(let title of bannerTitles){
             banners[title.toLowerCase()] = await Banner.findOne({deletedAt:null,title})
         }
+        console.log('banner object: ',banners);
         res.render("homepage",{
             userID:req.session.userID,
             banners
