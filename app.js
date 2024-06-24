@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const path = require('path');
 const dotenv = require("dotenv");
 const session = require("express-session");
 const nocache = require("nocache");
@@ -26,6 +27,7 @@ app.use(session({
 
 
 app.set("view engine","ejs")
+app.set('views',path.join(__dirname,'views'))
 app.use(express.json())
 app.use(express.urlencoded({extended:false}));
 app.use(express.static("public"));
