@@ -3,12 +3,20 @@ const app = require("./app");
 
 const mongoConnectionString = process.env.db_connection_string
 
-mongoose.connect(mongoConnectionString).then(function(data){
-    console.log("Connected to moasWebsite DataBase");
-})
-.catch(function(error){
-    console.log("Connect to MongoDb database failed",error);
-})
+async function connectToDatabase(connectionString){
+    try{
+        const connection = await mongoose.connect(connectionString,{
+            useNewUrlParser:true,
+            useUnifiedTopology:true
+        });
+        console.log('database connection successfull');
+    }
+    catch(error){
+        console.log('database connection failed',error);
+    }
+}
+
+connectToDatabase(mongoConnectionString);
 
 
 
