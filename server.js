@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const app = require("./app");
 
-const mongoConnectionString = process.env.db_connection_string
+const mongoConnectionString = process.env.MONGODB_URI
 
 async function connectToDatabase(connectionString){
     try{
