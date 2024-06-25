@@ -651,11 +651,11 @@
             <button
               class="cart-btn"
               name="button"
-              value="<%=product.addedToCart === true ? 'viewCart' : 'addToCart'%>"
+              value="<%=addedToCart ? 'viewCart' : 'addToCart'%>"
               type="submit"
               id="submit-button"
             >
-              <%=product.addedToCart === true ? 'View Cart' : 'Add To Cart'%>
+              <%=addedToCart ? 'View Cart' : 'Add To Cart'%>
             </button>
             <button
               class="buy-btn"

@@ -7,6 +7,7 @@ const Address = require("./../models/addressModel");
 const Order = require('./../models/orderModel');
 const Review = require("./../models/productReviewModel");
 const User = require('../models/userModel');
+const Cart = require('../models/cartModel');
 
 
 exports.landingPage = function(req,res){
@@ -198,7 +199,10 @@ exports.selectedProduct = async function(req,res,next){
         const userID = req.session.userID;
         const productID = req.params.id;      
         const product = await Product.findById(productID).populate('productOffer');
-        const reviews = await Review.find({productID}).sort({'userReviews.date':-1}).populate('userReviews.userID');
+        const reviews = await Review.find({productID}).populate('userReviews.userID').sort({'userReviews.date':-1});
+        const addedToCart = await Cart.findOne({userID,productID}) ? true : false;
+        console.log("addedToCart: ",addedToCart);
+        console.log('reviews: ',reviews);
         let totalRatings = 0;
         let averageRatings = '0.0';
         if(reviews.length > 0){
@@ -226,6 +230,7 @@ exports.selectedProduct = async function(req,res,next){
         res.render("selectedProduct",{
             product,
             userID,
+            addedToCart,
             userPurchased:purchased,
             userReviewed,
             reviews,
