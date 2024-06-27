@@ -104,6 +104,19 @@
         display: flex;
         align-items: center;
       }
+      /* best product */
+      .best-product {
+        display: flex;
+        align-items: start;
+      }
+      .product-image {
+        width: 50%;
+        margin-right: 13px;
+        margin-top: 10px;
+      }
+      .product-image img {
+        width: 100%;
+      }
       .count-right .value {
         font-size: 30px;
       }
@@ -158,6 +171,15 @@
                   <div class="value" id="bsc">-</div>
                 </div>
               </div>
+              <div class="box">
+                <div class="head">Best Selling Product</div>
+                <div class="best-data best-product">
+                  <div class="product-image">
+                    <img src="" alt="best-selling-product" />
+                  </div>
+                  <div class="value" id="bsp" style="font-size: 25px">-</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -204,6 +226,9 @@
               data.totalOrderedProducts;
             document.getElementById("bsb").innerText = data.bestSellingBrand;
             document.getElementById("bsc").innerText = data.bestSellingCategory;
+            document.getElementById("bsp").innerText = data.bestSellingProduct;
+            document.querySelector(".product-image img").src =
+              data.bestSellingProductImage;
           }
         } catch (error) {
           console.log(error, "error");
@@ -257,6 +282,9 @@
               data.totalOrderedProducts;
             document.getElementById("bsb").innerText = data.bestSellingBrand;
             document.getElementById("bsc").innerText = data.bestSellingCategory;
+            document.getElementById("bsp").innerText = data.bestSellingProduct;
+            document.querySelector(".product-image img").src =
+              data.bestSellingProductImage;
           }
         } catch (error) {
           console.log(error, "error");

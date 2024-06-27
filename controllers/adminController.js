@@ -20,6 +20,8 @@ const Excel = require("exceljs");
 const {jsPDF} = require('jspdf');
 const Notification = require('./../models/notification');
 const Wallet = require("./../models/walletModel");
+const { ObjectId } = require("mongodb");
+const mongoose = require('mongoose')
 require('jspdf-autotable');
 
 
@@ -130,6 +132,7 @@ exports.getSalesData = async function(req,res){
         let userID = ''
         let brands = {};
         let categories = {}
+        let productNames = {}
         orders.forEach(function(order){
             totalOrders += 1;
             if(JSON.stringify(order.userID) != JSON.stringify(userID)){
@@ -160,7 +163,9 @@ exports.getSalesData = async function(req,res){
                 }
 
                 // best selling brand
-                if(product.orderStatus != 'cancelled' && product.orderStatus != 'returned'){
+                const orderStatuses = ['cancelled','returned','pending'];
+                
+                if(!orderStatuses.includes(product.orderStatus)){
                     if(brands[product.productID.brand]){
                         brands[product.productID.brand] = brands[product.productID.brand] + 1;
                     }
@@ -170,12 +175,23 @@ exports.getSalesData = async function(req,res){
                 }
                 
                 // best selling category
-                if(product.orderStatus != 'cancelled' && product.orderStatus != 'returned'){
+                if(!orderStatuses.includes(product.orderStatus)){
                     if(categories[product.productID.category]){
                         categories[product.productID.category] = categories[product.productID.category] + 1;
                     }
                     else{
                         categories[product.productID.category] = 1;
+                    }
+                }
+
+                // best selling product
+                if(!orderStatuses.includes(product.orderStatus)){
+                    const productName = product.productID._id;
+                    if(productNames[productName]){
+                        productNames[productName] += 1;
+                    }
+                    else{
+                        productNames[productName] = 1;                        
                     }
                 }
             }); 
@@ -200,6 +216,22 @@ exports.getSalesData = async function(req,res){
                 bestSellingCategory = category;
             }
         }
+
+        // finging best selling product        
+        let bestSellingProductID;
+        let productRank = 0;
+        for(let productID in productNames){
+            if(productNames[productID] > productRank){
+                bestSellingProductID = productID;
+                productRank = productNames[productID];
+            }
+        }
+
+        const productID = new ObjectId(bestSellingProductID);
+        const bestSellingProductDoc = await Product.findOne({_id:productID}) ?? ''
+        const bestSellingProduct = `${bestSellingProductDoc.brand} Men's ${bestSellingProductDoc.fit} ${bestSellingProductDoc.productType}`;
+        const bestSellingProductImage = bestSellingProductDoc.images[0];
+        
         
         let graphData = []
         graphData.push(onProgressItems,deliveredItems,returnedItems,cancelledItems,pendingItems);
@@ -212,6 +244,8 @@ exports.getSalesData = async function(req,res){
             bestSellingBrand,
             brandCount,
             bestSellingCategory,
+            bestSellingProduct,
+            bestSellingProductImage,
             categoryCount
         })
 
