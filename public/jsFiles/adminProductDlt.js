@@ -25,12 +25,12 @@ async function deleteTheProduct(productID,element){
             method:'POST'
         })
         const data = await response.json();
-        if(data.message){
+        if(data.message === 'product deleted'){
             element.remove();
             console.log("product deleted");
         }
         else{
-            console.log("failed to delete the product");
+            window.alert('The products that are on "payment pending" and "delivery on progress", cannot be deleted by the admin !')
         }
     }
     catch(error){

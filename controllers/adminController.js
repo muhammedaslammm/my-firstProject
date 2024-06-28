@@ -526,9 +526,17 @@ exports.addNewProduct = async function(req,res){
 exports.deleteProduct = async function(req,res){
     const productID = req.params.id;
     try{
-        await Product.findByIdAndUpdate(productID,{deletedAt:new Date});
-        console.log("product deleted");
-        res.json({message:'product deleted'});
+        const deletedProduct = await Order.findOne({$and:[{'orderedProducts.productID':productID},{$or:[{'orderedProducts.orderStatus':'pending'},{'orderedProducts.orderStatus':'on progress'}]}]});
+        console.log('already ordered : ',deletedProduct);
+        if(!deletedProduct){
+            await Product.findByIdAndUpdate(productID,{deletedAt:new Date});        
+            console.log("product deleted");
+            res.json({message:'product deleted'});
+        } 
+        else{
+            console.log('cannot delete this product');
+            res.json({message:'deletion failed'})
+        }       
     }
     catch(error){
         console.log("server error",error);
