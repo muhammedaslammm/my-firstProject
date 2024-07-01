@@ -4,7 +4,8 @@ const path = require('path');
 const dotenv = require("dotenv");
 const session = require("express-session");
 const nocache = require("nocache");
-const mongodbStore = require("connect-mongodb-session")(session);
+const clientSession = require('./middlewares/clientSession')
+const adminSession = require('./middlewares/adminSession')
 const userRouter = require("./routes/userRoutes");
 const productsRouter = require("./routes/productsRoutes")
 const adminRouter = require("./routes/adminRoutes");
@@ -15,16 +16,6 @@ const paymentRouter = require("./routes/paymentRoutes");
 
 
 app.use(nocache());
-app.use(session({
-    secret:"s3cr3tc87od637e",
-    saveUninitialized:false,
-    resave:false,
-    store:new mongodbStore({
-        uri:"mongodb://localhost:27017/moasWebsite",
-        collection:"session"
-    })
-}))
-
 
 app.set("view engine","ejs")
 app.set('views',path.join(__dirname,'views'))
@@ -36,12 +27,12 @@ console.log(process.env.email_id);
 
 
 // routes
-app.use("/admin",adminRouter)
-app.use("/",userRouter);
-app.use("/",productsRouter);
-app.use("/",cartRouter);
-app.use("/",orderRouter)
-app.use("/",paymentRouter)
+app.use("/admin",adminSession,adminRouter)
+app.use("/",clientSession,userRouter);
+app.use("/",clientSession,productsRouter);
+app.use("/",clientSession,cartRouter);
+app.use("/",clientSession,orderRouter)
+app.use("/",clientSession,paymentRouter)
 
 function pageNotFound(req,res,next){
     res.status(404).render("invalidURL")

@@ -1,6 +1,6 @@
 const User = require("./../models/userModel");
 
-exports.authentication = async function(req,res,next){
+const authentication = async function(req,res,next){
     if(req.session.userID){
         const userID = req.session.userID;
         const userData = await User.findOne({_id:userID});
@@ -14,8 +14,7 @@ exports.authentication = async function(req,res,next){
                 else{
                     console.log("No user Found! session destroyed");
                     res.redirect("/login")
-                }
-                
+                }                
             })
         }
         else if(userData && userData.isBlocked){
@@ -40,4 +39,6 @@ exports.authentication = async function(req,res,next){
         res.redirect("/login")
     }
 }
+
+module.exports = authentication;
 

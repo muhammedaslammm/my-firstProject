@@ -229,8 +229,8 @@ exports.getSalesData = async function(req,res){
 
         const productID = new ObjectId(bestSellingProductID);
         const bestSellingProductDoc = await Product.findOne({_id:productID}) ?? ''
-        const bestSellingProduct = `${bestSellingProductDoc.brand} Men's ${bestSellingProductDoc.fit} ${bestSellingProductDoc.productType}`;
-        const bestSellingProductImage = bestSellingProductDoc.images[0];
+        const bestSellingProduct = bestSellingProductDoc ? `${bestSellingProductDoc.brand} Men's ${bestSellingProductDoc.fit} ${bestSellingProductDoc.productType}` : '-'
+        const bestSellingProductImage = bestSellingProductDoc ? bestSellingProductDoc.images[0] : '-'
         
         
         let graphData = []
@@ -1418,5 +1418,24 @@ exports.downloadPdf = async function(req,res){
     catch(error){
         console.log("server error",error);
         res.status(500).json({error:"server error"});
+    }
+}
+
+// admin logout
+exports.adminLogout = function(req,res,next){
+    try{
+        req.session.destroy(function(error){
+            if(error){
+                console.log('session destruction failed');
+                res.redirect('/admin/adminHome')
+            }
+            else{
+                console.log('session destroyed');
+                res.redirect('/admin/adminlogin')
+            }
+        })
+    }
+    catch(error){
+        next(error)
     }
 }

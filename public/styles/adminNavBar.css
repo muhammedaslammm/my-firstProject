@@ -14,7 +14,11 @@ header {
 }
 .nav-container{
   width:90%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin:0 auto
+
 }
 .leftSection{
   display: flex;
@@ -33,4 +37,13 @@ header {
 .leftSection .page{
   font-size: 19px;
   color:rgb(137, 134, 134)
+}
+
+.rightSection a{
+  color: white;
+  font-weight: 500;
+  font-size: 17px;
+  background-color: rgb(212, 68, 68);
+  padding: 3px 8px;
+  text-decoration: none;
 }

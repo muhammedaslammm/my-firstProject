@@ -71,4 +71,7 @@ router.post("/download-pdf",validation,adminController.downloadPdf);
 
 // admin dashboard
 router.get('/getSalesData',validation,adminController.getSalesData);
+
+// admin logout
+router.get('/logout',validation,adminController.adminLogout)
 module.exports = router;

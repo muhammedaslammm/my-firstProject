@@ -305,7 +305,7 @@ exports.homepage = async function(req,res,next){
         for(let title of bannerTitles){
             banners[title.toLowerCase()] = await Banner.findOne({deletedAt:null,title})
         }
-        console.log('banner object: ',banners);
+        // console.log('banner object: ',banners);
         res.render("homepage",{
             userID:req.session.userID,
             banners
@@ -327,7 +327,7 @@ exports.logout = function(req,res,next){
             }
             else{
                 console.log("session destroyed");
-                res.redirect("/")
+                res.redirect("/home")
             }
         })
     }

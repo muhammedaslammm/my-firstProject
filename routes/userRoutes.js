@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {authentication} = require("./../middlewares/validation")
+const authentication = require("./../middlewares/validation")
 const userController = require("../controllers/userController");
 const User = require("./../models/userModel")
 
@@ -30,6 +30,6 @@ router.get("/set-as-default/:id",authentication,userController.setDefaultAddress
 router.get("/edit-address/:id",authentication,userController.editAddressPage)
 router.post("/edit-address/:id",authentication,userController.editAddress);
 router.get("/wallet",authentication,userController.walletPage);
-router.get("/logout",userController.logout)
+router.get("/logout",authentication,userController.logout)
 
 module.exports = router;
