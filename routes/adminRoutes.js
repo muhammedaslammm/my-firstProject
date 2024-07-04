@@ -17,7 +17,6 @@ router.post("/updateCategory/:id",validation,adminController.updateCategory_post
 router.get("/deleteCategory/:id",validation,adminController.deleteCategory);
 router.get("/products",validation,adminController.adminProductPage)
 router.get("/addNewProduct",validation,adminController.addNewProduct_page);
-router.post('/crop-image',uploadMem.single('image'),validation,adminController.cropImage)
 router.post("/addNewProduct",validation,upload.array("images"),adminController.addNewProduct);
 router.post("/product-delete/:id",validation,adminController.deleteProduct)
 router.get("/update-product/:id",validation,adminController.updateProductPage);

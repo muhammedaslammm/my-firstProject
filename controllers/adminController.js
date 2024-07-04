@@ -430,7 +430,6 @@ exports.adminProductPage = async function(req,res,next){
 exports.addNewProduct_page = async function(req,res,next){
     try{
         const categories = await Category.find({deletedAt:null});
-        console.log(categories);
         res.render("addNewProduct",{categories})
     }
     catch(error){
@@ -438,44 +437,10 @@ exports.addNewProduct_page = async function(req,res,next){
     }
 }
 
-// crop image
-exports.cropImage = async function(req,res){
-    try{       
-        if(req.file){
-            let image = sharp(req.file.buffer);
-            image =  image.resize(600,800,{fit:'cover'});
-
-            const resizedImage = await image.toBuffer();
-            const cropData = {
-                left:0,
-                top:0,
-                width:600,
-                height:800
-            }
-            const croppedBuffer = await sharp(resizedImage).extract(cropData).toBuffer();
-            
-            res.writeHead(200,{
-                'Content-Type':'image/jpeg',
-                'Content-Length':croppedBuffer.length
-            })
-            res.end(croppedBuffer);
-        }
-        else if(req.files){
-            console.log(req.files);
-        }
-        
-    }
-    catch(error){
-        console.log("error when cropping",error);
-        res.status(404).send('Error when cropping img')
-    }
-}
-
-
 // add new porduct to db
 exports.addNewProduct = async function(req,res){    
-    const newProduct = req.body;
-    console.log(newProduct);
+    const productData = req.body;
+    console.log(productData);
     console.log(req.files); 
 
     const images = req.files.map(function(file){
@@ -485,28 +450,28 @@ exports.addNewProduct = async function(req,res){
     try{
         const discount = Math.round(((req.body.actualPrice-req.body.sellingPrice)/req.body.actualPrice)*100);
 
-        const uploadProduct = await Product.create({
+        const newProduct = await Product.create({
             images,
-            sleeve:req.body.sleeve,
-            wash:req.body.wash,
-            fit:req.body.fit,
-            color:req.body.color,
-            pattern:req.body.pattern,
-            fabric:req.body.fabric,
-            brand:req.body.brand,
-            productType:req.body.productType,
-            extra_small:req.body.extra_small,
-            small:req.body.small,
-            medium:req.body.medium,
-            large:req.body.large,
-            extra_large:req.body.extra_small,
-            extra_extra_large:req.body.extra_extra_large,
-            actualPrice:req.body.actualPrice,
-            sellingPrice:req.body.sellingPrice,
-            category:req.body.category,
+            sleeve:productData.sleeve,
+            wash:productData.wash,
+            fit:productData.fit,
+            color:productData.color,
+            pattern:productData.pattern,
+            fabric:productData.fabric,
+            brand:productData.brand,
+            productType:productData.productType,
+            extra_small:productData.extra_small,
+            small:productData.small,
+            medium:productData.medium,
+            large:productData.large,
+            extra_large:productData.extra_small,
+            extra_extra_large:productData.extra_extra_large,
+            actualPrice:productData.actualPrice,
+            sellingPrice:productData.sellingPrice,
+            category:productData.category,
             discount,
-            status:req.body.status,                
-            date:req.body.date
+            status:productData.status, 
+            date:new Date
         })
 
         console.log("product uploaded successful");
@@ -575,6 +540,8 @@ exports.updateProduct = async function(req,res){
     console.log(req.files);
     const properties = ["image1","image2","image3"];
     const objectKeys = Object.keys(req.files);
+    console.log("object keys: ",objectKeys);
+
     let jvalue = 0
     for(let i=0; i<properties.length; i++){
         for(let j=jvalue; j<=objectKeys.length; j++){

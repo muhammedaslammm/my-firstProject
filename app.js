@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const path = require('path');
 const dotenv = require("dotenv");
-const session = require("express-session");
 const nocache = require("nocache");
 const clientSession = require('./middlewares/clientSession')
 const adminSession = require('./middlewares/adminSession')

@@ -9,6 +9,10 @@
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/cropperjs/dist/cropper.min.css"
+    />
     <link rel="stylesheet" href="/styles/adminNavBar.css" />
 
     <title>add-new-product</title>
@@ -66,79 +70,51 @@
         font-size: 15px;
         color: rgb(65, 64, 64);
       }
-      .image-head span {
-        font-size: 13px;
-        color: grey;
-        font-weight: 300;
-      }
-      .main-image-preview {
-        display: none;
-      }
-      .preview-box {
-        width: 15%;
-        border: 1.2px dashed rgb(90, 88, 88);
+
+      #crop-box {
+        position: relative;
+        width: 230px;
+        /* border: 1.2px dashed rgb(90, 88, 88); */
         padding: 3px;
         margin-top: 5px;
-        position: relative;
       }
-      .preview-box img {
+      #crop-box img {
         width: 100%;
       }
-      .delete-button {
-        position: absolute;
-        top: 2px;
-        right: 2px;
-        background-color: rgb(237, 50, 50);
-        border: none;
-        color: white;
-        font-weight: 500;
-        font-size: 14px;
-        padding: 0px 5px;
+      .crop {
+        display: none;
       }
-      .delete-button:hover {
-        cursor: pointer;
-      }
-      .main-error {
+      .error {
         font-size: 15px;
         margin: 0;
         color: maroon;
         transition: display 0.3s;
       }
 
-      /* sub images */
-      #image-previews {
-        display: flex;
-        gap: 10px;
-      }
-      .sub-preview-box {
-        width: 15%;
-        border: 1.2px dashed rgb(90, 88, 88);
-        padding: 3px;
-        margin-top: 5px;
+      .cropped-preview-box {
         position: relative;
+        width: 180px;
       }
-      .sub-preview-box img {
-        width: 100%;
-      }
-      .subDelete-button {
+      .cropped-preview-box .delete-button {
         position: absolute;
         top: 2px;
         right: 2px;
-        background-color: rgb(237, 50, 50);
-        border: none;
-        color: white;
-        font-weight: 500;
-        font-size: 14px;
-        padding: 0px 5px;
       }
-      .subDelete-button:hover {
+      .cropped-preview-box .edit-button {
+        position: absolute;
+        top: 2px;
+        right: 30px;
+      }
+
+      .cropped-preview-box .delete-button:hover {
         cursor: pointer;
       }
-      .sub-error {
-        font-size: 15px;
-        margin: 0;
-        color: maroon;
-        transition: display 0.3s;
+      .cropped-preview-box .edit-button:hover {
+        cursor: pointer;
+      }
+
+      .cropped-preview-box img {
+        width: 100%;
       }
 
       /* form remaining section */
@@ -281,34 +257,65 @@
             <div class="left-section">
               <!-- main image -->
               <div class="mainImage">
-                <div class="image-head">Add Main Image</div>
+                <div class="image-head">Main Image</div>
                 <input
                   type="file"
-                  name="main-image"
-                  id="main-image"
+                  id="imageInput1"
                   accept="image/*"
-                  onchange="cropAndPreviewImage(event,'main-image-preview')"
+                  style="display: none"
+                  onchange="fileSelected(event,'image1')"
                 />
-                <div id="main-image-preview"></div>
-                <p class="main-error"></p>
+                <button class="add-image" onclick="buttonClicked(event)">
+                  add main image
+                </button>
+                <div class="preview"></div>
+                <button class="crop" onclick="cropTheImage(event,'image1')">
+                  crop
+                </button>
+                <div class="cropped-preview"></div>
+                <p class="error"></p>
               </div>
 
-              <!-- sub image -->
-              <div class="sub-images">
-                <div class="image-head">
-                  Sub Images <span>(select only two)</span>
-                </div>
+              <!-- sub image 1-->
+              <div class="sub-image1">
+                <div class="image-head">Sub Image 1</div>
                 <input
                   type="file"
                   accept="image/*"
-                  id="sub-image-fileInput"
-                  onchange="cropAndPreviewSubImages(event)"
+                  id="imageInput2"
                   style="display: none"
-                  multiple
+                  onchange="fileSelected(event,'image2')"
                 />
-                <button id="add-images">add images</button>
-                <div class="sub-error"></div>
-                <div id="image-previews"></div>
+                <button class="add-image" onclick="buttonClicked(event)">
+                  add sub image 1
+                </button>
+                <div class="preview"></div>
+                <button class="crop" onclick="cropTheImage(event,'image2')">
+                  crop
+                </button>
+                <div class="cropped-preview"></div>
+                <p class="error"></p>
+              </div>
+
+              <!-- sub image 2 -->
+              <div class="sub-image2">
+                <div class="image-head">Sub Image 2</div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="imageInput3"
+                  style="display: none"
+                  onchange="fileSelected(event,'image3')"
+                />
+                <button class="add-image" onclick="buttonClicked(event)">
+                  add sub image 2
+                </button>
+                <div class="preview"></div>
+                <button class="crop" onclick="cropTheImage(event,'image3')">
+                  crop
+                </button>
+                <div class="cropped-preview"></div>
+                <p class="error"></p>
               </div>
 
               <!-- description -->
@@ -439,12 +446,16 @@
                 <div class="cata">
                   <label for="">Category</label>
                   <select name="category" id="category">
+                    <option value="" selected disabled>
+                      Select a category
+                    </option>
                     <% categories.forEach(function(category){ %>
                     <option value="<%=category.category%>" class="input">
                       <%=category.category%>
                     </option>
                     <% }) %>
                   </select>
+                  <div class="error"></div>
                 </div>
                 <div class="status">
                   <label for="">Product Status</label>
@@ -538,17 +549,6 @@
                 </div>
               </div>
 
-              <!-- date -->
-              <div class="date">
-                <label for="">Publishing Date</label>
-                <input
-                  type="date"
-                  name="date"
-                  value="<%=typeof newProduct != 'undefined' ? newProduct.date : ''%>"
-                  class="input"
-                />
-                <p class="error"></p>
-              </div>
               <div class="submit-button">
                 <input type="submit" value="submit product" />
               </div>
@@ -557,6 +557,12 @@
         </div>
       </div>
     </div>
-    <script src="/jsFiles/newProImgs.js"></script>
+    <script
+      src="https://kit.fontawesome.com/f620fbbfb3.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
+    <script src="/jsFiles/submitProductInfo.js"></script>
+    <!-- <script src="/jsFiles/newProImgs.js"></script> -->
   </body>
 </html>
