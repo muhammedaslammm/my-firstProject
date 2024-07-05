@@ -581,8 +581,7 @@ exports.updateProduct = async function(req,res){
             sellingPrice:req.body.sellingPrice,
             category:req.body.category,
             discount,
-            status:req.body.status,                
-            date:new Date
+            status:req.body.status, 
         }});
 
         console.log("product Updated");
@@ -600,13 +599,13 @@ exports.updateProduct = async function(req,res){
 exports.productOfferPage = async function(req,res,next){
     const productID = req.query.productID;
     try{
-        const product = await Product.findById(productID);
+        const product = await Product.findById(productID).populate('productOffer');
+        console.log('product offer: ',product.productOffer);
         res.render('productOffer',{productID,product})
     }
     catch(error){
         next(error)
-    }
-    
+    }    
 }
 
 // add the submitted product offer

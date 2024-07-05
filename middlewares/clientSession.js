@@ -11,10 +11,15 @@ store.on('error',function(error){
 })
 
 const userSession = session({
+    name:'client.sid',
     secret:'clientSessionSecret',
     resave: false,
     saveUninitialized: false,
-    store
+    store,
+    cookie: {
+        path: '/', 
+        maxAge: 1000 * 60 * 60 * 24 
+    }
 })
 
 module.exports = userSession;

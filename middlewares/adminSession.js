@@ -11,10 +11,15 @@ store.on('error',function(error){
 })
 
 const adminSession = session({
+    name:'admin.sid',
     secret:'adminSessionSecret',
     resave: false,
     saveUninitialized: false,
-    store
+    store,
+    cookie: {
+        path: '/admin', 
+        maxAge: 1000 * 60 * 60 * 24 
+    }
 })
 
 module.exports = adminSession;
