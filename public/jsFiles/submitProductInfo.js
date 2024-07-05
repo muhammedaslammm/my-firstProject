@@ -193,7 +193,7 @@ form.addEventListener('submit',async function(event){
     inputs.forEach(function(input){
         if(input.value === ''){
             input.parentElement.querySelector('.error').innerText = '*Data Required'
-            validated = false
+            validated = false;
         }
     })
     if(category.value === ''){
@@ -208,6 +208,7 @@ form.addEventListener('submit',async function(event){
             if(input.name != undefined){
                 formData.append(input.name,input.value);
             }
+            
         })
         formData.append(category.name,category.value)
         for(let key in images){
@@ -231,6 +232,9 @@ form.addEventListener('submit',async function(event){
             console.log('some error occured in adding product to db',error);
             window.location.href = '/admin/products'
         }
+    }
+    else{
+        console.log('failed to input product');
     }
 })
 
