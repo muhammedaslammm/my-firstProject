@@ -157,6 +157,7 @@
                 <input type="date" id="end-date" class="input" name="endDate" value="<%=coupon ? coupon.endDate.toISOString().substr(0,10) : ''%>">
                 <p class="error"></p>
             </div>
+            <input type="hidden" id="hidden-input" value="<%=coupon._id ? coupon._id : ''%>">
             <input type="submit">
             
 
@@ -172,16 +173,18 @@
             const startDate = document.querySelector('#start-date');
             const endDate = document.querySelector('#end-date');
             const inputs = document.querySelectorAll('.input');
+            const couponID = document.getElementById('hidden-input').value;
             const amounts = document.querySelectorAll('.amount input[type="number"]')
             const offerAmount = document.querySelector("#offer-amount")
-            let fieldValidated = true
-            
+
+            let fieldValidated = true           
             
             inputs.forEach(function(input){
-                if(input.value === ''){
-                    input.parentNode.querySelector('.error').innerText = '*Field Required';
-                    fieldValidated = false;
-                }
+              const inputValue = input.value.trim('');
+              if(inputValue === ''){
+                input.parentElement.querySelector('.error').innerText = '*Field Required';
+                fieldValidated = false
+              }
             })
             if(endDate.value < startDate.value){
                 endDate.parentNode.querySelector('.error').innerText = 'Invalid End Date';
@@ -200,7 +203,7 @@
             }
             try{
               const couponCode = document.getElementById('code');
-              const response = await fetch(`/admin/check-couponCode?code=${couponCode.value}`,{
+              const response = await fetch(`/admin/check-couponCode?couponCode=${couponCode.value}&couponID=${couponID}`,{
                 method:'GET'
               })
               if(response.ok){

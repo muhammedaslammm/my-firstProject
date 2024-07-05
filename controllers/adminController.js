@@ -297,7 +297,7 @@ exports.unblockUser = async function(req,res,next){
 // admin product category page
 exports.adminCategoryPage = async function(req,res,next){
     try{
-        const categories = await Category.find({deletedAt:null});
+        const categories = await Category.find({deletedAt:null}).sort({categoryname:-1}).limit(10)
         res.render("adminCategory",{categories});
     }
     catch(error){
@@ -1064,9 +1064,18 @@ exports.editCoupon = async function(req,res){
 
 // check coupon
 exports.checkCouponCode = async function(req,res){
-    const couponCode = req.query.code;
-    try{
-        const matchingCoupon = await Coupon.findOne({couponCode});
+    const {couponID,couponCode} = req.query;
+    
+    let query = {}
+    if(couponID){
+        query._id = {$ne:couponID}
+    }
+    if(couponCode){
+        query.couponCode = couponCode
+    }
+    
+    try{ 
+        const matchingCoupon = await Coupon.findOne(query);
         if(matchingCoupon){
             res.status(200).json({result:'matching'})
         }
@@ -1078,6 +1087,10 @@ exports.checkCouponCode = async function(req,res){
         console.log('error',error);
         res.status(500).json({error:'error'})
     }
+
+        
+    
+
 }
 
 // admin delete coupon
