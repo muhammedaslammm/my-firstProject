@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const adminController = require("./../controllers/adminController")
-const {upload,upload2,uploadMem} = require("./../operations/multerConfig");
+const {upload,upload2} = require("./../operations/multerConfig");
 const validation = require("./../operations/adminValidation");
 
 router.get("/adminlogin",adminController.adminLoginPage)
@@ -20,7 +20,7 @@ router.get("/addNewProduct",validation,adminController.addNewProduct_page);
 router.post("/addNewProduct",validation,upload.array("images"),adminController.addNewProduct);
 router.post("/product-delete/:id",validation,adminController.deleteProduct)
 router.get("/update-product/:id",validation,adminController.updateProductPage);
-router.post("/update-product/:id",validation,upload.fields([{name:"image1",maxCount:1},{name:"image2",maxCount:1},{name:"image3",maxCount:1}]),adminController.updateProduct);
+router.patch("/update-product/:id",validation,upload.fields([{name:"image1",maxCount:1},{name:"image2",maxCount:1},{name:"image3",maxCount:1}]),adminController.updateProduct);
 
 // add product offer
 router.get('/add-productOffer',validation,adminController.productOfferPage);

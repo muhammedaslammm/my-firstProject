@@ -31,11 +31,6 @@ const upload2 = multer({
     storage:bannerStorage
 })
 
-// product main image crop
-const tempStore = multer.memoryStorage()
-const uploadMem = multer({
-    storage:tempStore
-})
 
 
-module.exports = {upload,upload2,uploadMem}
+module.exports = {upload,upload2}

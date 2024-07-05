@@ -9,6 +9,10 @@
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/cropperjs/dist/cropper.min.css"
+    />
     <link rel="stylesheet" href="/styles/adminNavBar.css" />
 
     <title>update product</title>
@@ -46,10 +50,13 @@
         margin-bottom: 20px;
       }
       .new-product form {
-        display: flex;
-        justify-content: space-between;
         border: 1px solid rgb(193, 193, 193);
         padding: 20px;
+      }
+      .top-section {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
       }
 
       form .error {
@@ -61,17 +68,86 @@
       .left-section {
         width: 43%;
       }
-      .image-preview {
-        margin-top: 5px;
-        width: 18%;
-        border: 1.5px solid grey;
-        padding: 2px;
-        margin-bottom: 20px;
-        /* height: 80px; */
+      /* image section */
+      .cropped-preview {
+        position: relative;
+        width: 180px;
       }
-      .image-preview img {
+      .cropped-preview img {
         width: 100%;
-        object-fit: contain;
+      }
+      .cropped-preview .delete-image {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        cursor: pointer;
+      }
+      .select-image {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: white;
+        border: 2px dashed rgb(88, 175, 226);
+        cursor: pointer;
+      }
+      .select-image i {
+        font-size: 65px;
+        color: rgb(88, 175, 226);
+      }
+      .select-image span {
+        margin-top: 3px;
+        font-family: "Poppins", sans-serif;
+        display: block;
+        font-size: 16px;
+        font-weight: 500;
+        color: rgb(88, 175, 226);
+      }
+
+      /* image preview for crop */
+      .cropping-box {
+        width: 200px;
+      }
+      .cropping-box img {
+        width: 100%;
+      }
+
+      .new-preview-box {
+        position: relative;
+        width: 180px;
+      }
+      .new-preview-box img {
+        width: 100%;
+      }
+      .new-preview-box .delete-button {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+      }
+      .new-preview-box .crop-button {
+        position: absolute;
+        top: 3px;
+        right: 30px;
+      }
+
+      /* selected preview */
+      .selected-preview,
+      .error {
+        margin-top: 10px;
+      }
+      #crop {
+        margin-top: 5px;
+        font-family: "Poppins", sans-serif;
+        color: rgb(206, 39, 39);
+        border: 1px solid rgb(206, 39, 39);
+        background-color: white;
+        padding: 3px 10px;
+        cursor: pointer;
+      }
+
+      /* description */
+      .bottom-section {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
       }
       .left-section .decription-head {
         margin: 0;
@@ -79,7 +155,6 @@
 
       .description-head {
         margin: 0px;
-        margin-top: 30px;
         font-size: 16px;
         font-weight: 500;
         margin-bottom: 10px;
@@ -115,6 +190,12 @@
         width: 55%;
         display: flex;
         flex-direction: column;
+        margin-top: 33px;
+      }
+      .sizeqty-top,
+      .sizeqty-bottom {
+        display: flex;
+        justify-content: space-between;
       }
       .size-and-qty label {
         display: inline-block;
@@ -220,323 +301,336 @@
             id="updateForm"
             onsubmit="submitForm(event,'<%=product._id%>')"
           >
-            <div class="left-section">
-              <div class="images">
-                <!-- image 1 -->
-                <label for="">image 1: </label>
-                <input
-                  type="file"
-                  name="image1"
-                  accept="image/*"
-                  onchange="changeImage(event,'preview1','image1')"
-                /><br />
-                <div class="image-preview">
-                  <img src="<%=imgURLs.img1%>" alt="image1" id="preview1" />
-                  <p class="error1"></p>
+            <div class="top-section">
+              <% for(let id=0; id < images.length; id++){%>
+
+              <!-- images -->
+              <div class="image-section" data-imageID="image<%=id%>">
+                <label for="">Image <%=id+1%> : </label>
+
+                <div class="cropped-preview">
+                  <img src="<%=images[id]%>" alt="product-image" />
+                  <button
+                    class="delete-image"
+                    onclick="deletePreview(event,'image<%=id%>')"
+                  >
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
                 </div>
 
-                <!-- image2 -->
-                <label for="">image 2:</label>
+                <button
+                  class="select-image"
+                  style="display: none"
+                  onclick="selectFile(event,'image<%=id%>')"
+                >
+                  <i class="fa-regular fa-image"></i><span>Add new image</span>
+                </button>
                 <input
                   type="file"
-                  name="image2"
                   accept="image/*"
-                  onchange="changeImage(event,'preview2','image2')"
-                /><br />
-                <div class="image-preview">
-                  <img src="<%=imgURLs.img2%>" alt="image2" id="preview2" />
-                  <p class="error2"></p>
-                </div>
-
-                <!-- image3 -->
-                <label for="">image 3:</label>
-                <input
-                  type="file"
-                  name="image3"
-                  accept="image/*"
-                  onchange="changeImage(event,'preview3','image3')"
+                  style="display: none"
+                  id="file-input"
+                  onchange="previewForCrop(event,'image<%=id%>')"
                 />
-                <div class="image-preview">
-                  <img src="<%=imgURLs.img3%>" alt="image3" id="preview3" />
-                  <p class="error3"></p>
-                </div>
-              </div>
-
-              <!-- left section description -->
-              <div class="description-head">description</div>
-              <div class="description">
-                <div class="description-left">
-                  <!-- sleeve -->
-                  <div class="sleeve">
-                    <label for="">Sleeve</label>
-                    <input
-                      type="text"
-                      name="sleeve"
-                      value="<%=product.sleeve%>"
-                      class="input"
-                    />
-                    <p class="error">
-                      <%=typeof errors != 'undefined' ? errors.sleeve : ''%>
-                    </p>
-                  </div>
-
-                  <!-- fit -->
-                  <div class="fit">
-                    <label for="">Fit</label>
-                    <input
-                      type="text"
-                      name="fit"
-                      value="<%=product.fit%>"
-                      class="input"
-                    />
-                    <p class="error">
-                      <%=typeof errors != 'undefined' ? errors.fit : ''%>
-                    </p>
-                  </div>
-
-                  <!-- pattern -->
-                  <div class="pattern">
-                    <label for="">Pattern</label>
-                    <input
-                      type="text"
-                      name="pattern"
-                      value="<%= product.pattern%>"
-                      class="input"
-                    />
-                    <p class="error">
-                      <%=typeof errors != 'undefined' ? errors.pattern : ''%>
-                    </p>
-                  </div>
-                </div>
-                <div class="description-right">
-                  <!-- wash -->
-                  <div class="wash">
-                    <label for="">Wash</label>
-                    <input
-                      type="text"
-                      name="wash"
-                      value="<%=product.wash%>"
-                      class="input"
-                    />
-                    <p class="error">
-                      <%=typeof errors != 'undefined' ? errors.wash : ''%>
-                    </p>
-                  </div>
-
-                  <!-- color -->
-                  <div class="color">
-                    <label for="">Color</label>
-                    <input
-                      type="text"
-                      name="color"
-                      value="<%=product.color%>"
-                      class="input"
-                    />
-                    <p class="error">
-                      <%=typeof errors != 'undefined' ? errors.color : ''%>
-                    </p>
-                  </div>
-
-                  <!-- fabric -->
-                  <div class="fabric">
-                    <label for="">Fabric</label>
-                    <input
-                      type="text"
-                      name="fabric"
-                      value="<%=product.fabric%>"
-                      class="input"
-                    />
-                    <p class="error">
-                      <%=typeof errors != 'undefined' ? errors.fabric : ''%>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="right-section">
-              <div class="brand-and-type">
-                <div class="brand">
-                  <label for="">Brand</label>
-                  <input
-                    type="text"
-                    name="brand"
-                    value="<%=product.brand%>"
-                    class="input"
-                  />
-                  <p class="error">
-                    <%=typeof errors != 'undefined' ? errors.brand : ''%>
-                  </p>
-                </div>
-                <div class="type">
-                  <label for="">Product Type</label>
-                  <input
-                    type="text"
-                    name="productType"
-                    value="<%=product.productType%>"
-                    class="input"
-                  />
-                  <p class="error">
-                    <%=typeof errors != 'undefined' ? errors.productType : ''%>
-                  </p>
-                </div>
-              </div>
-              <div class="actual-and-selling">
-                <div class="actual">
-                  <label for="">Actual Price</label>
-                  <input
-                    type="number"
-                    name="actualPrice"
-                    value="<%=product.actualPrice%>"
-                    class="input"
-                  />
-                  <p class="error">
-                    <%=typeof errors != 'undefined' ? errors.actualPrice : ''%>
-                  </p>
-                </div>
-                <div class="selling">
-                  <label for="">Selling Price</label>
-                  <input
-                    type="number"
-                    name="sellingPrice"
-                    value="<%=product.sellingPrice%>"
-                    class="input"
-                  />
-                  <p class="error">
-                    <%=typeof errors != 'undefined' ? errors.sellingPrice : ''%>
-                  </p>
-                </div>
-              </div>
-              <div class="cata-and-status">
-                <div class="cata">
-                  <label for="">Category</label>
-                  <select name="category" id="category">
-                    <% categories.forEach(function(category){ %>
-                    <%if(product.category === category.category){%>
-                    <option value="<%=category.category%>" selected>
-                      <%=category.category%>
-                    </option>
-                    <%}else{%>
-                    <option value="<%=category.category%>">
-                      <%=category.category%>
-                    </option>
-                    <%}%> <% }) %>
-                  </select>
-                </div>
-                <div class="status">
-                  <label for="">Product Status</label>
-                  <input
-                    type="text"
-                    name="status"
-                    value="<%=product.status%>"
-                    class="input"
-                  />
-                  <p class="error">
-                    <%=typeof errors != 'undefined' ? errors.status : ''%>
-                  </p>
-                </div>
-              </div>
-              <div class="size-and-qty">
-                <!-- extra small -->
-                <div class="es">
-                  <label for="extra-small">Extra-Small:</label><br />
-                  <input
-                    type="number"
-                    id="extra-small"
-                    name="extra_small"
-                    value="<%=product.extra_small%>"
-                    class="input"
-                  /><br />
-                  <p class="error"></p>
-                </div>
-
-                <!-- small -->
-                <div class="s">
-                  <label for="small">Small:</label><br />
-                  <input
-                    type="number"
-                    id="small"
-                    name="small"
-                    value="<%=product.small%>"
-                    class="input"
-                  /><br />
-                  <p class="error"></p>
-                </div>
-
-                <!-- medium -->
-                <div class="m">
-                  <label for="medium">Medium:</label><br />
-                  <input
-                    type="number"
-                    id="medium"
-                    name="medium"
-                    value="<%=product.medium%>"
-                    class="input"
-                  /><br />
-                  <p class="error"></p>
-                </div>
-
-                <!-- large -->
-                <div class="l">
-                  <label for="large">Large:</label><br />
-                  <input
-                    type="number"
-                    id="large"
-                    name="large"
-                    value="<%=product.large%>"
-                    class="input"
-                  /><br />
-                  <p class="error"></p>
-                </div>
-
-                <!-- extra large -->
-                <div class="xl">
-                  <label for="extra-large">Extra-Large:</label><br />
-                  <input
-                    type="number"
-                    id="extra-large"
-                    name="extra_large"
-                    value="<%=product.extra_large%>"
-                    class="input"
-                  /><br />
-                  <p class="error"></p>
-                </div>
-
-                <!-- extra extra large -->
-                <div class="xxl">
-                  <label for="extra-extra-large">Extra-Extra-Large:</label
-                  ><br />
-                  <input
-                    type="number"
-                    id="extra-extra-large"
-                    name="extra_extra_large"
-                    value="<%=product.extra_extra_large%>"
-                    class="input"
-                  /><br />
-                  <p class="error"></p>
-                </div>
-              </div>
-
-              <!-- date -->
-              <div class="date">
-                <label for="">Publishing Date</label>
                 <input
-                  type="date"
-                  name="date"
-                  value="<%=product.date instanceof Date ? product.date.toISOString().split('T')[0]: ''%>"
+                  type="hidden"
+                  value="image added"
                   class="input"
+                  name="unknown"
                 />
-                <p class="error">
-                  <%=typeof errors != 'undefined' ? errors.date : ''%>
-                </p>
+                <!-- cropping section -->
+                <div class="selected-preview"></div>
+                <button class="crop-button" style="display: none" id="crop">
+                  Crop
+                </button>
+
+                <!-- cropped image -->
+                <div class="new-cropped-preview"></div>
+                <div class="error"></div>
               </div>
-              <div class="submit-button">
-                <input type="submit" value="submit product" />
+
+              <!--  -->
+              <%} %>
+            </div>
+            <div class="bottom-section">
+              <div class="left-section">
+                <!-- left section description -->
+                <div class="description-head">description</div>
+                <div class="description">
+                  <div class="description-left">
+                    <!-- sleeve -->
+                    <div class="sleeve">
+                      <label for="">Sleeve</label>
+                      <input
+                        type="text"
+                        name="sleeve"
+                        value="<%=product.sleeve%>"
+                        class="input"
+                      />
+                      <p class="error">
+                        <%=typeof errors != 'undefined' ? errors.sleeve : ''%>
+                      </p>
+                    </div>
+
+                    <!-- fit -->
+                    <div class="fit">
+                      <label for="">Fit</label>
+                      <input
+                        type="text"
+                        name="fit"
+                        value="<%=product.fit%>"
+                        class="input"
+                      />
+                      <p class="error">
+                        <%=typeof errors != 'undefined' ? errors.fit : ''%>
+                      </p>
+                    </div>
+
+                    <!-- pattern -->
+                    <div class="pattern">
+                      <label for="">Pattern</label>
+                      <input
+                        type="text"
+                        name="pattern"
+                        value="<%= product.pattern%>"
+                        class="input"
+                      />
+                      <p class="error">
+                        <%=typeof errors != 'undefined' ? errors.pattern : ''%>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="description-right">
+                    <!-- wash -->
+                    <div class="wash">
+                      <label for="">Wash</label>
+                      <input
+                        type="text"
+                        name="wash"
+                        value="<%=product.wash%>"
+                        class="input"
+                      />
+                      <p class="error">
+                        <%=typeof errors != 'undefined' ? errors.wash : ''%>
+                      </p>
+                    </div>
+
+                    <!-- color -->
+                    <div class="color">
+                      <label for="">Color</label>
+                      <input
+                        type="text"
+                        name="color"
+                        value="<%=product.color%>"
+                        class="input"
+                      />
+                      <p class="error">
+                        <%=typeof errors != 'undefined' ? errors.color : ''%>
+                      </p>
+                    </div>
+
+                    <!-- fabric -->
+                    <div class="fabric">
+                      <label for="">Fabric</label>
+                      <input
+                        type="text"
+                        name="fabric"
+                        value="<%=product.fabric%>"
+                        class="input"
+                      />
+                      <p class="error">
+                        <%=typeof errors != 'undefined' ? errors.fabric : ''%>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="right-section">
+                <div class="brand-and-type">
+                  <div class="brand">
+                    <label for="">Brand</label>
+                    <input
+                      type="text"
+                      name="brand"
+                      value="<%=product.brand%>"
+                      class="input"
+                    />
+                    <p class="error">
+                      <%=typeof errors != 'undefined' ? errors.brand : ''%>
+                    </p>
+                  </div>
+                  <div class="type">
+                    <label for="">Product Type</label>
+                    <input
+                      type="text"
+                      name="productType"
+                      value="<%=product.productType%>"
+                      class="input"
+                    />
+                    <p class="error">
+                      <%=typeof errors != 'undefined' ? errors.productType :
+                      ''%>
+                    </p>
+                  </div>
+                </div>
+                <div class="actual-and-selling">
+                  <div class="actual">
+                    <label for="">Actual Price</label>
+                    <input
+                      type="number"
+                      name="actualPrice"
+                      value="<%=product.actualPrice%>"
+                      class="input"
+                    />
+                    <p class="error">
+                      <%=typeof errors != 'undefined' ? errors.actualPrice :
+                      ''%>
+                    </p>
+                  </div>
+                  <div class="selling">
+                    <label for="">Selling Price</label>
+                    <input
+                      type="number"
+                      name="sellingPrice"
+                      value="<%=product.sellingPrice%>"
+                      class="input"
+                    />
+                    <p class="error">
+                      <%=typeof errors != 'undefined' ? errors.sellingPrice :
+                      ''%>
+                    </p>
+                  </div>
+                </div>
+                <div class="cata-and-status">
+                  <div class="cata">
+                    <label for="">Category</label>
+                    <select name="category" id="category">
+                      <% categories.forEach(function(category){ %>
+                      <%if(product.category === category.category){%>
+                      <option value="<%=category.category%>" selected>
+                        <%=category.category%>
+                      </option>
+                      <%}else{%>
+                      <option value="<%=category.category%>">
+                        <%=category.category%>
+                      </option>
+                      <%}%> <% }) %>
+                    </select>
+                    <div class="error"></div>
+                  </div>
+                  <div class="status">
+                    <label for="">Product Status</label>
+                    <input
+                      type="text"
+                      name="status"
+                      value="<%=product.status%>"
+                      class="input"
+                    />
+                    <p class="error">
+                      <%=typeof errors != 'undefined' ? errors.status : ''%>
+                    </p>
+                  </div>
+                </div>
+                <div class="size-and-qty">
+                  <div class="sizeqty-top">
+                    <!-- extra small -->
+                    <div class="es">
+                      <label for="extra-small">XS</label><br />
+                      <input
+                        type="number"
+                        id="extra-small"
+                        name="extra_small"
+                        value="<%=product.extra_small%>"
+                        class="input"
+                      /><br />
+                      <p class="error"></p>
+                    </div>
+
+                    <!-- small -->
+                    <div class="s">
+                      <label for="small">S</label><br />
+                      <input
+                        type="number"
+                        id="small"
+                        name="small"
+                        value="<%=product.small%>"
+                        class="input"
+                      /><br />
+                      <p class="error"></p>
+                    </div>
+
+                    <!-- medium -->
+                    <div class="m">
+                      <label for="medium">M</label><br />
+                      <input
+                        type="number"
+                        id="medium"
+                        name="medium"
+                        value="<%=product.medium%>"
+                        class="input"
+                      /><br />
+                      <p class="error"></p>
+                    </div>
+                  </div>
+
+                  <div class="sizeqty-bottom">
+                    <!-- large -->
+                    <div class="l">
+                      <label for="large">L</label><br />
+                      <input
+                        type="number"
+                        id="large"
+                        name="large"
+                        value="<%=product.large%>"
+                        class="input"
+                      /><br />
+                      <p class="error"></p>
+                    </div>
+
+                    <!-- extra large -->
+                    <div class="xl">
+                      <label for="extra-large">XL</label><br />
+                      <input
+                        type="number"
+                        id="extra-large"
+                        name="extra_large"
+                        value="<%=product.extra_large%>"
+                        class="input"
+                      /><br />
+                      <p class="error"></p>
+                    </div>
+
+                    <!-- extra extra large -->
+                    <div class="xxl">
+                      <label for="extra-extra-large">XXL</label><br />
+                      <input
+                        type="number"
+                        id="extra-extra-large"
+                        name="extra_extra_large"
+                        value="<%=product.extra_extra_large%>"
+                        class="input"
+                      /><br />
+                      <p class="error"></p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- date -->
+
+                <div class="submit-button">
+                  <input type="submit" value="submit product" />
+                </div>
               </div>
             </div>
           </form>
         </div>
       </div>
     </div>
+    <script
+      src="https://kit.fontawesome.com/f620fbbfb3.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
     <script src="/jsFiles/updateProduct.js"></script>
   </body>
 </html>

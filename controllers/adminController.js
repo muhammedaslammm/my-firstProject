@@ -514,12 +514,14 @@ exports.updateProductPage = async function(req,res){
     try{
         const productID = req.params.id;
         const product = await Product.findById(productID);
-        const categories = await Category.find({deletedAt:null})  ;
-        const imgURLs = {};
-        for(let i=0; i<product.images.length; i++){
-            imgURLs[`img${i+1}`] = product.images[i]
-        }     
-        res.render("updateProduct",{product,categories,imgURLs});
+        const categories = await Category.find({deletedAt:null});
+            
+        res.render("updateProduct",{
+            productID,
+            product,
+            categories,
+            images:product.images
+        });
     }
     catch(error){
         console.log("server error",error);
@@ -537,7 +539,7 @@ exports.updateProduct = async function(req,res){
     const productFromDB = await Product.findById(productID);
     const productImageURL = productFromDB.images;
     const imageURLs = [];
-    console.log(req.files);
+    console.log('req.files: ',req.files);
     const properties = ["image1","image2","image3"];
     const objectKeys = Object.keys(req.files);
     console.log("object keys: ",objectKeys);
@@ -580,7 +582,7 @@ exports.updateProduct = async function(req,res){
             category:req.body.category,
             discount,
             status:req.body.status,                
-            date:req.body.date
+            date:new Date
         }});
 
         console.log("product Updated");
