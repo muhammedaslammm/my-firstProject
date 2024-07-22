@@ -1,30 +1,38 @@
 <header>
-  <div class="nav-container">
+  <nav class="nav-container">
     <div class="left-section">
-      <div class="logo"><a href="/home">moas</a></div>
+      <div class="logo"><a href="/home">moascart</a></div>
       <form action="/search" id="search-section" method="get">
-        <input type="search" placeholder="search" id="search" name="q" />
+        <input
+          type="search"
+          placeholder="Search for products here..."
+          id="search"
+          name="q"
+        />
         <button type="submit" id="searchButton">
           <i class="fa fa-search"></i>
         </button>
       </form>
     </div>
     <div class="right-section">
-      <a href="/cart-page">Cart</a>
-      <a href="/wishlist">Wishlist</a>
-      <div class="dropdown-section">
-        <a href="" id="profile-button">Profile</a>
-        <div class="dropdown-content">
-          <%if(userID){%>
-          <a href="/user-profile">User Profile</a>
-          <a href="/order-page">Orders</a>
-          <a href="/logout">Logout</a>
-          <%}else{%>
-          <a href="/login">Login</a>
-          <%}%>
+      <div class="menu-button"><i class="fa-solid fa-bars"></i></div>
+      <div class="links">
+        <a href="/cart-page">Cart</a>
+        <a href="/wishlist">Wishlist</a>
+        <div class="dropdown-section">
+          <a href="" id="profile-button">Profile</a>
+          <div class="dropdown-content">
+            <%if(userID){%>
+            <a href="/user-profile">User Profile</a>
+            <a href="/order-page">Orders</a>
+            <a href="/logout">Logout</a>
+            <%}else{%>
+            <a href="/login">Login</a>
+            <%}%>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </nav>
 </header>
 <script></script>

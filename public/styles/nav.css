@@ -5,9 +5,8 @@ body {
 }
 
 header {
-    padding: 10px 0px;
-    background-color: rgb(67, 82, 104);
-    margin-bottom: 20px;
+    padding: 12px 0px;
+    background-color: rgb(49, 63, 69);
     position: fixed;
     left: 0;
     right: 0;
@@ -15,7 +14,7 @@ header {
     z-index: 1;
   }
   .nav-container {
-    width: 90%;
+    width:90%;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -28,7 +27,6 @@ header {
   .left-section .logo a {
     color: white;
     font-weight: 500;
-    font-size: 25px;
     text-decoration: none;
   }
   #search-section {
@@ -50,14 +48,16 @@ header {
   #search-section button:hover{
     cursor: pointer;
   }
-  .right-section {
+  .links {
     display: flex;
-    gap: 30px;
   }
-  .right-section a {
+  .menu-button{
+    display: none;
+  }
+  .links a {
+    margin-left: 60px;
     text-decoration: none;
     color: white;
-    font-size: 17px;
   }
   .dropdown-section {
     position: relative;
@@ -80,3 +80,109 @@ header {
   .dropdown-content a:hover {
     background-color: rgb(232, 230, 230);
   }
+
+
+/* large screen */
+@media (min-width:1536px){
+  header{
+    padding:10px 0px;
+  }
+  .left-section .logo a{
+    font-size: 32px;
+  }
+  .links a{
+    font-size: 23px;
+  }
+}
+@media (max-width:1536px){
+  .left-section .logo a{
+    font-size: 30px;
+  }
+  .links a{
+    font-size: 19px;
+    margin-left: 45px;
+  }
+}
+
+
+@media (max-width:1280px){
+  .left-section .logo a{
+    font-size: 28px;
+  }
+  #search-section input[type="search"] {
+    max-width: 400px;
+    font-size: 16px;
+    padding: 0px 8px;
+  }
+  .links a{
+    font-size: 18px;
+    margin-left: 28px;
+  }
+}
+
+@media (max-width:1024px){
+  .left-section .logo a{
+    font-size: 26px;
+  }
+  #search-section input[type="search"] {
+    max-width: 300px;
+    font-size: 15px;
+  }
+  .links a{
+    font-size: 17px;
+    margin-left: 25px;
+  }
+}
+
+@media (max-width:768px){
+  .left-section .logo a{
+    font-size: 24px;
+  }
+  #search-section input[type="search"] {
+    max-width: 280px;
+    padding: 0px 7px;
+    font-size: 14.5px;
+  }
+  .links a{
+    font-size: 16px;
+    margin-left: 23px;
+  }
+}
+
+@media (max-width:648px){
+  .left-section .logo a{
+    font-size: 22px;
+  }
+  #search-section input[type="search"] {
+    max-width: 200px;
+    padding: 0px 6.5px;
+    font-size: 13.5px;
+  }
+  .links{
+    display: none;
+  }
+  .menu-button{
+    display: block;
+    color: white;
+    font-size: 20px;
+  }
+}
+
+@media (max-width:478px){
+  .left-section .logo a{
+    font-size: 20px;
+  }
+  #search-section input[type="search"] {
+    display: none;
+  }
+  #search-section button{
+    display: none;
+  }
+  
+  .menu-button{
+    display: block;
+    color: white;
+    font-size: 19px;
+  }
+}
+

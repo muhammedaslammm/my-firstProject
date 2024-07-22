@@ -1,0 +1,379 @@
+.banner-container{
+    width:100%;
+    display: flex;
+    margin:75px auto;
+}
+p{
+    margin: 0;
+}
+
+.bannerHomeImg{
+    position: relative;
+    max-height: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.bannerHomeImg img{
+    width:100%;
+    height:100%;
+    object-fit: cover;
+}
+.bannerHomeImg .banner-note{
+    position: absolute;
+    font-family: "Kanit", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 500;
+    color: white;
+    font-size: 4vw;
+    bottom: 20px;
+    left:29%;
+}
+.banner-button{
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.3vw;
+    font-weight: 400;
+    border: 1px solid white;
+    padding:6px 15px;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+
+
+/* product container */
+.product-container{
+    width:90%;
+    margin:20px auto
+}
+
+.image-boxes{
+    display: flex;
+    justify-content: space-between;    
+}
+
+.image-boxes a{
+    width: 17%;
+    height:250px;
+    text-decoration: none;
+    color:black;    
+}
+
+
+.box{
+    width:100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition:0.3s
+}
+.image-boxes .box:hover{
+    box-shadow: 0px 0px 6px rgb(99, 99, 99);
+}
+
+.box-image{
+    width:100%;
+    height:100%;
+    overflow: hidden;
+}
+
+.box-image img{
+    width:100%;
+    height:100%;
+    object-fit: cover;
+}
+.box-head{
+    padding:5px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 500;
+    
+}
+
+/* new arrival box */
+.new-arrival-box{
+    display: flex;
+    flex-direction: column;   
+    margin:100px auto 20px;
+}
+.new-arrival-head{
+    font-size: 2.5vw;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 5%;
+}
+.new-arrival-section{    
+    display: flex;
+    justify-content: center;
+    max-width:1280px;
+    margin-left: auto;
+    margin-right: auto;
+    gap:50px;
+    /* border:1px solid red; */
+}
+.image-one{
+    width:400px;
+    height:500px
+}
+.content-one{
+    max-width: 600px
+}
+.image-one img{
+    width:100%;
+    height: 100%;
+    object-fit: cover;
+}
+.content-one .content{
+    font-size: 50px;
+    color: rgb(6, 107, 6);
+    font-family: 'Times New Roman', Times, serif;
+}
+.content-one span{
+    font-size: 58px;
+}
+.content-one .contentOne-note{
+    font-size:23px ;
+    opacity: 0.9;
+}
+.image-one:hover, .image-two:hover{    
+    cursor: pointer;
+}
+
+/* large screen */ 
+@media (max-width:1536px){
+    .bannerHomeImg .banner-note{
+        font-size: 4.4vw;
+        left:28%;
+    }
+    .banner-button{
+        font-size: 1.4vw;
+    }
+    
+}
+@media (max-width:1280px){  
+    .bannerHomeImg .banner-note{
+        font-size: 4.6vw;
+        left:27%;
+    }
+    .banner-button{
+        font-size: 1.5vw;
+    }   
+
+    .image-boxes a{
+        width:16%;
+        height:200px
+    }
+    .box-head{
+        font-size: 19px;
+    }
+
+    .new-arrival-box{
+        margin-top: 80px;
+    }
+    .new-arrival-head{
+        font-size: 2.6vw;
+    }
+    .new-arrival-section{
+        max-width: 1024px;
+    }
+    .image-one{
+        max-width:350px;
+        height:450px
+    }
+    .content-one{
+        max-width: 550px
+    }
+    .content-one .content{
+        font-size: 44px;
+        color: rgb(6, 107, 6);
+        font-family: 'Times New Roman', Times, serif;
+    }
+    .content-one span{
+        font-size: 52px;
+    }
+    .content-one .contentOne-note{
+        font-size:20px ;
+        opacity: 0.9;
+    }
+}
+
+@media (max-width:1024px){
+    .image-boxes a{
+        width:15%;
+        min-width: 130px;
+        height:170px
+    }
+    .box-head{
+        font-size: 16px;
+    }
+    .new-arrival-head{
+        font-size: 23px;
+    }
+    .new-arrival-section{
+        max-width: 768px;
+    }
+    .image-one{
+        width:400px;
+        height:420px;
+    }
+    .content-one{
+        width: 500px
+    }
+    .content-one .content{
+        font-size: 38px;
+        color: rgb(6, 107, 6);
+        font-family: 'Times New Roman', Times, serif;
+    }
+    .content-one span{
+        font-size: 46px;
+    }
+    .content-one .contentOne-note{
+        font-size:18px ;
+        opacity: 0.9;
+    }
+}
+
+@media (max-width:768px){
+    .bannerHomeImg .banner-note{
+        font-size: 4.7vw;
+        left:26%;
+    }
+    .banner-button{
+        font-size: 1.6vw;
+    }
+    .image-boxes a{
+        width:13%;
+        min-width:110px;
+        height:150px;
+    }
+    .box-head{
+        font-size: 15px;
+    }
+
+    .new-arrival-box{
+        margin-top: 70px;
+    }
+    .new-arrival-head{
+        font-size: 21px;
+    }
+
+    .new-arrival-section{
+        max-width: 648px;
+    }
+    .image-one{
+        width:380px;
+        height:390px;
+    }
+    .content-one{
+        width: 470px
+    }
+    .content-one .content{
+        font-size: 31px;
+        color: rgb(6, 107, 6);
+        font-family: 'Times New Roman', Times, serif;
+    }
+    .content-one span{
+        font-size: 40px;
+    }
+    .content-one .contentOne-note{
+        font-size:16px ;
+        opacity: 0.9;
+    }
+}
+@media (max-width:648px){
+    .bannerHomeImg .banner-note{
+        font-size: 4.8vw;
+        left:25%;
+    }
+    .banner-button{
+        font-size: 1.7vw;
+    }
+    .image-boxes a{
+        width:13%;
+        min-width:80px;
+        height:110px;
+    }
+    .box-head{
+        font-size: 13px;
+    }
+    .new-arrival-box{
+        margin-top: 60px;
+    }
+    .new-arrival-head{
+        font-size: 18px;
+    }
+    .new-arrival-section{
+        max-width: 478px;
+        gap:30px
+    }
+    .image-one{
+        width:350px;
+        height:300px;
+    }
+    .content-one{
+        width: 440px
+    }
+    .content-one .content{
+        font-size: 24px;
+        color: rgb(6, 107, 6);
+        font-family: 'Times New Roman', Times, serif;
+    }
+    .content-one span{
+        font-size: 34px;
+    }
+    .content-one .contentOne-note{
+        font-size:12px ;
+        opacity: 0.9;
+    }
+}
+
+@media (max-width:478px){
+    .bannerHomeImg .banner-note{
+        font-size: 4.9vw;
+        left:24%;
+    }
+    .banner-button{
+        font-size: 1.8vw;
+    }
+    .image-boxes a{
+        width:13%;
+        min-width:65px;
+        height:95px
+    }
+    .box-head{
+        font-size: 11px;
+    }
+    .new-arrival-box{
+        margin-top: 45px;
+    }
+    .new-arrival-head{
+        font-size: 16px;
+    }
+    .new-arrival-section{
+        flex-direction: column;
+        align-items: center;
+        gap:10px;
+    }
+    .image-one{
+        width:300px;
+        height:300px;
+    }
+    .content-one{
+        width: 300px;
+        text-align: center;
+    }
+    .content-one .content{
+        font-size: 20px;
+        color: rgb(6, 107, 6);
+        font-family: 'Times New Roman', Times, serif;
+    }
+    .content-one span{
+        font-size: 28px;
+    }
+    .content-one .contentOne-note{
+        font-size:11px ;
+        opacity: 0.9;
+    }
+    
+}

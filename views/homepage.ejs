@@ -10,26 +10,42 @@
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand&family=Roboto:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bodoni+Moda+SC:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Amita:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
     <link rel="stylesheet" href="/styles/nav.css" />
-    <link rel="stylesheet" href="/styles/home-page.css" />
+    <link rel="stylesheet" href="/styles/clientside/home-page.css" />
   </head>
   <body>
     <!-- headers -->
     <%-include("./partials/navbar.ejs")%>
     <!-- -- -->
     <div class="banner-container">
-      <div class="bannerHome">
-        <div class="bannerHomeImg">
-          <img src="<%=banners.home.image%>" alt="" />
-        </div>
-        <div class="bannerNoteSection">
-          <div class="bannerText">
-            The Place You Where <br />
-            Looking for
+      <div class="bannerHomeImg">
+        <img src="<%=banners.home.image%>" alt="" />
+        <div class="banner-note">
+          <p>Welcome to moascart</p>
+          <div class="button">
+            <p class="banner-button">Start Shopping</p>
           </div>
         </div>
       </div>
@@ -50,7 +66,7 @@
             <div class="box-image">
               <img src="<%=banners.t_shirts.image%>" alt="bottom image" />
             </div>
-            <div class="box-head">T Shirts</div>
+            <div class="box-head">T-Shirts</div>
           </div>
         </a>
 
@@ -81,48 +97,36 @@
           </div>
         </a>
       </div>
-
-      <div class="new-arrival-box">
-        <div class="new-arrival-head">new arrivals</div>
-        <div class="new-arrival-images">
-          <div class="image-one">
-            <img src="<%=banners.formals.image%>" alt="formal image" />
-          </div>
-          <div class="content-one">
-            <p class="content">
-              Men's formals starting at <span>Rs.5800/-</span>
-            </p>
-            <p class="contentOne-note">
-              Introducing the latest in formal wear excellence! Our meticulously
-              crafted products boast incredible stitchings and unparalleled
-              quality, ensuring you stand out with style and sophistication
-              <br />
-              With prices starting from 5800, these pieces are a testament to
-              luxury and elegance. Elevate your wardrobe and make a lasting
-              impression with our exceptional formal wear collection.
-            </p>
-          </div>
+    </div>
+    <div class="new-arrival-box">
+      <div class="new-arrival-head">new arrivals</div>
+      <div class="new-arrival-section">
+        <div class="image-one">
+          <img src="<%=banners.formals.image%>" alt="formal image" />
+        </div>
+        <div class="content-one">
+          <p class="content">
+            Men's formals starting at <span>Rs.5800/-</span>
+          </p>
+          <p class="contentOne-note">
+            Introducing the latest in formal wear excellence! Our meticulously
+            crafted products boast incredible stitchings and unparalleled
+            quality, ensuring you stand out with style and sophistication
+            <br />
+            With prices starting from 5800, these pieces are a testament to
+            luxury and elegance. Elevate your wardrobe and make a lasting
+            impression with our exceptional formal wear collection.Elevate your
+            wardrobe and make a lasting impression with our exceptional formal
+            wear collection.
+          </p>
         </div>
       </div>
     </div>
 
-    <script>
-      // remove the selected size from the localstorage
-      document.addEventListener("DOMContentLoaded", function () {
-        localStorage.removeItem("selectedSize");
-      });
-
-      // nav
-      const profileButton = document.querySelector("#profile-button");
-      const content = document.querySelector(".dropdown-content");
-
-      profileButton.addEventListener("click", function (event) {
-        event.preventDefault();
-        content.style.display =
-          content.style.display === "none" ? "block" : "none";
-      });
-
-      // ---------------------------------------------------
-    </script>
+    <script src="/jsFiles/clientside/homepage.js"></script>
+    <script
+      src="https://kit.fontawesome.com/f620fbbfb3.js"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>
