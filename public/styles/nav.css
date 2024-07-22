@@ -14,8 +14,8 @@ header {
     z-index: 1;
   }
   .nav-container {
-    width:90%;
-    margin: 0 auto;
+    max-width:1536px;
+    margin: 0 auto;   
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -95,6 +95,9 @@ header {
   }
 }
 @media (max-width:1536px){
+  .nav-container{
+    max-width: 1280px;
+  }
   .left-section .logo a{
     font-size: 30px;
   }
@@ -106,8 +109,11 @@ header {
 
 
 @media (max-width:1280px){
+  .nav-container{
+    max-width: 1024px;
+  }
   .left-section .logo a{
-    font-size: 28px;
+    font-size: 25px;
   }
   #search-section input[type="search"] {
     max-width: 400px;
@@ -115,48 +121,63 @@ header {
     padding: 0px 8px;
   }
   .links a{
-    font-size: 18px;
+    font-size: 16px;
     margin-left: 28px;
   }
 }
 
 @media (max-width:1024px){
+  header{
+    padding:10px 0px;
+  }
+  .nav-container{
+    max-width: 768px;
+  }
   .left-section .logo a{
-    font-size: 26px;
+    font-size: 20px;
   }
   #search-section input[type="search"] {
     max-width: 300px;
     font-size: 15px;
   }
   .links a{
-    font-size: 17px;
+    font-size: 14px;
     margin-left: 25px;
   }
 }
 
 @media (max-width:768px){
+  header{
+    padding:9px 0px;
+  }
+  .nav-container{
+    max-width: 648px;
+  }
   .left-section .logo a{
-    font-size: 24px;
+    font-size: 19px;
   }
   #search-section input[type="search"] {
     max-width: 280px;
-    padding: 0px 7px;
-    font-size: 14.5px;
+    padding: 0px 5px;
+    font-size: 13px;
   }
   .links a{
-    font-size: 16px;
+    font-size: 14px;
     margin-left: 23px;
   }
 }
 
 @media (max-width:648px){
+  .nav-container{
+    max-width: 478px;
+  }
   .left-section .logo a{
-    font-size: 22px;
+    font-size: 17px;
   }
   #search-section input[type="search"] {
     max-width: 200px;
     padding: 0px 6.5px;
-    font-size: 13.5px;
+    font-size: 11px;
   }
   .links{
     display: none;
@@ -164,13 +185,16 @@ header {
   .menu-button{
     display: block;
     color: white;
-    font-size: 20px;
+    font-size: 18px;
   }
 }
 
 @media (max-width:478px){
+  .nav-container{
+    width:90%
+  }
   .left-section .logo a{
-    font-size: 20px;
+    font-size: 15.5px;
   }
   #search-section input[type="search"] {
     display: none;
@@ -182,7 +206,7 @@ header {
   .menu-button{
     display: block;
     color: white;
-    font-size: 19px;
+    font-size: 16px;
   }
 }
 
