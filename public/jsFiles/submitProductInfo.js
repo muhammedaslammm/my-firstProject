@@ -184,10 +184,11 @@ async function convertToBinary(imageURL){
 }
 
 // submitting the values
-let validated = true;
+
 const form = document.getElementById('product-form');
 form.addEventListener('submit',async function(event){
     event.preventDefault();
+    let validated = true;
     const inputs = document.querySelectorAll('input');
     const category = document.getElementById('category');
     inputs.forEach(function(input){
