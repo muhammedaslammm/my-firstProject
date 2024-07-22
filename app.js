@@ -34,7 +34,7 @@ app.use("/",clientSession,orderRouter)
 app.use("/",clientSession,paymentRouter)
 
 function pageNotFound(req,res,next){
-    res.status(404).render("invalidURL")
+    res.status(404).render("invalidURLPage")
 }
 app.use(pageNotFound)
 
