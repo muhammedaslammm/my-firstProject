@@ -121,7 +121,7 @@ exports.increaseQuantity = async function(req,res){
         else if(cart.productID[cartSize] <= 6 && Number(currentQuantity) < cart.productID[cartSize] ){
             console.log(cart.productID[cartSize]);
             const qtyUpdate = await Cart.updateOne({_id:cartID},{$inc:{quantity:1}})
-            const [totalAmount, totalGST, bagTotal] = await addCalculateRate(userID)
+            const [totalAmount, bagTotal, totalGST] = await addCalculateRate(userID)
             const currentCart = await Cart.findById(cartID)            
 
             res.status(200).json({
