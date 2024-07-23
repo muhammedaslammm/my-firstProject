@@ -18,270 +18,9 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
     <link rel="stylesheet" href="./styles/nav.css" />
+    <link rel="stylesheet" href="/styles/clientside/cart.css" />
 
     <title>Cart</title>
-    <style>
-      body {
-        font-family: "poppins", sans-serif;
-      }
-
-      .cart-body {
-        width: 90%;
-        margin: 80px auto;
-        display: flex;
-        justify-content: space-between;
-      }
-      /* cart left section */
-      .cart-leftSection {
-        display: flex;
-        flex-direction: column;
-        width: 68%;
-      }
-      .cart-leftSection .left-top-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 20px;
-      }
-      .cart-leftSection .left-top-row .cart-head {
-        line-height: 20px;
-      }
-      .cart-leftSection .left-top-row .cart-head .cart-name {
-        font-size: 22px;
-        font-weight: 500;
-        margin-bottom: 3px;
-      }
-      .cart-leftSection .left-top-row .cart-head .item-sum {
-        font-size: 15px;
-        color: rgb(95, 94, 94);
-      }
-
-      /* cart box */
-      .cart-box {
-        border: 1px solid rgb(227, 226, 226);
-        padding: 25px 18px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-        margin-bottom: 10px;
-        box-shadow: 0px 0px 5px rgb(227, 226, 226);
-      }
-      .cart-box .image {
-        width: 11%;
-        height: auto;
-      }
-      .cart-box .image img {
-        object-fit: contain;
-        width: 100%;
-      }
-      .details-section {
-        line-height: 19px;
-        margin-right: 35px;
-        width: 60%;
-        /* border: 1px solid lightcoral; */
-      }
-      .details-section .brand {
-        font-size: 19px;
-        font-weight: 500;
-        margin-bottom: 4px;
-      }
-      .detail-note {
-        font-size: 15px;
-        color: rgb(118, 117, 117);
-      }
-      .price {
-        display: flex;
-        margin-top: 15px;
-        align-items: flex-end;
-      }
-      .price .selling {
-        font-size: 15px;
-        color: rgb(122, 122, 122);
-        margin-right: 10px;
-      }
-      .selling-price {
-        font-size: 19px;
-        font-weight: 500;
-        color: black;
-      }
-      .gst-amount {
-        margin-right: 5px;
-      }
-      .gst-note {
-        font-style: italic;
-        color: rgb(185, 137, 6);
-      }
-
-      .price .actual {
-        font-size: 15px;
-        color: rgb(118, 117, 117);
-        margin-left: 10px;
-        text-decoration: line-through;
-        text-decoration-thickness: 1.1px;
-        text-decoration-color: rgb(149, 19, 19);
-      }
-      .color {
-        font-size: 16px;
-        font-weight: 500;
-        color: rgb(118, 117, 117);
-        margin-top: 2px;
-      }
-
-      /* size and quantity */
-      .size-and-quantity {
-        display: flex;
-        margin-top: 16px;
-        justify-content: space-between;
-      }
-      /* size box */
-      .size-box {
-        padding: 7px 10px;
-        border: 1px solid rgb(227, 226, 226);
-        width: 48%;
-        border-radius: 3px;
-      }
-      .size-box .size {
-        font-size: 15px;
-        color: rgb(110, 109, 109);
-        margin-bottom: 5px;
-      }
-      .size-box .value {
-        font-weight: 500;
-        font-size: 19px;
-      }
-
-      /* quantity box */
-      .quantity-box {
-        padding: 7px 10px;
-        border: 1px solid rgb(227, 226, 226);
-        width: 48%;
-        border-radius: 3px;
-      }
-      .quantity-box .quantity {
-        font-size: 15px;
-        color: rgb(110, 109, 109);
-        margin-bottom: 5px;
-      }
-      .quantity-box .values {
-        display: flex;
-        flex-direction: row;
-      }
-
-      .quantity-box .value {
-        font-weight: 500;
-        font-size: 19px;
-        margin-right: 15px;
-      }
-      .values div {
-        margin-right: 15px;
-      }
-      .iconDown {
-        font-size: 20px;
-        color: rgb(145, 145, 145);
-        padding: 0px 5px;
-      }
-      .iconUp {
-        font-size: 19px;
-        color: rgb(138, 138, 138);
-        padding: 0px 5px;
-      }
-
-      .values div:hover {
-        cursor: pointer;
-      }
-      .values #cart-quantity:hover {
-        cursor: default;
-      }
-
-      /* cart options */
-      .cart-options {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-      }
-      .cart-options a {
-        font-size: 15px;
-        margin-right: 15px;
-      }
-      .cart-options a:last-child {
-        margin-right: 0;
-      }
-      .cart-options a:hover {
-        text-decoration: none;
-      }
-
-      .cart-options #wishlist {
-        color: rgb(23, 110, 209);
-      }
-      .cart-options #remove {
-        color: maroon;
-      }
-      /* right section */
-      .cart-rightSection {
-        /* border: 1px solid black; */
-        width: 29%;
-        /* padding: 0px 0px 0px 15px; */
-      }
-      .amount-summary-box {
-        position: sticky;
-        top: 70px;
-        margin-top: 62px;
-        /* border: 1px solid rgb(204, 203, 203); */
-        background-color: rgb(247, 247, 247);
-        box-shadow: 0px 0px 5px rgb(208, 208, 208);
-        padding: 12px 20px;
-      }
-      .total-amount {
-        font-size: 18px;
-        margin-bottom: 20px;
-        color: rgb(90, 90, 90);
-      }
-      .total-amount span {
-        font-size: 21px;
-        font-weight: 500;
-        color: black;
-      }
-      .amount-details {
-        display: flex;
-        justify-content: space-between;
-        font-size: 15px;
-      }
-      .gst {
-        color: rgb(13, 92, 13);
-      }
-      .amount-details .detail-label {
-        color: rgb(90, 90, 90);
-      }
-
-      /* no content */
-      .div {
-        display: flex;
-        justify-content: start;
-        align-items: center;
-        margin-top: 5%;
-        font-weight: 500;
-        color: rgb(220, 215, 215);
-        font-size: 20px;
-      }
-
-      /* oder button */
-      .order-button {
-        margin-top: 10px;
-        display: flex;
-        justify-content: end;
-        margin-right: 5px;
-        position: sticky;
-        top: 225px;
-      }
-      .order-button a {
-        color: rgb(0, 0, 0);
-        background-color: rgb(255, 255, 255);
-        font-size: 15px;
-        padding: 2px 20px;
-        font-weight: 500;
-        border-radius: 3px;
-        border: 1px solid rgb(135, 133, 133);
-      }
-    </style>
   </head>
   <body>
     <!-- headers -->
@@ -360,13 +99,13 @@
               <i
                 id="solidHeart"
                 class="fa-solid fa-heart"
-                style="color: rgb(190, 19, 19); font-size: 20px"
+                style="color: rgb(190, 19, 19)"
               ></i>
               <%}else{%>
               <i
                 id="regularHeart"
                 class="fa-regular fa-heart"
-                style="color: black; font-size: 20px"
+                style="color: black"
               ></i>
               <%}%></a
             >
@@ -375,10 +114,7 @@
               id="remove"
               onclick="removeCartItem('<%=cart._id%>',event)"
               style="text-decoration: none"
-              ><i
-                class="fa-solid fa-trash-can"
-                style="color: #000000; font-size: 18px"
-              ></i
+              ><i class="fa-solid fa-trash-can" style="color: #000000"></i
             ></a>
           </div>
         </div>
