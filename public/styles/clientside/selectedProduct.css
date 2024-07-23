@@ -1,0 +1,967 @@
+body {
+    font-family: "poppins", sans-serif;
+  }
+  .container-body {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    margin-top: 80px;
+    box-shadow: 0px 0px 9px rgb(207, 207, 207);
+    background-color: white;
+    padding: 30px;
+    box-sizing: border-box;
+  }
+  .image-section {
+    width: 40%;
+    display: flex;
+    object-fit: cover;
+  }
+  .main-image {
+    width: 60%;
+  }
+  .sub-images {
+    width: 29%;
+    object-fit: contain;
+    margin-left: 15px;
+  }
+  .image3 {
+    margin-top: 15px;
+  }
+  img {
+    width: 100%;
+  }
+  /* details section */
+
+  .details-section {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+  }
+  /* head and description */
+  .details-head {
+    line-height: 20px;
+  }
+  .details-head .brand {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .details-head .description {
+    font-size: 17px;
+    font-weight: 500;
+    margin: 0;
+  }
+  .details-head .ratings {
+    margin-top: 5px;
+    display: flex;
+    font-size: 14px;        
+  }
+  .ratings .avgRating{
+    color: rgb(23, 124, 23);
+    margin-right: 3px;
+    font-weight: 500;
+  }
+  .ratings .ratings-count{
+    color: rgb(80, 80, 80);
+  }
+
+  /* details below the head */
+  .details-and-pin {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .product-details1 {
+    width: 100%;
+    margin-top: 15px;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgb(193, 191, 191);
+  }
+
+  .price,
+  .tax-option {
+    line-height: 20px;
+  }
+  .price .selling {
+    font-size: 23px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .actual-and-offer {
+    display: flex;
+    margin-bottom: 5px;
+  }
+  .actual-and-offer .actual {
+    font-size: 15px;
+    color: grey;
+    text-decoration: line-through;
+    text-decoration-color: rgba(255, 0, 0, 0.758);
+    margin-right: 8px;
+  }
+  .actual-and-offer .offer {
+    font-size: 15px;
+    color: green;
+    font-weight: 500;
+  }
+  .tax-option {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .tax-option .similar a {
+    color: rgb(71, 69, 69);
+    text-decoration: none;
+    font-size: 15px;
+  }
+  /* size section */
+  .size {
+    margin-top: 20px;
+    border-top: 1px solid rgb(207, 204, 204);
+    padding: 14px 0px;
+    line-height: 24px;
+    margin-bottom: 5px;
+  }
+  .size-head {
+    font-size: 17px;
+    font-weight: 500;
+    margin-bottom: 13px;
+  }
+  #sizes {
+    margin-bottom: 25px;
+    display: flex;
+    gap: 10px;
+  }
+  .size-button {
+    height: 34px;
+    width: 34px;
+    border: 1px solid rgb(84, 83, 83);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .size-button:hover {
+    cursor: pointer;
+    background-color: rgb(40, 39, 39);
+    color: white;
+    font-weight: 500;
+  }
+  .size-button.selected {
+    background-color: rgb(40, 39, 39);
+    color: white;
+    font-weight: 500;
+  }
+
+  /* quantity */
+  .quantity {
+    margin-top: 10px;
+  }
+
+  .quantity .quantity-box {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-bottom: 9px;
+  }
+  #error-text {
+    position: absolute;
+    color: rgb(197, 53, 24);
+    top: 66px;
+    font-size: 15px;
+  }
+  .quantity-box .stock-left {
+    font-size: 15px;
+    color: rgb(120, 118, 118);
+  }
+
+  .quantity-section .head {
+    font-size: 15px;
+    color: rgb(74, 74, 74);
+    margin-bottom: 8px;
+  }
+  .product-quantity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:10px;
+    
+  }
+  .product-quantity div {
+    display: flex;
+    justify-content: center;
+    align-items: center;  
+    font-size: 18px;
+  }
+  .downButton,
+  .upButton {
+    width: 30px;
+    height: 30px;
+    border: 1px solid grey;
+  }
+  .product-quantity .productQuantity {
+    margin-top: 0;
+  }
+  .product-quantity .productQuantity:hover {
+    cursor: default;
+  }
+  .downButton:hover,
+  .upButton:hover {
+    cursor: pointer;
+  }
+  
+  /* details 3 */
+  .details3 {
+    display: flex;
+    margin-top: 20px;
+  }
+  .mini-details {
+    width: 75%;
+  }
+  .mini-details-head {
+    font-weight: 500;
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  .mini-details p {
+    margin: 0;
+    font-size: 15px;
+    color: rgb(79, 79, 79);
+  }
+
+  /* buy buttons */
+  .buy-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+  }
+  .buy-buttons .cart-btn {
+    background-color: white;
+    color: black;
+    font-family: 'poppins',sans-serif;
+    width:49%;
+    font-weight: 500;
+    font-size: 16px;
+    text-align: center;
+    padding:4px 0px;
+    border-radius: 3px;
+    border: 1px solid rgb(51, 51, 51);
+    cursor: pointer;
+  }
+  .buy-buttons .buy-btn {
+    border: none;
+    background-color: rgb(17, 97, 177);
+    color: white;
+    font-family: 'poppins',sans-serif;
+    width: 49%;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    padding:4px 0px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .buy-buttons a:hover {
+    text-decoration: none;
+  }
+
+  /* review section */
+  .review-section {
+    display: flex;
+    justify-content: space-evenly;
+    max-width: 1280px;
+    margin: 15px auto;
+    box-shadow: 0px 10px 9px rgb(207, 207, 207);
+    background-color: white;        
+    padding: 30px;
+    box-sizing: border-box;
+  }
+  .write-review{
+    width: 30%;
+  }
+  .user-review-option-section-head{
+    margin-left: 2%;
+    font-size: 17px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .write-review .review-box{
+    border: 1px solid rgb(198, 198, 198);
+    border-radius: 4px;
+    padding: 15px;
+  }
+  .rating {
+    margin-bottom: 18px;
+  }
+  .rating-head {
+    font-size: 16px;
+    color: rgb(49, 48, 48);
+    margin: 0px 4px 4px;
+  }
+  .star {
+    margin-right: 5px;
+    font-size: 17px;
+    color: rgb(74, 74, 74);
+  }
+  .star:hover {
+    cursor: pointer;
+  }
+  #review-input-label{
+    font-size: 16px;
+    color: rgb(49, 48, 48);
+    margin: 0px 4px 4px;
+  }
+  .review-input {
+    border: 1px solid rgb(187, 187, 187);
+    border-radius: 4px;
+    outline: none;
+    padding: 3px;
+    width: 80%;
+    margin-right: 10px;
+    font-family: "poppins", sans-serif;
+    font-size: 15px;
+    display: block;
+    margin-bottom: 10px;
+  }
+  #review-submit-button {
+    font-family: "poppins", sans-serif;
+    border: none;
+    background-color: rgb(177, 117, 56);
+    color: white;
+    font-weight: 500;
+    padding: 3px 6px;
+  }
+  #review-submit-button:hover {
+    cursor: pointer;
+  }
+
+  /* user review */
+  .written-review-box{
+    width:30%;        
+  }
+  .personal-review-head{
+    font-size: 17px;
+    font-weight: 500;
+  }
+  .user-review{     
+    margin-top: 10px;   
+    display: flex;
+    border:1px solid rgb(202, 202, 202);
+    padding:18px;
+    border-radius: 4px;
+  }
+  .user-review .user-photo{
+    margin-right: 2.3%;
+  }
+  .user-review .photo{
+    background-color: grey;
+    padding:5px 10px;
+    border-radius: 20px;
+    color:white
+  }
+
+  .user-name{
+    font-size: 16.5px;
+    font-weight: 500;
+  }
+  .user-name span{
+    font-size: 15px;
+    font-weight: normal;
+    color: rgb(103, 102, 102);
+  }
+  .reviewed-date{
+    font-size: 14px;
+    color:rgb(83, 83, 83);
+    margin-bottom: 2px;
+  }
+  .user-rating{
+    margin-bottom: 13px;
+  }
+  .reviewed-star{
+    margin-right: 2px;
+    font-size: 13px;
+  }
+  .user-review-note{
+    font-style: italic;
+  }
+
+  .cannot-review-message{
+    margin: 0px;
+    font-style: italic;
+  }
+  
+  /* all reviews  */
+  .all-reviews{
+    width:50%; 
+  }
+  .reviews-head{
+    font-size: 17px;
+    font-weight: 500;
+  }
+  .users-review-box{
+    margin-top: 10px;
+    border:1px solid rgb(202, 202, 202);
+    padding:18px;
+    border-radius: 4px;
+  }
+  .users-review-box {
+    display: flex;
+  }
+  .users-review-box .user-photo{
+    margin-right: 2.3%;
+  }
+  .users-review-box .photo{
+    background-color: grey;
+    padding:5px 10px;
+    border-radius: 20px;
+    color:white
+  }
+
+  /* no review */
+  .no-review-section{
+    display: flex;
+    margin-top: 5%;
+  }
+  .no-review{
+    font-size: 17px;
+    color: rgb(139, 138, 138);
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  @media (max-width:1280px){
+    .container-body{
+        max-width: 1024px;
+    }
+    .details-head .brand{
+        font-size: 21px;
+    }
+    .details-head .description{
+        font-size: 16px;
+    }
+    .details-head .ratings {
+        font-size: 13px;
+    }
+    .price .selling{
+        font-size: 22px;
+    }
+    .actual-and-offer .actual,
+    .actual-and-offer .offer,
+    .tax-option .similar a{
+        font-size: 14px;
+    }
+
+    .size-head{
+        font-size: 16px;
+    }
+    .size-button{
+        font-size: 14px;
+        height: 33px;
+        width: 33px;
+    }
+
+    .quantity-box .stock-left,
+    .quantity-section .head{
+        font-size: 14px;
+    }
+    .product-quantity div{
+        font-size: 17px;
+    }
+    .downButton,
+    .upButton{
+        width: 29px;
+        height: 29px;
+    }
+
+    #error-text{
+        font-size: 14px;
+    }
+    
+    .mini-details-head{
+        font-size: 15px;
+    }
+    .mini-details p{
+        font-size: 14px;
+    }
+    .buy-buttons .cart-btn,
+    .buy-buttons .buy-btn{
+      font-size: 15px;
+    }
+    .review-section{
+        max-width: 1024px;
+        margin: 14px auto;
+        padding: 29px;
+    }
+    
+
+    .personal-review-head,
+    .written-review-head,
+    .reviews-head,
+    .user-name
+    .no-review{
+      font-size: 16px;
+    }
+    .reviewed-date{
+      font-size: 13px;
+    }
+    .reviewed-star{
+      font-size: 12px;
+    }
+    .user-review-note,
+    .cannot-review-message{
+      font-size: 15px;
+    }
+    
+  }
+
+  @media (max-width:1024px){
+    .container-body{
+        max-width: 768px;
+    }
+    .sub-images {
+      width: 27.5%;
+      object-fit: contain;
+      margin-left: 14px;
+    }
+    .image3 {
+      margin-top: 13px;
+    }
+
+    .details-head {
+      line-height: 18px;
+    }
+    .details-head .brand{
+      font-size: 19px;
+    }
+    .details-head .description{
+        font-size: 15px;
+    }
+    .details-head .ratings {
+        font-size: 12px;
+    }
+    .price .selling{
+        font-size: 20px;
+    }
+    .actual-and-offer .actual,
+    .actual-and-offer .offer,
+    .tax-option .similar a{
+        font-size: 13px;
+    }
+
+    .size-head{
+        font-size: 14px;
+    }
+    .size-button{
+        font-size: 13px;
+        height: 30px;
+        width: 30px;
+    }
+
+    .quantity-box .stock-left,
+    .quantity-section .head{
+        font-size: 13px;
+    }
+    .product-quantity div{
+        font-size: 16px;
+    }
+    .downButton,
+    .upButton{
+        width: 27px;
+        height: 27px;
+    }
+
+    #error-text{
+        font-size: 13px;
+    }
+    
+    .mini-details-head,
+    .mini-details p{
+        font-size: 13px;
+    }
+    .buy-buttons .cart-btn,
+    .buy-buttons .buy-btn{
+      font-size: 13px;
+      padding:3px 0px;
+    }
+
+
+    .review-section{
+        max-width: 768px;
+        margin: 14px auto;
+        padding: 28px;
+    }
+    .personal-review-head,
+    .written-review-head,
+    .reviews-head,    
+    .no-review{
+      font-size: 14px;
+    }
+    .user-review .photo,
+    .users-review-box .photo{
+      padding:4px 8px;
+      font-size: 14px;
+    }
+    .user-name{
+      font-size: 13px;
+    }
+    .reviewed-date{
+      font-size: 12px;
+    }
+    .reviewed-star{
+      font-size: 11px;
+    }
+    .user-review-note,
+    .cannot-review-message{
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width:768px){
+    .container-body{
+        max-width: 648px;
+    }
+
+    .sub-images {
+      width: 26.5%;
+      object-fit: contain;
+      margin-left: 14px;
+    }
+    .image3 {
+      margin-top: 13px;
+    }
+
+    .details-head {
+      line-height: 17px;
+    }
+    .details-head .brand{
+      font-size: 17px;
+    }
+    .details-head .description{
+        font-size: 14px;
+    }
+    .details-head .ratings {
+        font-size: 11px;
+    }
+    .price .selling{
+        font-size: 18px;
+    }
+    .actual-and-offer .actual,
+    .actual-and-offer .offer,
+    .tax-option .similar a{
+        font-size: 12px;
+    }
+
+    .size-head{
+        font-size: 13px;
+    }
+    .size-button{
+        font-size: 12px;
+        height: 27px;
+        width: 27px;
+    }
+
+    .quantity-box .stock-left,
+    .quantity-section .head{
+        font-size: 12px;
+    }
+    .product-quantity div{
+        font-size: 14px;
+    }
+    .downButton,
+    .upButton{
+        width: 25px;
+        height: 25px;
+    }
+
+    #error-text,
+    .mini-details-head,
+    .mini-details p{
+        font-size: 12px;
+    }
+    .buy-buttons .cart-btn,
+    .buy-buttons .buy-btn{
+      font-size: 12px;
+      padding:3px 0px;
+    }
+
+
+    .review-section{
+        max-width: 768px;
+        margin: 12px auto;
+        padding: 25px;
+    }
+    .personal-review-head,
+    .written-review-head,
+    .reviews-head,    
+    .no-review{
+      font-size: 13px;
+    }
+    .user-review .photo,
+    .users-review-box .photo{
+      padding:4px 8px;
+      font-size: 13px;
+    }
+    .user-name{
+      font-size: 13px;
+    }
+    .reviewed-date{
+      font-size: 11px;
+    }
+    .reviewed-star{
+      font-size: 10.5px;
+    }
+    .user-review-note,
+    .cannot-review-message{
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width:648px){
+    .container-body{
+        max-width: 475px;
+    }
+    .sub-images {
+      width: 26%;
+      object-fit: contain;
+      margin-left: 10px;
+    }
+    .image3 {
+      margin-top: 10px;
+    }
+
+    .details-head {
+      line-height: 17px;
+    }
+    .details-head .brand{
+      font-size: 17px;
+    }
+    .details-head .description{
+        font-size: 14px;
+    }
+    .details-head .ratings {
+        font-size: 11px;
+    }
+    .price .selling{
+        font-size: 18px;
+    }
+    .actual-and-offer .actual,
+    .actual-and-offer .offer,
+    .tax-option .similar a{
+        font-size: 12px;
+    }
+
+    .size-head{
+        font-size: 13px;
+    }
+    .size-button{
+        font-size: 11px;
+        height: 25px;
+        width: 25px;
+    }
+
+    .quantity-box .stock-left,
+    .quantity-section .head{
+        font-size: 12px;
+    }
+    .product-quantity div{
+        font-size: 14px;
+    }
+    .downButton,
+    .upButton{
+        width: 24px;
+        height: 24px;
+    }
+
+    #error-text,
+    .mini-details-head,
+    .mini-details p{
+        font-size: 12px;
+    }
+    .buy-buttons .cart-btn,
+    .buy-buttons .buy-btn{
+      font-size: 12px;
+      padding:3px 0px;
+    }
+    .review-section{
+        max-width: 475px;
+        margin: 11px auto;
+        padding: 23px;
+        justify-content: center;
+        gap:10px
+    }
+    .user-review{
+      padding:12px;
+    }
+    .personal-review-head,
+    .written-review-head,
+    .reviews-head,    
+    .no-review{
+      font-size: 13px;
+    }
+    .user-review .photo,
+    .users-review-box .photo{
+      padding:4px 8px;
+      font-size: 13px;
+    }
+    .user-name,.user-name span{
+      font-size: 11px;
+    }
+    .reviewed-date{
+      font-size: 10px;
+    }
+    .reviewed-star{
+      font-size: 9px;
+      margin-right: 1px;
+    }
+    .user-review-note,
+    .cannot-review-message{
+      font-size: 12px;
+    }
+  }
+
+  @media (max-width:475px){
+    .container-body{
+      margin-top: 60px;
+      max-width:90%;
+      justify-content: space-between;
+      padding:10px;
+    }
+    .main-image {
+      width: 90%;
+    }
+    .sub-images {
+      width: 40%;
+      object-fit: contain;
+      margin-left: 8px;
+    }
+    .image3 {
+      margin-top: 6px;
+    }
+
+    .details-head {
+      line-height: 12.5px;
+    }
+    .details-head .brand{
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+    .details-head .description{
+        font-size: 12px;
+    }
+    .details-head .ratings {
+        font-size: 9px;
+    }
+    .product-details1{
+      margin-top: 10px;
+    }
+    .price .selling{
+        font-size: 16px;
+        margin-bottom: 2px;
+    }
+    .actual-and-offer{
+      margin-bottom: 2px;
+    }
+    .actual-and-offer .actual,
+    .actual-and-offer .offer{
+      font-size: 10px;
+    }
+    .tax-option .similar a{
+        font-size: 9px;
+    }
+    .size{
+      margin-top: 10px;
+      margin-bottom: 3px;
+      padding:10px 0px;
+    }
+    .size-head{
+        font-size: 10.5px;
+        margin-bottom: 6px;
+    }
+    .size-button{
+        font-size: 8.5px;
+        height: 19px;
+        width: 19px;
+    }
+    #sizes {
+      margin-bottom: 12px;
+      display: flex;
+      gap: 7px;
+    }
+    
+    .quantity-box .stock-left,
+    .quantity-section .head{
+        font-size: 10px;
+    }
+    .quantity-section .head{
+      margin-bottom: 4px;
+    }
+    .product-quantity div{
+        font-size: 8.5px;
+    }
+    .downButton,
+    .upButton{
+        width: 17px;
+        height: 17px;
+    }
+
+    #error-text,
+    .mini-details-head,
+    .mini-details p{
+        font-size: 10px;
+    }
+    .buy-buttons{
+      margin-top: 30px;
+    }
+    .buy-buttons .cart-btn,
+    .buy-buttons .buy-btn{
+      font-size: 8px;
+      padding:2px 0px;
+    }
+    .details3{
+      margin-top: 15px;
+    }
+    .review-section{
+      max-width: 90%;
+      margin: 9px auto;
+      padding: 19px;
+      justify-content: center;
+      gap:10px
+    }
+    .written-review-box{
+      width:100px;
+    }
+    .user-review,
+    .users-review-box{
+      padding:9px;
+    }
+    .personal-review-head,
+    .written-review-head,
+    .reviews-head,    
+    .no-review{
+      font-size: 10px;
+    }
+    .user-review .photo,
+    .users-review-box .photo{
+      padding:1.5px 2.5px;
+      font-size: 4px;
+      text-align: center;
+    }
+    .user-name,.user-name span{
+      font-size: 7px;
+    }
+    .reviewed-date{
+      font-size: 6px;
+    }
+    .reviewed-star{      
+      font-size: 5px;
+      margin-right: 0.5px;
+    }
+    .user-rating{
+      margin-top: -13px;
+      margin-bottom: 6px;
+    }
+    .user-review-note,
+    .cannot-review-message{
+      font-size: 10px;
+    }
+  }

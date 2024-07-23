@@ -99,10 +99,15 @@ header {
     max-width: 1280px;
   }
   .left-section .logo a{
-    font-size: 30px;
+    font-size: 27px;
+  }
+  #search-section input[type="search"] {
+    max-width: 400px;
+    font-size: 16px;
+    padding: 0px 7px;
   }
   .links a{
-    font-size: 19px;
+    font-size: 18px;
     margin-left: 45px;
   }
 }
