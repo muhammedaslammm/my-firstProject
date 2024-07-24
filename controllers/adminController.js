@@ -615,7 +615,7 @@ exports.addProductOffer = async function(req,res){
 
     try{
         const product = await Product.findById(productID);
-        const discountedAmount = product.actualPrice*(offer/100);
+        const discountedAmount = Math.round(product.actualPrice*(offer/100));
         const sellingPrice = product.actualPrice - discountedAmount;
         const newOffer = await ProductOffer.create({
             offer,  

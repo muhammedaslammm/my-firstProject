@@ -351,8 +351,7 @@ exports.buttonClick = async function(req,res,next){
         const userID = req.session.userID;
         const productID = req.params.id;
         const product =  await Product.findById(productID)
-        const quantity = req.body.quantity;
-        const size = req.body.size;
+        const {quantity,size} = req.body;
         const address = await Address.find({userID});
 
         if(req.body.button === "addToCart"){
@@ -445,7 +444,7 @@ exports.addProduct_Address = async function(req,res,next){
     try{
         const address = req.body;
         address.userID = req.session.userID;
-        const {productID,quantity,size}=req.query;
+        const {productID,quantity,size} = req.query;
         const addAddress = await Address.create(address);
         await Address.updateMany({},{$set:{default:false}});
         await Address.updateOne({_id:addAddress._id},{$set:{default:true}});

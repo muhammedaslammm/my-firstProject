@@ -206,7 +206,7 @@ exports.orderResponsePage = async function(req,res,next){
         const productType = order.orderedProducts[0].productID.productType;
         const similarProducts = await Product.find({productType}).limit(6);
         console.log("similar products: ",similarProducts.length);
-        res.render("orderResponsePage",{userID,order,similarProducts})       
+        res.render("orderResponsePage",{userID,order,similarProducts})         
     }
     catch(error){
         next(error)
@@ -259,12 +259,12 @@ exports.downloadInvoice = async function(req,res){
         marginBottom:25,
         marginLeft:25,
         sender:{
-            company:'moasWeb pvt ltd',
-            address:'moasWeb Down Villa 1278 Street, Trivandrum, Kerala',
+            company:'moascart pvt ltd',
+            address:'moascart Down Villa 1278 Street, Trivandrum, Kerala',
             zip:658956,
             city:'Trivandrum',
             country:'India',
-            email:'moaswebpvt02@gmail.com',
+            email:'moascartpvt02@gmail.com',
             phone:'+91 9569585698'
         },
         client:{
@@ -318,8 +318,7 @@ exports.cancelOrder = async function(req,res){
             }}            
         )            
 
-        // collecting cancelled product amount for adding in the wallet
-        
+        // collecting cancelled product amount for adding in the wallet       
         
         const order = await Order.findById(orderID).populate('usedCouponID');
         if(order.paymentMethod != 'cash-on-delivery'){

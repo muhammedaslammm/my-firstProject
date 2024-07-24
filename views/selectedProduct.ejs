@@ -57,7 +57,7 @@
         </div>
         <!-- below head -->
         <form
-          action="/category/<%=product.category%>/<%=product._id%>"
+          action="/category/<%=product.category.category%>/<%=product._id%>"
           method="post"
           id="selected-product-form"
         >
@@ -78,7 +78,6 @@
                 </div>
               </div>
               <div class="tax-option">
-                <!-- <div class="tax-note">Inclusive of all taxes</div> -->
                 <div class="similar"><a href="#">view similar?</a></div>
               </div>
               <div class="size">

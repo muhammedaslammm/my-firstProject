@@ -41,6 +41,13 @@ exports.cartPage = async function(req,res,next){
                 path:'productOffer'
             }
         })
+        .populate({
+            path:'productID',
+            populate:{
+                path:'category'
+            }
+        })
+        console.log('cart product: ',carts[0]);
         const totalCart = carts.length; 
         let totalAmount = 0;
         let bagTotal = 0;
@@ -447,6 +454,7 @@ exports.addCoupon2Product = async function(req,res){
                 const newAmount = Math.round(totalAmount - deducted)
                 const deductedAmount = deducted
                 
+                // coupon manage in future
                 const usedCoupon = await UsedCoupon.create({
                     userID:req.session.userID,
                     couponID:coupon._id,
