@@ -122,70 +122,84 @@ exports.products = async function(req,res,next){
         const {brand,size,price,color,rating,discount,sort} = req.query; 
         const category = req.params.categoryName;     
         
-        const categories = await Category.distinct('category',{deletedAt:null});
+        const categories = await Category.distinct('category',{deletedAt:null})
         const brands = await Product.distinct('brand',{deletedAt:null});
         
         filters = {}
 
         if(brand) filters.brand = brand;        
         if(rating) filters.rating = rating;
-        if(discount) filters.discount = discount;      
-        
-        if(category) filters.category = category;
-
+        if(discount) filters.discount = discount;  
+        if(category) filters['productCategory.category'] = category;    
         if(size) filters[size] = {$gt:0};
-
-
         if(color){
             const colorMatch = new RegExp(color,"i");
             filters.color = colorMatch;
         }
-        
         if(price){
             const priceRange = price.split("-");
             filters.sellingPrice = {$gte:parseInt(priceRange[0]),$lte:parseInt(priceRange[1])};
         }       
 
-        let sortQuery;
+        let sortQuery = {}
         switch(sort){
             case 'popularity':
-                sortQuery = {popularity:-1};
+                sortQuery.popularity = -1;
                 break;
             case 'new':
-                sortQuery = {date:-1};
+                sortQuery.date = -1;
                 break;
             case 'low-high':
-                sortQuery = {sellingPrice:1};
+                sortQuery.sellingPrice = 1;
                 break;
             case 'high-low':
-                sortQuery = {sellingPrice:-1};
+                sortQuery.sellingPrice = -1;
                 break;
             case 'name-asc':
-                sortQuery = {brand:1};
+                sortQuery.brand = 1;
                 break;
             case 'name-desc':
-                sortQuery = {brand:-1};
+                sortQuery.brand = -1
                 break;    
             default:
-                sortQuery = {date:-1}
+                sortQuery.date = -1;
         }   
         filters.deletedAt = null;
 
         // pagination
         const productPerPage = 12;
         const currentPage = req.query.page || 1;
+        console.log('filters: ',filters);
+        const products = await Product.aggregate([
+            {$lookup:{
+                from:'categories',
+                localField:'category',
+                foreignField:'_id',
+                as:'productCategory'
+            }},            
+            {$unwind:'$productCategory'},                  
+            {$match:filters},
+            {$sort:sortQuery},
+            {$limit:productPerPage},
+            {$lookup:{
+                from:'productoffers',
+                localField:'productOffer',
+                foreignField:'_id',
+                as:'product_offer'
+            }},
+            {$unwind:{
+                path:'$product_offer',
+                preserveNullAndEmptyArrays:true
+            }},
+            {$project:{'category':0,'productOffer':0}}
+        ])
 
-        const products = await Product.find(filters)
-        .sort(sortQuery)
-        .skip((currentPage-1)*productPerPage)
-        .limit(productPerPage)
-        .populate('productOffer');
-
-        const totalProducts = await Product.countDocuments({category});
+        console.log('product: ',products[0]);
+        const totalProducts = await Product.countDocuments({'category.category':category}).populate('category');
         const totalPages = Math.ceil(totalProducts/productPerPage);
 
         const count = products.length;
-        res.render("products",{products,userID,count,categories,brands,query:req.query,params:req.params,count,currentPage,totalPages})
+        res.render("products",{products,userID,count,categories,brands,query:req.query,params:req.params,count,currentPage,totalPages,category})
     
     }
     catch(error){
@@ -197,8 +211,8 @@ exports.products = async function(req,res,next){
 exports.selectedProduct = async function(req,res,next){
     try{
         const userID = req.session.userID;
-        const productID = req.params.id;      
-        const product = await Product.findById(productID).populate('productOffer');
+        const productID = req.params.productID;      
+        const product = await Product.findById(productID).populate('productOffer').populate('category')
         const reviews = await Review.find({productID}).populate('userReviews.userID').sort({'userReviews.date':-1});
         const addedToCart = await Cart.findOne({userID,productID}) ? true : false;
         console.log("addedToCart: ",addedToCart);

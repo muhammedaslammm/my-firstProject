@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="/styles/nav.css" />
     <link rel="stylesheet" href="/styles/clientside/products.css" />
 
-    <title>signup page</title>
+    <title><%=category%> page</title>
   </head>
   <body>
     <!-- header section -->
@@ -246,7 +246,7 @@
             <img src="<%=product.images[0]%>" alt="product image" />
           </div>
           <a
-            href="/category/<%=product.category%>/<%=product._id%>"
+            href="/category/<%=product.productCategory.category%>/<%=product._id%>"
             class="product-link"
           >
             <div class="details">
@@ -259,8 +259,8 @@
               </div>
               <div class="price">
                 <div class="selling">
-                  Rs. <%=product.productOffer ?
-                  product.productOffer.sellingPrice : product.sellingPrice%>
+                  Rs. <%=product.product_offer ?
+                  product.product_offer.sellingPrice : product.sellingPrice%>
                 </div>
                 <!-- <div class="actual">Rs. <%=product.actualPrice%></div> -->
                 <div class="discount">

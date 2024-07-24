@@ -414,7 +414,7 @@ exports.adminProductPage = async function(req,res,next){
         .skip((page-1)*productPerPage)        
         .limit(productPerPage)
         .populate('productOffer')
-
+        .populate('category')
         const currentPage = page;
         const totalProducts = await Product.countDocuments()
         const totalPages = Math.ceil(totalProducts/productPerPage);        
@@ -513,7 +513,7 @@ exports.deleteProduct = async function(req,res){
 exports.updateProductPage = async function(req,res){
     try{
         const productID = req.params.id;
-        const product = await Product.findById(productID);
+        const product = await Product.findById(productID).populate('category');
         const categories = await Category.find({deletedAt:null});
             
         res.render("updateProduct",{

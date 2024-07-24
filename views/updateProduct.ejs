@@ -506,12 +506,12 @@
                     <label for="">Category</label>
                     <select name="category" id="category">
                       <% categories.forEach(function(category){ %>
-                      <%if(product.category === category.category){%>
-                      <option value="<%=category.category%>" selected>
+                      <%if(product.category.category === category.category){%>
+                      <option value="<%=category._id%>" selected>
                         <%=category.category%>
                       </option>
                       <%}else{%>
-                      <option value="<%=category.category%>">
+                      <option value="<%=category._id%>">
                         <%=category.category%>
                       </option>
                       <%}%> <% }) %>

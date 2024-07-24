@@ -231,17 +231,10 @@
                 : product.sellingPrice%>
               </div>
               <div class="actual-price">Rs. <%=product.actualPrice%></div>
-              <!-- <div class="product-offer">
-                <span
-                  ><%=product.productOffer ? product.productOffer.offer :
-                  product.discount%>%</span
-                >
-                off
-              </div> -->
             </div>
             <div class="product-category">
               <div class="category-head">category</div>
-              <div class="category"><%=product.category%></div>
+              <div class="category"><%=product.category?.category%></div>
             </div>
             <div class="product-quantity">
               <%const totalQuantity = product.extra_small + product.small +

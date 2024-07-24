@@ -36,14 +36,14 @@ router.get("/search",productsController.searchResult)
 router.get("/category/:categoryName",productsController.products)
 
 // selected product
-router.get("/category/:category/:id",productsController.selectedProduct);
+router.get("/category/:categoryName/:productID",productsController.selectedProduct);
 
 // get the size's quantity
 router.get('/getQuantity/:productID',productsController.getQuantity)
 
 // add address if needed
 router.post("/category/:category/:id",authentication,productsController.buttonClick);
-router.get("/product-addAddress",productsController.product_addAddress);
+router.get("/product-addAddress",authentication,productsController.product_addAddress);
 router.post("/product-addAddress",productsController.addProduct_Address);
 
 // wishlist
