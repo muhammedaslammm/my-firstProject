@@ -13,7 +13,7 @@ router.post("/unblockUser/:id",validation,adminController.unblockUser)
 router.get("/category",validation,adminController.adminCategoryPage)
 router.post("/addNewCategory",validation,adminController.addNewCategory);
 router.get("/editCategory/:id",validation,adminController.editCategory);
-router.post("/updateCategory/:id",validation,adminController.updateCategory_post);
+router.post("/updateCategory",validation,adminController.updateCategory_post);
 router.get("/deleteCategory/:id",validation,adminController.deleteCategory);
 router.get("/products",validation,adminController.adminProductPage)
 router.get("/addNewProduct",validation,adminController.addNewProduct_page);

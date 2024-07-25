@@ -190,17 +190,27 @@ form.addEventListener('submit',async function(event){
     event.preventDefault();
     let validated = true;
     const inputs = document.querySelectorAll('input');
+    const numInputs = document.querySelectorAll('input[type="number"]');
     const category = document.getElementById('category');
     inputs.forEach(function(input){
-        if(input.value === ''){
+        if(input.value.trim('').length === 0){
             input.parentElement.querySelector('.error').innerText = '*Data Required'
             validated = false;
         }
     })
     if(category.value === ''){
         category.parentElement.querySelector('.error').innerText = '*Data Required';
-        validated = false
+        validated = false;
     }     
+    numInputs.forEach((input) => {
+        if(input.value < 0){
+            input.parentElement.querySelector('.error').innerText = '*Required Only Positive Numbers';
+            validated = false;
+            // setTimeout(function(){
+            //     input.parentElement.querySelector('.error').innerText = '';
+            // },2000)
+        }
+    })
     if(validated){
         const formData = new FormData()
         const category = document.getElementById('category')

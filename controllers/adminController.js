@@ -118,7 +118,12 @@ exports.getSalesData = async function(req,res){
 
             query.orderedDate = {$gte:yearStart,$lte:yearEnd}
         }
-        const orders = await Order.find(query).populate('orderedProducts.productID');
+        const orders = await Order.find(query).populate({
+            path:'orderedProducts.productID',
+            populate:{
+                path:'category'
+            }
+        });
         let labels = ['on progress','delivered','returned','cencelled','pendings'];
         let totalOrders = 0,
             totalOrderedProducts = 0,
@@ -176,11 +181,11 @@ exports.getSalesData = async function(req,res){
                 
                 // best selling category
                 if(!orderStatuses.includes(product.orderStatus)){
-                    if(categories[product.productID.category]){
-                        categories[product.productID.category] = categories[product.productID.category] + 1;
+                    if(categories[product.productID.category.category]){
+                        categories[product.productID.category.category] = categories[product.productID.category.category] + 1;
                     }
                     else{
-                        categories[product.productID.category] = 1;
+                        categories[product.productID.category.category] = 1;
                     }
                 }
 
@@ -308,46 +313,30 @@ exports.adminCategoryPage = async function(req,res,next){
 
 // add new category
 exports.addNewCategory = async function(req,res,next){
-    const categoryData = req.body;
-    const errors = {}
-
     try{
-        const categories = await Category.find({deletedAt:null});
-        const query = {category:{$regex:categoryData.category,$options:"i"}}
-        const matchingCategory = await Category.findOne(query);
-        if(validator.isEmpty(req.body.category)){
-            errors.category = "enter valid category"
+        console.log(req.body.category.trim('').split(' ').join(''));
+        const wordSplit = req.body.category.trim('').split(' ');
+        const category = wordSplit.map(function(word){
+            return word[0].toUpperCase() + word.slice(1);
+        }).join(' ')
+        const matchingCategory = await Category.findOne({category:{$regex:`^${category}$`,$options:'i'},deletedAt:null});
+        if(matchingCategory){
+            res.status(404).json({error:'Category already existing'})
         }
-        else if(matchingCategory){
-            errors.category = "category existing"
+        else{
+            await Category.create({
+                category
+            })
+            res.status(200).json({success:'category created'})
         }
-
-        if(Object.keys(errors).length > 0){
-            res.render("adminCategory",{categories,errors,categoryData});
-        }else{
-            try{
-                const words = categoryData.category.split(" ");
-                const userCategory = words.map(function(word){
-                    return word[0].toUpperCase() + word.slice(1);
-                }).join(" ");
-                await Category.create({
-                    category:userCategory
-                })
-                const categories = await Category.find({deletedAt:null});
-                console.log("category created");
-                res.render("adminCategory",{categories})
-            }
-            catch(error){
-                console.log("couldn't add new category",error);
-            }
-        }
-        
     }
     catch(error){
-        next(error)
+        res.status(505).json({serverFailure:'something went wrong'})
+        console.log(error);
     }
-}
+    
 
+}
 // edit category page
 exports.editCategory = async function(req,res,next){
     const categoryID = req.params.id;
@@ -362,31 +351,25 @@ exports.editCategory = async function(req,res,next){
 
 // edit category
 exports.updateCategory_post = async function(req,res){
-        const categoryID = req.params.id;
-        const errors = {};
+        const {category,categoryID} = req.body;
+        const splitCategory = category.split(' ');
+        const categoryName = splitCategory.map(function(word){
+            return word[0].toUpperCase() + word.slice(1);
+        }).join(' ')
         try{
             const currentCategory = await Category.findById(categoryID);
-            const matchingCategory = await Category.findOne({category:{$regex:req.body.category,$options:'i'}});
+            const matchingCategory = await Category.findOne({category:{$regex:`^${categoryName}$`,$options:'i'},deletedAt:null});
             if(matchingCategory){
-                errors.update = "category existing";                
+                res.status(404).json({error:'Category already existing'})               
             }
-            if(Object.keys(errors).length > 0){
-                res.render("updateCategory",{errors,searched:req.body,currentCategory})
+            else{
+                await Category.updateOne({_id:categoryID},{$set:{category:categoryName}});
+                res.status(200).json({success:'category updated'})
             }
-
-            else{   
-                const words = req.body.category.split(" ");
-                const newCategory = words.map(function(word){
-                    return word[0].toUpperCase() + word.slice(1);
-                }).join(" ");             
-                const update_category = await Category.updateOne({_id:categoryID},{$set:{category:newCategory}});
-                console.log("category edited");
-                res.redirect("/admin/category")
-            }
+            
         }
         catch(error){
-            console.log("category updation failed");
-            res.redirect("/admin/category",error)
+            res.status(500).json({serverFailure:'something went wrong'})
         }      
 } 
 
@@ -409,12 +392,30 @@ exports.adminProductPage = async function(req,res,next){
     const productPerPage = 5;
     const page = parseInt(req.query.page) || 1
     try{
-        const products = await Product.find({deletedAt:null})  
-        .sort({date:-1})       
-        .skip((page-1)*productPerPage)        
-        .limit(productPerPage)
-        .populate('productOffer')
-        .populate('category')
+        const products = await Product.aggregate([
+            {$lookup:{
+                from:'categories',
+                localField:'category',
+                foreignField:'_id',
+                as:'productCategory'
+            }},
+            {$unwind:'$productCategory'},
+            {$match:{deletedAt:null,/*'productCategory.deletedAt':null */}}, 
+            {$lookup:{
+                from:'productoffers',
+                localField:'productOffer',
+                foreignField:'_id',
+                as:'product_offer'
+            }},
+            {$unwind:{
+                path:'$product_offer',
+                preserveNullAndEmptyArrays:true
+            }},
+            {$sort:{date:-1}},
+            {$skip:(page-1)*productPerPage},
+            {$limit:productPerPage},
+            {$project:{'productOffer':0,'category':0}}
+        ]) 
         const currentPage = page;
         const totalProducts = await Product.countDocuments()
         const totalPages = Math.ceil(totalProducts/productPerPage);        

@@ -97,22 +97,31 @@
       <div class="content-body">
         <div class="update-box">
           <div class="update-box-head">update:</div>
-          <p class="error">
-            <%if(typeof errors != 'undefined'){%> <%=errors.update%> <%}%>
-          </p>
+
           <form
             action="/admin/updateCategory/<%=currentCategory._id%>"
             method="post"
+            id="form"
           >
+            <p class="error">
+              <%if(typeof errors != 'undefined'){%> <%=errors.update%> <%}%>
+            </p>
             <input
+              id="category"
               type="text"
               name="category"
               placeholder="<%=typeof searched != 'undefined' ? searched.category : currentCategory.category%>"
+            />
+            <input
+              type="hidden"
+              id="categoryID"
+              value="<%=currentCategory._id%>"
             />
             <input type="submit" />
           </form>
         </div>
       </div>
     </div>
+    <script src="/jsFiles/adminside/updateCategory.js"></script>
   </body>
 </html>

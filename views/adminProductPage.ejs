@@ -97,6 +97,8 @@
       .product-section .no-product {
         margin-top: 10%;
       }
+
+      /* product card */
       .product-card {
         display: flex;
         justify-content: space-around;
@@ -106,6 +108,14 @@
         margin-bottom: 8px;
         /* overflow: hidden; */
         position: relative;
+      }
+      .deleted-product #editButton,
+      .deleted-product .productOffer {
+        display: none;
+      }
+      .deleted-product {
+        background-color: rgb(199, 199, 199);
+        opacity: 0.5;
       }
       .product-image {
         width: 7%;
@@ -193,7 +203,7 @@
           <div class="head-name">Products</div>
           <a href="/admin/addNewProduct">add new product</a>
         </div>
-        <div class="filter-panel">
+        <!-- <div class="filter-panel">
           <div class="filter-panel-left">
             <a href="/admin/refresh-product-page">refresh</a>
           </div>
@@ -210,11 +220,13 @@
               <input type="text" placeholder="filter" />
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="product-section">
           <% if(products.length > 0 ){ %> <% products.forEach(function(product){
           %>
-          <div class="product-card">
+          <div
+            class="product-card <%=product.productCategory.deletedAt != null ? 'deleted-product' : 'product-not-deleted'%>"
+          >
             <div class="product-image">
               <img src="<%=product.images[0]%>" alt="product Image" />
             </div>
@@ -227,14 +239,14 @@
             </div>
             <div class="product-price">
               <div class="selling-price">
-                Rs. <%=product.productOffer ? product.productOffer.sellingPrice
-                : product.sellingPrice%>
+                Rs. <%=product.product_offer ?
+                product.product_offer.sellingPrice : product.sellingPrice%>
               </div>
               <div class="actual-price">Rs. <%=product.actualPrice%></div>
             </div>
             <div class="product-category">
               <div class="category-head">category</div>
-              <div class="category"><%=product.category?.category%></div>
+              <div class="category"><%=product.productCategory?.category%></div>
             </div>
             <div class="product-quantity">
               <%const totalQuantity = product.extra_small + product.small +
@@ -246,6 +258,7 @@
             <div class="options">
               <a
                 href="/admin/update-product/<%=product._id%>"
+                id="editButton"
                 style="color: rgb(22, 90, 173)"
                 >edit</a
               >

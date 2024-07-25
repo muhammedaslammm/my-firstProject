@@ -130,7 +130,8 @@ exports.products = async function(req,res,next){
         if(brand) filters.brand = brand;        
         if(rating) filters.rating = rating;
         if(discount) filters.discount = discount;  
-        if(category) filters['productCategory.category'] = category;    
+        if(category) filters['productCategory.category'] = category; 
+        if(category) filters['productCategory.deletedAt'] = null;   
         if(size) filters[size] = {$gt:0};
         if(color){
             const colorMatch = new RegExp(color,"i");

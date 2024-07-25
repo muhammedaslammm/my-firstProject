@@ -160,12 +160,13 @@
           <div class="new-category">
             <div class="new-category-head">Add New Category</div>
             <div class="category-field-head">category name:</div>
-            <p class="category-error">
-              <%=typeof errors != 'undefined' ? errors.category : '' %>
-            </p>
             <div class="category-field">
-              <form action="/admin/addNewCategory" method="post">
+              <form action="/admin/addNewCategory" method="post" id="form">
+                <p class="category-error">
+                  <%=typeof errors != 'undefined' ? errors.category : '' %>
+                </p>
                 <input
+                  id="category"
                   type="text"
                   name="category"
                   value="<%=typeof categoryData != 'undefined' ? categoryData.category : ''%>"
@@ -177,5 +178,6 @@
         </div>
       </div>
     </div>
+    <script src="/jsFiles/adminside/adminCategoryAdd.js"></script>
   </body>
 </html>

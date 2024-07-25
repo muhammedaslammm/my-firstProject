@@ -171,9 +171,10 @@ async function submitForm(event,productID){
 
     let validated = true;
     const inputsFields = document.querySelectorAll('.input');
+    const numInputs = document.querySelectorAll('input[type="number"]')
     const category = document.getElementById('category');
     inputsFields.forEach(function(input){
-        if(input.value === ''){
+        if(input.value.trim('').length === 0){
             input.parentElement.querySelector('.error').innerText = '*Data Required';
             validated = false;            
         }
@@ -182,6 +183,15 @@ async function submitForm(event,productID){
         category.parentElement.querySelector('.error').innerText = '*Data Required';
         validated = false;
     }
+    numInputs.forEach(function(input){
+        if(input.value < 0){
+            input.parentElement.querySelector('.error').innerText = 'Requires only positive numbers';
+            validated = false;
+            // setTimeout(function(){
+            //     input.parentElement.querySelector('.error').innerText = '';
+            // },2000)            
+        }
+    })
     if(validated){
         const formData = new FormData();
         const category = document.getElementById('category');
